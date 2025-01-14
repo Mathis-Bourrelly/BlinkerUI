@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "blinker-ui",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -18,12 +18,15 @@
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
+    "@tanstack/react-query": "^5.64.1",
     "expo": "~52.0.25",
     "expo-blur": "~14.0.2",
     "expo-constants": "~17.0.4",
     "expo-font": "~13.0.3",
     "expo-haptics": "~14.0.1",
+    "expo-linear-gradient": "~14.0.2",
     "expo-linking": "~7.0.4",
+    "expo-modules-core": "^2.1.3",
     "expo-router": "~4.0.16",
     "expo-splash-screen": "~0.29.20",
     "expo-status-bar": "~2.0.1",

@@ -1,26 +1,34 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
 export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
-  },
+    light: {
+        text: "#e8e8eb",
+        background: "#ffffff",
+        gradient: ['#0C101D', '#080910', '#070911', '#03050C'] as const,
+        accent: "#3058e7",
+        corner: 12, // Si vous utilisez `corner` pour le style des bordures ou des rayons
+        card: "#16171d",
+        font: "Poppins", // Optionnel si utilisé dans les styles
+        border: "#42454e",
+        text2: "#9f9f9f",
+        secondary: "#ffffff",
+        input: "#111318",
+        danger: "#e73030",
+        valide: "#2f6d27",
+        color: "#ffffff"
+    },
+    dark: {
+        text: "#e8e8eb",
+        background: "#03050c",
+        gradient: ['#0C101D', '#080910', '#070911', '#03050C'] as const,
+        accent: "#3058e7",
+        corner: 12,
+        card: "#16171d",
+        font: "Poppins",
+        border: "#42454e",
+        text2: "#9f9f9f",
+        secondary: "#ffffff",
+        input: "#111318",
+        danger: "#e73030",
+        valide: "#2f6d27",
+        color: "#ffffff"
+    }
 };
