@@ -30,23 +30,19 @@ export default function Index() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems:'center'
+        alignItems: 'center',
+        justifyContent: 'center', // Centrer verticalement et horizontalement
     },
     background: {
         flex: 1,
         alignItems: 'center',
+        justifyContent: 'center', // Centrer également dans le fond
         width: "100%",
     },
     logo_title: {
         flexDirection: "row",
         alignItems: "center",
-        marginVertical: 20
-    },
-    textInput: {
-        color: "white",
-        borderColor: "white",
-        borderWidth: 2,
-        borderRadius: 10,
-        backgroundColor: "gray"
+        marginVertical: 20,
     },
 });
+
