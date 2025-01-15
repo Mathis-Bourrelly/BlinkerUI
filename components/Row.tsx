@@ -12,4 +12,5 @@ const rowStyle = {
     flex:0,
     flexDirection:'row',
     alignItems:"center",
+    alignContent:'center',
 } satisfies ViewStyle;

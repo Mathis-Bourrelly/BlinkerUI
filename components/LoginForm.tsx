@@ -13,7 +13,7 @@ export function LoginForm() {
     const [password, setPassword] = useState("");
 
     // Utilisation du hook de mutation
-    const { mutate,isPending, isError, error , isSuccess} = useLoginMutation();
+    const { mutate,isPending, isError, error , isSuccess, data } = useLoginMutation();
 
     const handleLogin = () => {
         mutate({ email, password });
@@ -21,6 +21,7 @@ export function LoginForm() {
 
     return (
         <View style={LoginFormStyle.form}>
+            <ThemedText variant={"Title"} color={"text"}> Connexion </ThemedText>
             <ThemedTextInput
                 value={email}
                 onChange={(text) => setEmail(text)}
@@ -31,10 +32,10 @@ export function LoginForm() {
                 onChange={(text) => setPassword(text)}
                 placeholder="Password"
             />
-            <ThemedButton title="Submit" onPress={handleLogin} />
+            <ThemedButton title="Login" onPress={handleLogin} />
             {isPending && <ActivityIndicator color={"text"} />}
             {isError && <ThemedText>{`Error: ${error.message}`}</ThemedText>}
-            {isSuccess && <ThemedText color={"valide"}>Connexion réussi !</ThemedText>}
+            {isSuccess && <ThemedText color={"valide"}>{data?.message}</ThemedText>}
         </View>
     );
 }

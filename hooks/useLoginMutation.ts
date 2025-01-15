@@ -28,11 +28,8 @@ type LoginCredentials = {
 };
 
 type LoginResponse = {
+    message: string;
     token: string;
-    user: {
-        id: number;
-        email: string;
-    };
 };
 
 export function useLoginMutation() {
