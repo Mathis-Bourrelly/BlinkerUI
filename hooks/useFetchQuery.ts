@@ -1,13 +1,13 @@
 import {useQuery} from "@tanstack/react-query";
+import {Endpoint} from "@/constants/Endpoint";
 
-const endpoint = "http://dev.blinker.eterny.fr";
 
 export function useFetchQuery(path: string) {
     return useQuery({
         queryKey: [path],
         queryFn: async () => {
             wait(1)
-            return fetch(endpoint+path).then (res => res.json())
+            return fetch(Endpoint.url+path).then (res => res.json())
         }}
     )
 }

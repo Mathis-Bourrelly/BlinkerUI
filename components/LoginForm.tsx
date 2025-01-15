@@ -4,14 +4,16 @@ import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedButton } from "@/components/ThemedButton";
 import { ThemedText } from "@/components/ThemedText";
 import { useLoginMutation } from "@/hooks/useLoginMutation";
-import { Colors } from "@/constants/Colors";
+import {useThemeColors} from "@/hooks/useThemeColors";
+
+const colors = useThemeColors();
 
 export function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     // Utilisation du hook de mutation
-    const { mutate,isPending, isError, error , isSuccess, data} = useLoginMutation();
+    const { mutate,isPending, isError, error , isSuccess} = useLoginMutation();
 
     const handleLogin = () => {
         mutate({ email, password });
@@ -30,9 +32,9 @@ export function LoginForm() {
                 placeholder="Password"
             />
             <ThemedButton title="Submit" onPress={handleLogin} />
-            {isPending && <ActivityIndicator color={Colors.light.text} />}
+            {isPending && <ActivityIndicator color={"text"} />}
             {isError && <ThemedText>{`Error: ${error.message}`}</ThemedText>}
-            {isSuccess && <ThemedText>{data?.token}</ThemedText>}
+            {isSuccess && <ThemedText color={"valide"}>Connexion réussi !</ThemedText>}
         </View>
     );
 }
