@@ -2,57 +2,54 @@ import { useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedButton } from "@/components/ThemedButton";
-import { ThemedText } from "@/components/ThemedText";
 import { useRegisterMutation } from "@/hooks/useRegisterMutation";
-import { useThemeColors } from "@/hooks/useThemeColors";
+import { ThemedText } from "@/components/ThemedText";
 
-export function RegisterForm() {
+type RegisterFormProps = {
+    onMessage: (msg: string) => void;
+};
+
+export function RegisterForm({ onMessage }: RegisterFormProps) {
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [name, setName] = useState("");
-    const [role, setRole] = useState("user");
 
-    const { mutate, isPending, isError, error, isSuccess, data } = useRegisterMutation();
+    const { mutate, isPending } = useRegisterMutation();
 
     const handleRegister = () => {
-        mutate({ email, password, name, role });
+        mutate({ name, email, password }, {
+            onSuccess: (data) => onMessage(`Success: ${data.message}`),
+            onError: (err: Error) => onMessage(`Error: ${err.message}`),
+        });
     };
 
     return (
         <View style={RegisterFormStyle.form}>
-            <ThemedText variant={"Title"} color={"text"}> Enregistrement </ThemedText>
+            <ThemedText>Créer un compte</ThemedText>
+            <ThemedTextInput
+                value={name}
+                onChangeText={setName}
+                placeholder="Name"
+            />
             <ThemedTextInput
                 value={email}
-                onChange={(text) => setEmail(text)}
+                onChangeText={setEmail}
                 placeholder="Email"
             />
             <ThemedTextInput
                 value={password}
-                onChange={(text) => setPassword(text)}
+                onChangeText={setPassword}
                 placeholder="Password"
             />
-            <ThemedTextInput
-                value={name}
-                onChange={(text) => setName(text)}
-                placeholder="Name"
-            />
-            <ThemedTextInput
-                value={role}
-                onChange={(text) => setRole(text)}
-                placeholder="Role (optional)"
-            />
             <ThemedButton title="Register" onPress={handleRegister} />
-            {isPending && <ActivityIndicator color="text" />}
-            {isError && <ThemedText>{`Error: ${error.message}`}</ThemedText>}
-            {isSuccess && <ThemedText color="valide">{data?.message}</ThemedText>}
+            {isPending && <ActivityIndicator color={"text"} />}
         </View>
     );
 }
 
 const RegisterFormStyle = StyleSheet.create({
     form: {
-        width: "80%",
-        justifyContent: "center",
+        marginHorizontal:6,
         alignItems: "center",
     },
 });

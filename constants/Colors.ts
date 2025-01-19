@@ -11,8 +11,10 @@ export const Colors = {
         text2: "#9f9f9f",
         secondary: "#ffffff",
         input: "#111318",
-        danger: "#e73030",
-        valide: "#2f6d27",
+        danger: "#631212",
+        dangerbg: "#fbd2d2",
+        valide: "#205113",
+        validebg: "#def8d7",
         color: "#ffffff"
     },
     dark: {
@@ -27,8 +29,10 @@ export const Colors = {
         text2: "#9f9f9f",
         secondary: "#ffffff",
         input: "#111318",
-        danger: "#e73030",
-        valide: "#2f6d27",
+        danger: "#ec7f7f",
+        dangerbg: "#2b0909",
+        valide: "#92e985",
+        validebg: "#122c0b",
         color: "#ffffff"
     }
 };

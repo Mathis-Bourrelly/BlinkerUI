@@ -1,0 +1,13 @@
+{
+  "language": "French",
+  "screens": {
+    "login": {
+      "login": "Connexion",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "continue": "Continuer",
+      "createAccount": "Créer un compte",
+      "forgotPassword": "Mot de passe oublié?"
+    }
+  }
+}

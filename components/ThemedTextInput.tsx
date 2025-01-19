@@ -1,32 +1,34 @@
 import {StyleSheet, TextInput} from "react-native";
-import {Row} from "@/components/Row";
 import {useThemeColors} from "@/hooks/useThemeColors";
 
 type Props = {
-    value: string,
-    onChange: (value: string) => void,
-    placeholder?: string
-}
+    value: string;
+    onChangeText: (value: string) => void;
+    placeholder?: string;
+};
 
-export function ThemedTextInput({value, onChange, placeholder}: Props) {
-    const colors = useThemeColors()
-    return <Row style={[styles.wrapper, {backgroundColor: colors.text}]}>
-        <TextInput style={styles.input} onChangeText={onChange} value={value} placeholder={placeholder}/>
-    </Row>
+export function ThemedTextInput({value, onChangeText, placeholder}: Props) {
+    const colors = useThemeColors(); // Appel dynamique dans le composant
+    const dynamicStyles = {
+        backgroundColor: colors.background,
+        color: colors.text,
+    };
+
+    return (
+        <TextInput
+            style={[styles.input, dynamicStyles]}  // Combine styles statiques et dynamiques
+            onChangeText={onChangeText}
+            value={value}
+            placeholder={placeholder}
+        />
+    );
 }
 
 const styles = StyleSheet.create({
-    wrapper: {
-        flex: 1,
-        borderRadius: 20,
-        height: 32,
-        marginVertical:6,
-    },
     input: {
-        flex: 1,
-        height: 32,
-        borderRadius: 20,
-        fontSize: 16,
-        padding: 16,
-    }
-})
+        borderRadius: 16,
+        marginVertical: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+    },
+});
