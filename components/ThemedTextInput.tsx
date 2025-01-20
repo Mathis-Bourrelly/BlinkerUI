@@ -1,5 +1,5 @@
 import {StyleSheet, TextInput} from "react-native";
-import {useThemeColors} from "@/hooks/useThemeColors";
+import {useTheme} from "@/context/ThemeContext";
 
 type Props = {
     value: string;
@@ -8,7 +8,7 @@ type Props = {
 };
 
 export function ThemedTextInput({value, onChangeText, placeholder}: Props) {
-    const colors = useThemeColors(); // Appel dynamique dans le composant
+    const {colors} = useTheme(); // Appel dynamique dans le composant
     const dynamicStyles = {
         backgroundColor: colors.background,
         color: colors.text,

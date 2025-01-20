@@ -2,19 +2,20 @@ import {StyleSheet, Text, Image, View, TextInput, Button, ActivityIndicator} fro
 import {SafeAreaView} from "react-native-safe-area-context";
 import {ThemedText} from "@/components/ThemedText";
 import {LinearGradient} from "expo-linear-gradient";
-import {Colors} from "@/constants/Colors";
 import {LoginForm} from "@/components/LoginForm";
 import {RegisterForm} from "@/components/RegisterForm";
 import {Row} from "@/components/Row";
 import {useState} from "react";
-import {useThemeColors} from "@/hooks/useThemeColors";
+import { useTheme } from '@/context/ThemeContext';
 import {useTranslation} from 'react-i18next';
+import {ThemedLogo} from "@/components/ThemedLogo";
+import {ThemedTitle} from "@/components/ThemedTitle";
 
 
 export default function Index() {
     const [message, setMessage] = useState<string | null>(null); // État pour le message
-    const gradientColors = Colors.light.gradient;
-    const colors = useThemeColors()
+    const { colors, toggleTheme } = useTheme();
+    const gradientColors = colors.gradient;
     const {t, i18n} = useTranslation();
 
     const handleMessage = (msg: string) => {
@@ -26,11 +27,13 @@ export default function Index() {
         <SafeAreaView style={styles.container}>
             <LinearGradient colors={gradientColors} style={styles.background}>
                 <View style={styles.logo_title}>
-                    <Image source={require("@/assets/images/logo dark.svg")}/>
-                    <Image source={require("@/assets/images/title dark.svg")}/>
+                    <ThemedLogo/>
+                    <ThemedTitle/>
                 </View>
                 <Button title="English" onPress={() => i18n.changeLanguage('en')}/>
                 <Button title="Français" onPress={() => i18n.changeLanguage('fr')}/>
+                <Button title="日本語" onPress={() => i18n.changeLanguage('jp')}/>
+                <Button title="Toggle Theme" onPress={toggleTheme} />
                 {(<View
                     style={[
                         styles.messageContainer,

@@ -1,8 +1,8 @@
 export const Colors = {
     light: {
-        text: "#e8e8eb",
+        text: "#000000",
         background: "#ffffff",
-        gradient: ['#0C101D', '#080910', '#070911', '#03050C'] as const,
+        gradient: ['#d5ddf8', '#f0f1fd', '#f4f6ff', '#ffffff'] as const,
         accent: "#3058e7",
         corner: 12, // Si vous utilisez `corner` pour le style des bordures ou des rayons
         card: "#16171d",

@@ -1,5 +1,6 @@
 import {StyleSheet, Text, TouchableOpacity} from "react-native";
-import {useThemeColors} from "@/hooks/useThemeColors";
+import {useTheme} from "@/context/ThemeContext";
+
 
 type Props = {
     title: string;
@@ -8,7 +9,7 @@ type Props = {
 };
 
 export function ThemedButton({title, onPress, disabled = false}: Props) {
-    const colors = useThemeColors();
+    const {colors} = useTheme();
     const buttonStyles = [
         styles.button,
         {backgroundColor: colors.text}, // Ajustez la couleur selon votre thème

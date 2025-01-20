@@ -4,8 +4,8 @@ import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedButton } from "@/components/ThemedButton";
 import { ThemedText } from "@/components/ThemedText";
 import { useLoginMutation } from "@/hooks/useLoginMutation";
-import {useThemeColors} from "@/hooks/useThemeColors";
 import { useTranslation } from 'react-i18next';
+import {useTheme} from "@/context/ThemeContext";
 
 
 type LoginFormProps = {
@@ -16,8 +16,8 @@ export function LoginForm({onMessage}: LoginFormProps) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const { mutate, isPending, isError, error, isSuccess, data } = useLoginMutation();
-    const colors = useThemeColors();
-    const { t, i18n } = useTranslation();
+    const {colors} = useTheme();
+    const { t } = useTranslation();
 
     const handleLogin = () => {
         mutate({ email, password }, {
@@ -28,7 +28,7 @@ export function LoginForm({onMessage}: LoginFormProps) {
 
     return (
         <View style={LoginFormStyle.form}>
-            <ThemedText>Connexion</ThemedText>
+            <ThemedText>{t('screens.login.login')} </ThemedText>
             <ThemedTextInput value={email} onChangeText={setEmail} placeholder={t('screens.login.email')} />
             <ThemedTextInput value={password} onChangeText={setPassword} placeholder={t('screens.login.password')}/>
             <ThemedButton title="Submit" onPress={handleLogin} />

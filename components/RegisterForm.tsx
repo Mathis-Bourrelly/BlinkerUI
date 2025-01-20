@@ -4,6 +4,7 @@ import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedButton } from "@/components/ThemedButton";
 import { useRegisterMutation } from "@/hooks/useRegisterMutation";
 import { ThemedText } from "@/components/ThemedText";
+import {useTranslation} from "react-i18next";
 
 type RegisterFormProps = {
     onMessage: (msg: string) => void;
@@ -13,7 +14,7 @@ export function RegisterForm({ onMessage }: RegisterFormProps) {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
+    const { t } = useTranslation();
     const { mutate, isPending } = useRegisterMutation();
 
     const handleRegister = () => {
@@ -25,7 +26,7 @@ export function RegisterForm({ onMessage }: RegisterFormProps) {
 
     return (
         <View style={RegisterFormStyle.form}>
-            <ThemedText>Créer un compte</ThemedText>
+            <ThemedText>{t('screens.login.createAccount')}</ThemedText>
             <ThemedTextInput
                 value={name}
                 onChangeText={setName}
@@ -41,7 +42,7 @@ export function RegisterForm({ onMessage }: RegisterFormProps) {
                 onChangeText={setPassword}
                 placeholder="Password"
             />
-            <ThemedButton title="Register" onPress={handleRegister} />
+            <ThemedButton title={t("screens.login.continue")} onPress={handleRegister} />
             {isPending && <ActivityIndicator color={"text"} />}
         </View>
     );
