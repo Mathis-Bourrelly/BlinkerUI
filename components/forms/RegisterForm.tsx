@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { ThemedTextInput } from "@/components/ThemedTextInput";
-import { ThemedButton } from "@/components/ThemedButton";
+import { ThemedTextInput } from "@/components/base/ThemedTextInput";
+import { ThemedButton } from "@/components/base/ThemedButton";
 import { useRegisterMutation } from "@/hooks/useRegisterMutation";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/base/ThemedText";
 import {useTranslation} from "react-i18next";
 
 type RegisterFormProps = {

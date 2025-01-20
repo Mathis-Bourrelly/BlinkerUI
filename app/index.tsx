@@ -1,15 +1,15 @@
 import {StyleSheet, Text, Image, View, TextInput, Button, ActivityIndicator} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {ThemedText} from "@/components/ThemedText";
+import {ThemedText} from "@/components/base/ThemedText";
 import {LinearGradient} from "expo-linear-gradient";
-import {LoginForm} from "@/components/LoginForm";
-import {RegisterForm} from "@/components/RegisterForm";
-import {Row} from "@/components/Row";
+import {LoginForm} from "@/components/forms/LoginForm";
+import {RegisterForm} from "@/components/forms/RegisterForm";
+import {Row} from "@/components/base/Row";
 import {useState} from "react";
 import { useTheme } from '@/context/ThemeContext';
 import {useTranslation} from 'react-i18next';
-import {ThemedLogo} from "@/components/ThemedLogo";
-import {ThemedTitle} from "@/components/ThemedTitle";
+import {ThemedLogo} from "@/components/images/ThemedLogo";
+import {ThemedTitle} from "@/components/images/ThemedTitle";
 
 
 export default function Index() {

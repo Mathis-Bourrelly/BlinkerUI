@@ -8,8 +8,8 @@ export const Colors = {
         card: "#16171d",
         font: "Poppins", // Optionnel si utilisé dans les styles
         border: "#42454e",
-        text2: "#9f9f9f",
-        secondary: "#ffffff",
+        text2: "#42454e",
+        secondary: "#03050c",
         input: "#111318",
         danger: "#631212",
         dangerbg: "#fbd2d2",

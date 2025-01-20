@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { ThemedTextInput } from "@/components/ThemedTextInput";
-import { ThemedButton } from "@/components/ThemedButton";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedTextInput } from "@/components/base/ThemedTextInput";
+import { ThemedText } from "@/components/base/ThemedText";
 import { useLoginMutation } from "@/hooks/useLoginMutation";
 import { useTranslation } from 'react-i18next';
 import {useTheme} from "@/context/ThemeContext";
+import {ThemedButton} from "@/components/base/ThemedButton";
 
 
 type LoginFormProps = {
