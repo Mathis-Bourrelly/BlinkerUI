@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { ThemedTextInput } from "@/components/base/ThemedTextInput";
-import { ThemedButton } from "@/components/base/ThemedButton";
+import { GradientButton } from "@/components/base/GradientButton";
 import { useRegisterMutation } from "@/hooks/useRegisterMutation";
 import { ThemedText } from "@/components/base/ThemedText";
 import {useTranslation} from "react-i18next";
@@ -26,23 +26,23 @@ export function RegisterForm({ onMessage }: RegisterFormProps) {
 
     return (
         <View style={RegisterFormStyle.form}>
-            <ThemedText>{t('screens.login.createAccount')}</ThemedText>
+            <ThemedText variant={"Title"}>{t('screens.login.createAccount')}</ThemedText>
             <ThemedTextInput
                 value={name}
                 onChangeText={setName}
-                placeholder="Name"
+                placeholder={t("screens.login.name")}
             />
             <ThemedTextInput
                 value={email}
                 onChangeText={setEmail}
-                placeholder="Email"
+                placeholder={t("screens.login.email")}
             />
             <ThemedTextInput
                 value={password}
                 onChangeText={setPassword}
-                placeholder="Password"
+                placeholder={t("screens.login.password")}
             />
-            <ThemedButton title={t("screens.login.continue")} onPress={handleRegister} />
+            <GradientButton text={t("screens.login.continue")} onPress={handleRegister} />
             {isPending && <ActivityIndicator color={"text"} />}
         </View>
     );

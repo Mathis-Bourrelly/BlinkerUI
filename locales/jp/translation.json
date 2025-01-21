@@ -2,12 +2,13 @@
   "language": "日本語",
   "screens": {
     "login": {
-      "login": "ログイン",
-      "email": "メールアドレス",
-      "password": "パスワード",
       "continue": "続ける",
       "createAccount": "アカウントを作成する",
-      "forgotPassword": "パスワードをお忘れですか？"
+      "email": "メールアドレス",
+      "forgotPassword": "パスワードをお忘れですか？",
+      "login": "ログイン",
+      "name": "名前",
+      "password": "パスワード"
     }
   }
 }

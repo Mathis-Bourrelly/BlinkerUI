@@ -7,7 +7,7 @@ export function ThemedTitle() {
 
     const titleSource = theme === 'dark'
         ? require('@/assets/images/title-dark.svg')
-        : require('@/assets/images/title-dark.svg'); // Charge le title correspondant
+        : require('@/assets/images/title-light.svg'); // Charge le title correspondant
 
     return <Image source={titleSource} style={styles.title} resizeMode={"contain"} />
 

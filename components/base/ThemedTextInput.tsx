@@ -1,5 +1,6 @@
 import {StyleSheet, TextInput} from "react-native";
 import {useTheme} from "@/context/ThemeContext";
+import {Fonts} from "@/constants/Fonts";
 
 type Props = {
     value: string;
@@ -10,8 +11,9 @@ type Props = {
 export function ThemedTextInput({value, onChangeText, placeholder}: Props) {
     const {colors} = useTheme(); // Appel dynamique dans le composant
     const dynamicStyles = {
-        backgroundColor: colors.background,
+        backgroundColor: colors.card,
         color: colors.text,
+        borderColor: colors.border,
     };
 
     return (
@@ -20,15 +22,18 @@ export function ThemedTextInput({value, onChangeText, placeholder}: Props) {
             onChangeText={onChangeText}
             value={value}
             placeholder={placeholder}
+            placeholderTextColor={colors.textSecondary}  // Utiliser une couleur thématique pour le placeholder
         />
     );
 }
 
 const styles = StyleSheet.create({
     input: {
-        borderRadius: 16,
+        ...Fonts.Body,  // Utilise le style défini dans Fonts
+        borderRadius: 30,
         marginVertical: 8,
         paddingHorizontal: 12,
         paddingVertical: 8,
+        borderWidth: 3,
     },
 });

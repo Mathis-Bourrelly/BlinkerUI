@@ -5,7 +5,7 @@ import { ThemedText } from "@/components/base/ThemedText";
 import { useLoginMutation } from "@/hooks/useLoginMutation";
 import { useTranslation } from 'react-i18next';
 import {useTheme} from "@/context/ThemeContext";
-import {ThemedButton} from "@/components/base/ThemedButton";
+import {GradientButton} from "@/components/base/GradientButton";
 
 
 type LoginFormProps = {
@@ -28,10 +28,10 @@ export function LoginForm({onMessage}: LoginFormProps) {
 
     return (
         <View style={LoginFormStyle.form}>
-            <ThemedText>{t('screens.login.login')} </ThemedText>
+            <ThemedText variant={"Title"}>{t('screens.login.login')} </ThemedText>
             <ThemedTextInput value={email} onChangeText={setEmail} placeholder={t('screens.login.email')} />
             <ThemedTextInput value={password} onChangeText={setPassword} placeholder={t('screens.login.password')}/>
-            <ThemedButton title="Submit" onPress={handleLogin} />
+            <GradientButton text={t('screens.login.login')} onPress={handleLogin} />
             {isPending && <ActivityIndicator color="text" />}
         </View>
     );

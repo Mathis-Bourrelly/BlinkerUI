@@ -2,12 +2,13 @@
   "language": "English",
   "screens": {
     "login": {
-      "login": "Login",
-      "email": "Email",
-      "password": "Password",
       "continue": "Continue",
       "createAccount": "Create an Account",
-      "forgotPassword": "Forgotten password?"
+      "email": "Email",
+      "forgotPassword": "Forgotten password ?",
+      "login": "Login",
+      "name": "Name",
+      "password": "Password"
     }
   }
 }
