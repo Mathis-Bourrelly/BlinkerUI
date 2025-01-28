@@ -1,4 +1,5 @@
-export function useIcons8(iconName: string, size: number = 48): string {
+export function useIcons8(iconName: string,color: string, size: number = 48): string {
     const baseUrl = "https://img.icons8.com/material-rounded";
-    return `${baseUrl}/${size}/${iconName}.png`;
+    const colorCode = color.substring(1)
+    return `${baseUrl}/${size}/${colorCode}/${iconName}.png`;
 }

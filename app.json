@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "blinker-ui",
-    "slug": "blinker-ui",
+    "name": "Blinker",
+    "slug": "Blinker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "blinkerui",
+    "scheme": "blinker",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -21,7 +21,8 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "Blinker"
     },
     "plugins": [
       "expo-router",

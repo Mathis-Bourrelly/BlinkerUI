@@ -1,4 +1,4 @@
 export const Endpoint = {
-    //url: "http://dev.blinker.eterny.fr"
-    url: "http://localhost:3011"
+    url: "http://dev.blinker.eterny.fr"
+    //url: "http://localhost:3011"
 }

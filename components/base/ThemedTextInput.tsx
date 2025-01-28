@@ -6,14 +6,16 @@ type Props = {
     value: string;
     onChangeText: (value: string) => void;
     placeholder?: string;
+    isPassword?: boolean;
 };
 
-export function ThemedTextInput({value, onChangeText, placeholder}: Props) {
+export function ThemedTextInput({value, onChangeText, placeholder, isPassword}: Props) {
     const {colors} = useTheme(); // Appel dynamique dans le composant
     const dynamicStyles = {
         backgroundColor: colors.card,
         color: colors.text,
         borderColor: colors.border,
+        isPassword: isPassword
     };
 
     return (
@@ -23,6 +25,7 @@ export function ThemedTextInput({value, onChangeText, placeholder}: Props) {
             value={value}
             placeholder={placeholder}
             placeholderTextColor={colors.textSecondary}  // Utiliser une couleur thématique pour le placeholder
+            secureTextEntry={isPassword ?? false}
         />
     );
 }

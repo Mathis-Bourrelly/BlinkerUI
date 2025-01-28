@@ -15,7 +15,7 @@ export const getToken = async () => {
     try {
         const value = await AsyncStorage.getItem('token');
         if (value !== null) {
-            // value previously stored
+            return value
         }
     } catch (e) {
         console.error(e);
