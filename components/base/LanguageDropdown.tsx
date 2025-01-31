@@ -18,7 +18,7 @@ const languages: LanguageOption[] = [
 ];
 
 export const LanguageDropdown: React.FC = () => {
-    const {t, i18n} = useTranslation();
+    const {i18n} = useTranslation();
     const {colors} = useTheme();
     const [isOpen, setIsOpen] = useState(false); // État pour afficher ou cacher le menu
     const [selectedLanguage, setSelectedLanguage] = useState<string>(i18n.language); // Langue sélectionnée
