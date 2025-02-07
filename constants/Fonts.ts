@@ -28,6 +28,11 @@ export const Fonts = {
         fontSize: 14,
         fontWeight: "normal" as const,
     },
+    BodyBold: {
+        fontFamily: "Poppins-Bold",
+        fontSize: 14,
+        fontWeight: "bold" as const,
+    },
     Caption: {
         fontFamily: "Poppins-Light",
         fontSize: 12,
@@ -44,4 +49,9 @@ export const Fonts = {
         fontWeight: "normal" as const,
         textTransform: "uppercase" as const,
     },
+    Underline: {
+        fontFamily: "Poppins-Regular",
+        fontSize: 16,
+        textDecorationLine: 'underline' as const,
+    }
 };

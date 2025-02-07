@@ -1,14 +1,21 @@
 {
+  "base": {
+    "error": "Erreur"
+  },
   "language": "Français",
-  "screens": {
-    "login": {
-      "continue": "Continuer",
-      "createAccount": "Créer un compte",
-      "email": "E-mail",
-      "forgotPassword": "Mot de passe oublié ?",
-      "login": "Connexion",
-      "name": "Nom",
-      "password": "Mot de passe"
-    }
+  "login": {
+    "alreadyAccount": "J'ai déja un compte",
+    "continue": "Continuer",
+    "createAccount": "Créer un compte",
+    "email": "E-mail",
+    "fieldEmailRequired": "un E-mail est requis",
+    "fieldPasswordRequired": "un mot de passe est requis",
+    "forgotPassword": "Mot de passe oublié ?",
+    "invalidEmail": "l'E-mail n'est pas valide",
+    "login": "Connexion",
+    "name": "Nom",
+    "noAccount": "Je n'ai pas de compte",
+    "password": "Mot de passe",
+    "wrongPassword": "Mot de passe incorrect"
   }
 }

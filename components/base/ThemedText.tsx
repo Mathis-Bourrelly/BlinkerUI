@@ -7,9 +7,11 @@ const styles = StyleSheet.create({
     Title: Fonts.Title,
     SubTitle: Fonts.SubTitle,
     Body: Fonts.Body,
+    BodyBold: Fonts.BodyBold,
     Caption: Fonts.Caption,
     ButtonText: Fonts.ButtonText,
     Overline: Fonts.Overline,
+    Underline: Fonts.Underline,
 });
 
 type Props = TextProps & {

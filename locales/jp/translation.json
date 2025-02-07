@@ -1,14 +1,19 @@
 {
+  "base": {
+    "error": ""
+  },
   "language": "日本語",
-  "screens": {
-    "login": {
-      "continue": "続ける",
-      "createAccount": "アカウントを作成する",
-      "email": "メールアドレス",
-      "forgotPassword": "パスワードをお忘れですか？",
-      "login": "ログイン",
-      "name": "名前",
-      "password": "パスワード"
-    }
+  "login": {
+    "continue": "続ける",
+    "createAccount": "アカウントを作成する",
+    "email": "メールアドレス",
+    "fieldEmailRequired": "",
+    "fieldPasswordRequired": "",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "invalidEmail": "",
+    "login": "ログイン",
+    "name": "名前",
+    "password": "パスワード",
+    "wrongPassword": ""
   }
 }

@@ -43,12 +43,16 @@ export function useLoginMutation() {
                 body: JSON.stringify(credentials),
             });
 
-            if (!response.ok) {
-                throw new Error('Login failed');
-            }
+
 
             const data: LoginResponse = await response.json();
-            await storeToken(data.token); // Stocke le token après connexion réussie
+
+            if (!response.ok) {
+                console.log(data);
+                throw new Error(data.message);
+            }
+
+            await storeToken(data.token);
             return data;
         }
     });

@@ -15,6 +15,8 @@ export function ThemedTitle() {
 
 const styles = StyleSheet.create({
     title: {
-        height: 150,
+        borderWidth: 1,
+        borderColor:"#ffffff",
+        width: '50%',
     },
 });

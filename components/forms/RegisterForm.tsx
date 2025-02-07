@@ -26,23 +26,23 @@ export function RegisterForm({ onMessage }: RegisterFormProps) {
 
     return (
         <View style={RegisterFormStyle.form}>
-            <ThemedText variant={"Title"}>{t('screens.login.createAccount')}</ThemedText>
+            <ThemedText variant={"Title"}>{t('login.createAccount')}</ThemedText>
             <ThemedTextInput
                 value={name}
                 onChangeText={setName}
-                placeholder={t("screens.login.name")}
+                placeholder={t("login.name")}
             />
             <ThemedTextInput
                 value={email}
                 onChangeText={setEmail}
-                placeholder={t("screens.login.email")}
+                placeholder={t("login.email")}
             />
             <ThemedTextInput
                 value={password}
                 onChangeText={setPassword}
-                placeholder={t("screens.login.password")}
+                placeholder={t("login.password")}
             />
-            <GradientButton text={t("screens.login.continue")} onPress={handleRegister} />
+            <GradientButton text={t("login.continue")} onPress={handleRegister} />
             {isPending && <ActivityIndicator color={"text"} />}
         </View>
     );

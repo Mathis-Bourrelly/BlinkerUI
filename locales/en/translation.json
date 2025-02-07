@@ -1,14 +1,21 @@
 {
+  "base": {
+    "error": "Error"
+  },
   "language": "English",
-  "screens": {
-    "login": {
-      "continue": "Continue",
-      "createAccount": "Create an Account",
-      "email": "Email",
-      "forgotPassword": "Forgotten password ?",
-      "login": "Login",
-      "name": "Name",
-      "password": "Password"
-    }
+  "login": {
+    "alreadyAccount": "I have an account",
+    "continue": "Continue",
+    "createAccount": "Create an Account",
+    "email": "Email",
+    "fieldEmailRequired": "Email is required",
+    "fieldPasswordRequired": "password is required",
+    "forgotPassword": "Forgotten password ?",
+    "invalidEmail": "Email is invalid",
+    "login": "Login",
+    "name": "Name",
+    "noAccount": "I have no account",
+    "password": "Password",
+    "wrongPassword": "Incorrect password"
   }
 }
