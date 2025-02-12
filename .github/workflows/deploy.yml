@@ -28,7 +28,7 @@ on:
         default: false
 jobs:
   build:
-    runs-on: ${{ github.event.inputs.os }}
+    runs-on: self-hosted
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v2
