@@ -1,10 +1,14 @@
 {
   "base": {
-    "error": ""
+    "error": "",
+    "or": "",
+    "return": ""
   },
   "language": "日本語",
   "login": {
+    "confirmPassword": "",
     "continue": "続ける",
+    "continueWithGoogle": "",
     "createAccount": "アカウントを作成する",
     "email": "メールアドレス",
     "fieldEmailRequired": "",
@@ -14,6 +18,7 @@
     "login": "ログイン",
     "name": "名前",
     "password": "パスワード",
+    "passwordForgotten": "",
     "wrongPassword": ""
   }
 }

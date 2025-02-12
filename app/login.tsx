@@ -12,6 +12,8 @@ import {Stack} from "expo-router";
 import {ThemedText} from "@/components/base/ThemedText";
 import {LanguageDropdown} from "@/components/base/LanguageDropdown";
 import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
+import GoogleSignInButton from "@/components/base/GoogleSignInButton";
+import {ThemedSeparator} from "@/components/base/ThemedSeparator";
 
 
 export default function Index() {
@@ -28,41 +30,41 @@ export default function Index() {
 
     return (
         <>
-            <Stack.Screen options={{title: t('login')}}/>
+            <Stack.Screen/>
             <SafeAreaView style={styles.container}>
                 <LinearGradient colors={gradientColors} style={styles.background}>
-                    <View style={styles.logo_title}>
-                        <ThemedFullLogo/>
-                    </View>
 
-                    {message && (
-                        <View style={[styles.messageContainer, {backgroundColor: message.includes('ERROR') ? colors.dangerbg : colors.validebg}]}>
-                            <ThemedText variant={"Body"}>
-                                {message.replace("ERROR","")}
-                            </ThemedText>
+                        <View style={styles.logo_title}>
+                            <ThemedFullLogo/>
                         </View>
-                    )}
-                    <View>
-                        {!isRegister && (
-                            <View style={styles.register}>
-                                <LoginForm onMessage={handleMessage}/>
-                                <ThemedText onPress={() => {
-                                    setIsRegister(true)
-                                }} variant={"Underline"}>{t('login.noAccount')}</ThemedText>
+                        {message && (
+                            <View
+                                style={[styles.messageContainer, {backgroundColor: message.includes('ERROR') ? colors.dangerbg : colors.validebg}]}>
+                                <ThemedText variant={"Body"}>
+                                    {message.replace("ERROR", "")}
+                                </ThemedText>
                             </View>
                         )}
-                        {isRegister && (<View style={styles.register}>
-                                <RegisterForm onMessage={handleMessage}/>
-                                <ThemedText onPress={() => {
-                                    setIsRegister(false)
-                                }} variant={"Underline"}>{t('login.alreadyAccount')}</ThemedText>
-                            </View>
-                        )}
-                    </View>
-                    <Row gap={12}>
-                        <LanguageDropdown/>
-                        <ThemeToggleButton/>
-                    </Row>
+                        <GoogleSignInButton/>
+                        <ThemedSeparator text={t('base.or')} barColor={colors.border}/>
+
+                            {!isRegister && (
+                                <>
+                                    <LoginForm onMessage={handleMessage}/>
+                                    <ThemedText onPress={() => {
+                                        setIsRegister(true)
+                                    }} variant={"Underline"}>{t('login.noAccount')}</ThemedText>
+                                </>
+                            )}
+                            {isRegister && (<>
+                                    <RegisterForm onMessage={handleMessage}/>
+                                    <ThemedText onPress={() => {
+                                        setIsRegister(false)
+                                    }} variant={"Underline"}>{t('login.alreadyAccount')}</ThemedText>
+                                </>
+                            )}
+
+
                 </LinearGradient>
             </SafeAreaView>
         </>
@@ -74,21 +76,22 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
     },
+
     background: {
         flex: 1,
         alignItems: 'center',
+        padding: 40,
     },
-    register: {
-        alignItems: 'center',
-        marginVertical: 10
+    formContainer: {
+        maxWidth:280
     },
     logo_title: {
         flexDirection: "row",
         alignItems: "center",
         alignContent: "center",
-        width: "80%",
-        marginTop: 60,
-        marginBottom: 100,
+        width: "100%",
+        marginTop: 20,
+        marginBottom: 60,
     },
     messageContainer: {
         margin: 20,
@@ -97,4 +100,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 8,
     },
+
 });

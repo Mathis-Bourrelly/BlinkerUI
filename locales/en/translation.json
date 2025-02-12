@@ -1,21 +1,26 @@
 {
   "base": {
-    "error": "Error"
+    "error": "Error",
+    "or": "or",
+    "return": "return"
   },
   "language": "English",
   "login": {
     "alreadyAccount": "I have an account",
+    "confirmPassword": "Confirm password",
     "continue": "Continue",
+    "continueWithGoogle": "Continue with Google",
     "createAccount": "Create an Account",
     "email": "Email",
     "fieldEmailRequired": "Email is required",
     "fieldPasswordRequired": "password is required",
-    "forgotPassword": "Forgotten password ?",
+    "forgotPassword": "Password forgotten ?",
     "invalidEmail": "Email is invalid",
     "login": "Login",
     "name": "Name",
     "noAccount": "I have no account",
     "password": "Password",
+    "passwordForgotten": "Password forgotten",
     "wrongPassword": "Incorrect password"
   }
 }

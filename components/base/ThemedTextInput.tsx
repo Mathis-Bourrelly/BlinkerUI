@@ -3,7 +3,7 @@ import {useTheme} from "@/context/ThemeContext";
 import {Fonts} from "@/constants/Fonts";
 import {ThemedText} from "@/components/base/ThemedText";
 import {useTranslation} from "react-i18next";
-const { t } = useTranslation();
+
 
 type Props = {
     value: string;
@@ -11,22 +11,30 @@ type Props = {
     placeholder?: string;
     isPassword?: boolean;
     errorText?: string;
+    titleText?: string;
 };
 
-export function ThemedTextInput({value, onChangeText, placeholder, isPassword, errorText}: Props) {
-    const {colors} = useTheme(); // Appel dynamique dans le composant
-    const dynamicStyles = {
-        backgroundColor: colors.card,
+export function ThemedTextInput({value, onChangeText, placeholder, isPassword, errorText, titleText}: Props) {
+    const {colors} = useTheme();
+    const { t } = useTranslation();
+    const dynamicText = {
         color: colors.text,
         borderColor: colors.border,
         isPassword: isPassword,
-        errorText: errorText
+        errorText: errorText,
+        titleText: errorText
+    };
+    const dynamicBackground = {
+        backgroundColor: colors.background,
     };
 
     return (
         <>
+            {titleText && (
+                <ThemedText style={[styles.inputTitle, dynamicText]} variant={"Body"} color={colors.text}>{titleText}</ThemedText>
+            )}
             <TextInput
-                style={[styles.input, dynamicStyles]}  // Combine styles statiques et dynamiques
+                style={[styles.input, dynamicText, dynamicBackground]}  // Combine styles statiques et dynamiques
                 onChangeText={onChangeText}
                 value={value}
                 placeholder={placeholder}
@@ -44,9 +52,15 @@ const styles = StyleSheet.create({
     input: {
         ...Fonts.Body,  // Utilise le style défini dans Fonts
         borderRadius: 30,
-        marginVertical: 8,
+        marginBottom: 8,
+        marginTop: 4,
         paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderWidth: 3,
+        paddingVertical: 6,
+        borderWidth: 1,
+        width: "100%",
     },
+    inputTitle: {
+        alignSelf: "flex-start",
+        marginStart: 14
+    }
 });

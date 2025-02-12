@@ -1,20 +1,23 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import {Icon} from "@/components/images/Icon";
+import {Colors} from "@/constants/Colors";
+import {useTheme} from "@/context/ThemeContext";
 
 type ThemedButtonIconProps = {
     text: string;
     onPress: () => void;
-    iconSource?: any; // Source de l'image
+    iconName?: string;
     disabled?: boolean;
 };
 
-export function ThemedButtonIcon({ text, onPress, iconSource, disabled = false }: ThemedButtonIconProps) {
+export function ThemedButtonIcon({ text, onPress, iconName, disabled = false }: ThemedButtonIconProps) {
+    const {colors} = useTheme();
     return (
         <TouchableOpacity onPress={onPress} disabled={disabled}>
                 <View style={styles.content}>
-                    {iconSource && (
-                        <Icon name="language" size={32} />
+                    {iconName && (
+                        <Icon name={iconName} color={colors.text} size={24} />
                     )}
                     <Text style={styles.text}>{text}</Text>
                 </View>

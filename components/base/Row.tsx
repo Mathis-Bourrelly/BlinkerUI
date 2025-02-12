@@ -9,6 +9,5 @@ export function Row ({style, gap, ...rest}: Props) {
 }
 
 const rowStyle = {
-    flex:1,
     flexDirection:'row',
 } satisfies ViewStyle;

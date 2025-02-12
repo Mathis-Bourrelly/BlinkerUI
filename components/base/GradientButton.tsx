@@ -41,6 +41,10 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginVertical: 6,
     },
+    fullSize: {
+        width: "100%",
+        flex: 1
+    },
     button: {
         height: 40,
         justifyContent: 'center',

@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
     ButtonText: Fonts.ButtonText,
     Overline: Fonts.Overline,
     Underline: Fonts.Underline,
+    UnderlineCaption: Fonts.UnderlineCaption,
 });
 
 type Props = TextProps & {

@@ -53,5 +53,11 @@ export const Fonts = {
         fontFamily: "Poppins-Regular",
         fontSize: 16,
         textDecorationLine: 'underline' as const,
+    },
+    UnderlineCaption: {
+        fontFamily: "Poppins-Regular",
+        fontSize: 12,
+        fontWeight: "300" as const,
+        textDecorationLine: 'underline' as const,
     }
 };

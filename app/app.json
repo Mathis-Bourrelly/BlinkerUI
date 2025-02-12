@@ -5,9 +5,9 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#03050c",
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/splash-icon-dark.png",
           "dark": {
-            "image": "./assets/images/splash-icon-dark.png",
+            "image": "./assets/images/splash-icon.png",
             "backgroundColor": "#000000"
           },
           "imageWidth": 200
@@ -16,5 +16,9 @@
     ],
     "name": "Blinker",
     "slug": "blinker"
+  },
+  "jsEngine": "hermes",
+  "ios": {
+    "jsEngine": "jsc"
   }
 }
