@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#03050c"
       },
       "package": "com.mathis13.blinkerui"
     },
@@ -29,10 +29,13 @@
       [
         "expo-splash-screen",
         {
+          "backgroundColor": "#ffffff",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "dark": {
+            "image": "./assets/images/splash-icon-dark.png",
+            "backgroundColor": "#03050C"
+          },
+          "imageWidth": 200
         }
       ],
       "expo-localization"
