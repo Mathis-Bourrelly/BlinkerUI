@@ -32,18 +32,18 @@ jobs:
         run: npx expo export -p web
 
       # 6️⃣ Déployer le build dans le dossier  cible sur le serveur Windows
-      - name: Deploy to Web Server Directory
+      - name: Deploy to target folder
         run: |
-          $targetFolder = "D:\blinker-web"
+          $targetFolder = "D:\blinkerUI"
           if (-not (Test-Path $targetFolder)) {
             New-Item -ItemType Directory -Path $targetFolder
           }
-          Copy-Item -Path ".\dist\*" -Destination $targetFolder -Recurse -Force
+          Copy-Item -Path * -Destination $targetFolder -Recurse -Force
         shell: powershell
 
       # 7️⃣ (Facultatif) Redémarrer le serveur pour servir l'Expo Web
       - name: Restart Expo Web Server
         run: |
           Stop-Process -Name "expo" -Force -ErrorAction SilentlyContinue
-          Start-Process -NoNewWindow -FilePath "npx" -ArgumentList "expo serve --port 8013 --non-interactive --web-only"
+          Start-Process -FilePath "npx" -ArgumentList "expo serve --port 8013 --web-only"
         shell: powershell
