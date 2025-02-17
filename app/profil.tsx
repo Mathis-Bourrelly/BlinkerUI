@@ -1,32 +1,35 @@
-import { StyleSheet, View, Text, ActivityIndicator, Image } from 'react-native';
-import { ThemedText } from "@/components/base/ThemedText";
-import { useTheme } from '@/context/ThemeContext';
-import { useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
+import {StyleSheet, View, Text, ActivityIndicator, Image} from 'react-native';
+import {ThemedText} from "@/components/base/ThemedText";
+import {useTheme} from '@/context/ThemeContext';
+import {Stack, useRouter} from "expo-router";
+import {SafeAreaView} from "react-native-safe-area-context";
+import {LinearGradient} from "expo-linear-gradient";
 import React from "react";
-import { useTranslation } from "react-i18next";
-import { Row } from "@/components/base/Row";
-import { LanguageDropdown } from "@/components/base/LanguageDropdown";
-import { ThemeToggleButton } from "@/components/base/ThemeToggleButton";
-import { ThemedButtonIcon } from "@/components/base/ThemedButtonIcon";
-import { useUserProfileQuery } from "@/hooks/interfaces/useProfileInterface"// Import du hook
+import {useTranslation} from "react-i18next";
+import {Row} from "@/components/base/Row";
+import {LanguageDropdown} from "@/components/base/LanguageDropdown";
+import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
+import {ThemedButtonIcon} from "@/components/base/ThemedButtonIcon";
+import {useUserProfileQuery} from "@/hooks/interfaces/useProfileInterface"// Import du hook
 
 export default function Index() {
-    const { colors } = useTheme();
-    const { t } = useTranslation();
+    const {colors} = useTheme();
+    const {t} = useTranslation();
     const router = useRouter();
     const gradientColors = colors.gradient;
     const userID = "829669a1-8fc8-4398-b975-249fbda5045c"; // Exemple d'ID utilisateur à remplacer par la logique de ton application
-    const { data, isLoading, error } = useUserProfileQuery(userID);
+    const {data, isLoading, error} = useUserProfileQuery(userID);
 
     if (isLoading) {
         return (
-            <SafeAreaView style={styles.container}>
-                <LinearGradient colors={gradientColors} style={styles.background}>
-                    <ActivityIndicator size="large" color={colors.accent} />
-                </LinearGradient>
-            </SafeAreaView>
+            <>
+                <Stack.Screen/>
+                <SafeAreaView style={styles.container}>
+                    <LinearGradient colors={gradientColors} style={styles.background}>
+                        <ActivityIndicator size="large" color={colors.accent}/>
+                    </LinearGradient>
+                </SafeAreaView>
+            </>
         );
     }
 
@@ -59,7 +62,7 @@ export default function Index() {
 
                     {data?.avatarUrl ? (
                         <Image
-                            source={{ uri: data.avatarUrl }}
+                            source={{uri: data.avatarUrl}}
                             style={styles.avatar}
                         />
                     ) : (
@@ -73,8 +76,8 @@ export default function Index() {
                     iconName={"circled-left--v2"}
                 />
                 <Row gap={12}>
-                    <LanguageDropdown />
-                    <ThemeToggleButton />
+                    <LanguageDropdown/>
+                    <ThemeToggleButton/>
                 </Row>
             </LinearGradient>
         </SafeAreaView>

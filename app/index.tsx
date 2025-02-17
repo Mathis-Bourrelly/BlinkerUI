@@ -20,23 +20,26 @@ export default function Index() {
     const gradientColors = colors.gradient;
 
     return (
-        <SafeAreaView style={styles.container}>
-            <LinearGradient colors={gradientColors} style={styles.background}>
-                <ThemedText variant={"Title"} color={colors.text}>
-                    Home
-                </ThemedText>
-                <ThemedButtonIcon
-                    text="Go to Login"
-                    onPress={() => router.push("/login")}
-                    iconName={"circled-left--v2"}
+        <>
+            <Stack.Screen/>
+            <SafeAreaView style={styles.container}>
+                <LinearGradient colors={gradientColors} style={styles.background}>
+                    <ThemedText variant={"Title"} color={colors.text}>
+                        Home
+                    </ThemedText>
+                    <ThemedButtonIcon
+                        text="Go to Login"
+                        onPress={() => router.push("/login")}
+                        iconName={"circled-left--v2"}
 
-                />
-                <Row gap={12}>
-                    <LanguageDropdown/>
-                    <ThemeToggleButton/>
-                </Row>
-            </LinearGradient>
-        </SafeAreaView>
+                    />
+                    <Row gap={12}>
+                        <LanguageDropdown/>
+                        <ThemeToggleButton/>
+                    </Row>
+                </LinearGradient>
+            </SafeAreaView>
+        </>
     );
 }
 

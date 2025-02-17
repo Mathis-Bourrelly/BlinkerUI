@@ -1,0 +1,45 @@
+name: Deploy React Native Web App
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      # Vérifier le code depuis le repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Installer Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 # Ajuste selon ta version de Node.js
+
+      # Installer les dépendances
+      - name: Install dependencies
+        run: npm install
+
+      # Build du projet web
+      - name: Build the web app
+        run: npm run build # Ou expo export:web si tu utilises Expo
+
+      # Déploiement dans le dossier cible sur le serveur
+      - name: Deploy to web server directory
+        run: |
+          $targetFolder = "D:\blinker-web"
+          if (-not (Test-Path $targetFolder)) {
+            New-Item -ItemType Directory -Path $targetFolder
+          }
+          Copy-Item -Path ".\dist\*" -Destination $targetFolder -Recurse -Force
+        shell: powershell
+
+      # (Facultatif) Redémarrer le serveur si nécessaire
+      - name: Restart Web Server
+        run: |
+          Stop-Process -Name "serve" -Force -ErrorAction SilentlyContinue
+          Start-Process -NoNewWindow -FilePath "npx" -ArgumentList "serve -s D:\blinker-web -l 3000"
+        shell: powershell

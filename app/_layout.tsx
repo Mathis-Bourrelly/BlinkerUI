@@ -35,9 +35,7 @@ export default function RootLayout() {
     return (
         <QueryClientProvider client={queryClient}>
             <ThemeProvider>
-                <NavigationContainer>
                     <Slot/>
-                </NavigationContainer>
             </ThemeProvider>
         </QueryClientProvider>
     );
