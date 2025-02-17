@@ -1,4 +1,4 @@
-name: Deploy React Native Web App
+name: Deploy Expo Web App
 
 on:
   push:
@@ -9,35 +9,39 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      # Vérifier le code depuis le repository
+      # 1️⃣ Vérifier le code depuis le repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Installer Node.js
+      # 2️⃣ Installer Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18 # Ajuste selon ta version de Node.js
 
-      # Installer les dépendances
+      # 3️⃣ Installer Expo CLI globalement
+      - name: Install Expo CLI
+        run: npm install -g expo-cli
+
+      # 4️⃣ Installer les dépendances du projet
       - name: Install dependencies
         run: npm install
 
-      # Build du projet web
+      # 5️⃣ Build Expo Web
       - name: Build the web app
-        run: npm run build # Ou expo export:web si tu utilises Expo
+        run: npx expo export:web
 
-      # Déploiement dans le dossier cible sur le serveur
+      # 6️⃣ Déploiement dans le dossier cible sur le serveur
       - name: Deploy to web server directory
         run: |
           $targetFolder = "D:\blinker-web"
           if (-not (Test-Path $targetFolder)) {
             New-Item -ItemType Directory -Path $targetFolder
           }
-          Copy-Item -Path ".\dist\*" -Destination $targetFolder -Recurse -Force
+          Copy-Item -Path ".\web-build\*" -Destination $targetFolder -Recurse -Force
         shell: powershell
 
-      # (Facultatif) Redémarrer le serveur si nécessaire
+      # 7️⃣ (Facultatif) Redémarrer le serveur web
       - name: Restart Web Server
         run: |
           Stop-Process -Name "serve" -Force -ErrorAction SilentlyContinue
