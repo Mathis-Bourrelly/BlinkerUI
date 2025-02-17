@@ -46,7 +46,7 @@ export default function Index() {
                             </View>
                         )}
                         <GoogleSignInButton/>
-                        <ThemedSeparator text={t('base.or')} barColor={colors.border}/>
+                        <ThemedSeparator text={t('base.or')} maxWidth={300} barColor={colors.border}/>
 
                             {!isRegister && (
                                 <>

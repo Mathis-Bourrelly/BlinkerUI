@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import {Endpoint} from "@/constants/Endpoint";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {router} from "expo-router";
 
 
 export const storeToken = async (token: string) => {
@@ -19,6 +20,7 @@ export const getToken = async () => {
         }
     } catch (e) {
         console.error(e);
+        router.push("/login");
     }
 };
 

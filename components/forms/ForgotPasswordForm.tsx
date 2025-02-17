@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from "@/context/ThemeContext";
 import { GradientButton } from "@/components/base/GradientButton";
 import { useRouter } from "expo-router";
-import { usePostMutation } from "@/hooks/usePostMutation";
+import { usePostMutation } from "@/hooks/repository/usePostMutation";
 
 type ForgotPasswordFormProps = {
     onMessage: (msg: string) => void;
