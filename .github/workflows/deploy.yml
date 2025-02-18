@@ -9,29 +9,25 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      # 1️⃣ Vérifier le code depuis le repository
+      # Vérifier le code depuis le repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Installer Node.js
+      # Installer Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18 # Ajuste selon ta version
 
-      # 3️⃣ Installer Expo CLI
+      # Installer Expo CLI
       - name: Install Expo CLI
         run: npm install -g expo-cli
 
-      # 4️⃣ Installer les dépendances du projet
+      # Installer les dépendances du projet
       - name: Install dependencies
         run: npm install
 
-      # 5️⃣ Build Expo Web
-      - name: Build Expo Web App
-        run: npx expo export -p web
-
-      # 6️⃣ Déployer le build dans le dossier  cible sur le serveur Windows
+      # Déployer le build dans le dossier  cible sur le serveur Windows
       - name: Deploy to target folder
         run: |
           $targetFolder = "D:\blinkerUI"
@@ -39,11 +35,4 @@ jobs:
             New-Item -ItemType Directory -Path $targetFolder
           }
           Copy-Item -Path * -Destination $targetFolder -Recurse -Force
-        shell: powershell
-
-      # 7️⃣ (Facultatif) Redémarrer le serveur pour servir l'Expo Web
-      - name: Restart Expo Web Server
-        run: |
-          Stop-Process -Name "expo" -Force -ErrorAction SilentlyContinue
-          Start-Process -FilePath "npx" -ArgumentList "expo serve --port 8013 --web-only"
         shell: powershell

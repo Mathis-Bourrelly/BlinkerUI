@@ -17,7 +17,7 @@ export function ForgotPasswordForm({ onMessage }: ForgotPasswordFormProps) {
     const [emailError, setEmailError] = useState("");
 
     const router = useRouter();
-    const { mutate, isPending } = usePostMutation();
+    const { mutate, isPending } = usePostMutation("/forgot-password");
     const { colors } = useTheme();
     const { t } = useTranslation();
 
@@ -42,7 +42,6 @@ export function ForgotPasswordForm({ onMessage }: ForgotPasswordFormProps) {
         if (valid) {
             mutate(
                 {
-                    path: '/forgot-password',
                     body: { email },
                 },
                 {
