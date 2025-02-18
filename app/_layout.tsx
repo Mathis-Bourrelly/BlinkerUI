@@ -1,11 +1,11 @@
 import './i18n'; // Ensure i18n is loaded first
-import { useEffect, useState } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider } from '@/context/ThemeContext';
+import {useEffect, useState} from 'react';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import {ThemeProvider} from '@/context/ThemeContext';
 import * as Font from 'expo-font';
 import AppLoading from 'expo-app-loading'; // For loading screen
-import { NavigationContainer } from '@react-navigation/native';
-import { Slot } from 'expo-router'; // This renders the current route/page content
+import {NavigationContainer} from '@react-navigation/native';
+import {Slot} from 'expo-router'; // This renders the current route/page content
 
 const queryClient = new QueryClient();
 
@@ -29,13 +29,15 @@ export default function RootLayout() {
 
     // If fonts are not loaded yet, show loading screen
     if (!fontsLoaded) {
-        return <AppLoading />;
+        return <AppLoading/>;
     }
 
     return (
         <QueryClientProvider client={queryClient}>
             <ThemeProvider>
+                <NavigationContainer>
                     <Slot/>
+                </NavigationContainer>
             </ThemeProvider>
         </QueryClientProvider>
     );
