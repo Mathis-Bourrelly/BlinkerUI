@@ -1,116 +1,165 @@
+import React from 'react';
 import {StyleSheet, View, Text, ActivityIndicator, Image} from 'react-native';
-import {ThemedText} from "@/components/base/ThemedText";
-import {useTheme} from '@/context/ThemeContext';
-import {Stack, useRouter} from "expo-router";
-import {SafeAreaView} from "react-native-safe-area-context";
-import {LinearGradient} from "expo-linear-gradient";
-import React from "react";
-import {useTranslation} from "react-i18next";
-import {Row} from "@/components/base/Row";
-import {LanguageDropdown} from "@/components/base/LanguageDropdown";
-import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
-import {ThemedButtonIcon} from "@/components/base/ThemedButtonIcon";
-import {useUserProfileQuery} from "@/hooks/interfaces/useProfileInterface"// Import du hook
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {LinearGradient} from 'expo-linear-gradient';
+import {Stack, useRouter} from 'expo-router';
+import {useTranslation} from 'react-i18next';
 
-export default function Index() {
+import {useTheme} from '@/context/ThemeContext';
+import {useUserProfileQuery} from '@/hooks/interfaces/useProfileInterface';
+import {ThemedText} from '@/components/base/ThemedText';
+import {Row} from '@/components/base/Row';
+import {LanguageDropdown} from '@/components/base/LanguageDropdown';
+import {ThemeToggleButton} from '@/components/base/ThemeToggleButton';
+import {ThemedButtonIcon} from '@/components/base/ThemedButtonIcon';
+import TabBar from '@/components/base/TabBar';
+import {ThemedSeparator} from "@/components/base/ThemedSeparator";
+
+export default function ProfileScreen() {
     const {colors} = useTheme();
     const {t} = useTranslation();
     const router = useRouter();
     const gradientColors = colors.gradient;
-    const userID = "829669a1-8fc8-4398-b975-249fbda5045c"; // Exemple d'ID utilisateur à remplacer par la logique de ton application
+
+    // Exemple d'ID utilisateur (à adapter selon votre logique)
+    const userID = '829669a1-8fc8-4398-b975-249fbda5045c';
+
+    // Récupération des données utilisateur via votre hook
     const {data, isLoading, error} = useUserProfileQuery(userID);
-
-    if (isLoading) {
-        return (
-            <>
-                <Stack.Screen/>
-                <SafeAreaView style={styles.container}>
-                    <LinearGradient colors={gradientColors} style={styles.background}>
-                        <ActivityIndicator size="large" color={colors.accent}/>
-                    </LinearGradient>
-                </SafeAreaView>
-            </>
-        );
-    }
-
-    if (error) {
-        return (
+    return (
+        <>
+            <Stack.Screen/>
             <SafeAreaView style={styles.container}>
                 <LinearGradient colors={gradientColors} style={styles.background}>
-                    <ThemedText variant="Title" color={colors.text}>
-                        {t('profile.errorLoadingProfile')}
-                    </ThemedText>
+
+                    {isLoading && (
+                        <ActivityIndicator size="large" color={colors.accent}/>
+                    )}
+
+                    {error && (
+                        <ThemedText variant="Title" color={colors.text}>
+                            {t('profile.errorLoadingProfile')}
+                        </ThemedText>
+                    )}
+
+                    {!isLoading && !error && data && (
+                        <>
+                            <View style={styles.headerContainer}>
+                                <Row gap={12}>
+                                    <Image
+                                        source={{uri: "https://i.pravatar.cc/250"}}
+                                        style={styles.avatar}
+                                    />
+                                    <View>
+                                        <ThemedText variant="Title" style={styles.username}>
+                                            {data.username}
+                                        </ThemedText>
+                                        <Text style={styles.handle}>
+                                            @{data.name}
+                                        </Text>
+                                        <Row>
+                                            <View style={styles.statItem}>
+                                                <ThemedText variant={"Body"}>
+                                                    {t('profile')}
+                                                </ThemedText>
+                                                <Text style={styles.statNumber}>
+                                                    {data.score}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.statItem}>
+                                                <ThemedText variant={"Body"}>
+                                                    {t('profile')}
+                                                </ThemedText>
+                                                <Text style={styles.statNumber}>
+                                                    {data.score}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.statItem}>
+                                                <ThemedText variant={"Body"}>
+                                                    {t('profile')}
+                                                </ThemedText>
+                                                <Text style={styles.statNumber}>
+                                                    {data.score}
+                                                </Text>
+                                            </View>
+                                        </Row>
+                                    </View>
+                                </Row>
+                                {data.bio && (
+                                    <View style={styles.infoContainer}>
+
+                                        <Text style={styles.infoText}>
+                                            {data.bio}
+                                        </Text>
+                                    </View>
+                                )}
+                                <ThemedSeparator barColor={colors.border} maxWidth={300}/>
+                            </View>
+
+                        </>
+                    )}
                 </LinearGradient>
+
+                <TabBar/>
             </SafeAreaView>
-        );
-    }
-
-    return (
-        <SafeAreaView style={styles.container}>
-            <LinearGradient colors={gradientColors} style={styles.background}>
-                <ThemedText variant="Title" color={colors.text}>
-                    Profil
-                </ThemedText>
-
-                <View style={styles.profileContainer}>
-                    <Text style={styles.profileText}>{t('profile.username')}: {data?.username}</Text>
-                    <Text style={styles.profileText}>{t('profile.score')}: {data?.score}</Text>
-
-                    {data?.bio && (
-                        <Text style={styles.profileText}>{t('profile.bio')}: {data?.bio}</Text>
-                    )}
-
-                    {data?.avatarUrl ? (
-                        <Image
-                            source={{uri: data.avatarUrl}}
-                            style={styles.avatar}
-                        />
-                    ) : (
-                        <Text style={styles.profileText}>{t('profile.noAvatar')}</Text>
-                    )}
-                </View>
-
-                <ThemedButtonIcon
-                    text={t("profile.goToLogin")}
-                    onPress={() => router.push("/login")}
-                    iconName={"circled-left--v2"}
-                />
-                <Row gap={12}>
-                    <LanguageDropdown/>
-                    <ThemeToggleButton/>
-                </Row>
-            </LinearGradient>
-        </SafeAreaView>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-    },
+    }
+    ,
     background: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
         width: '100%',
         padding: 20,
-    },
-    profileContainer: {
-        marginTop: 20,
-        width: '100%',
-        padding: 10,
+    }
+    ,
+    headerContainer: {
         alignItems: 'center',
-    },
-    profileText: {
-        fontSize: 18,
-        marginVertical: 5,
-        color: 'white', // Assurer la visibilité du texte sur fond sombre
-    },
+        marginBottom: 5
+    }
+    ,
     avatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginTop: 10,
-    },
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+    }
+    ,
+    username: {
+        color: '#ffffff',
+        marginBottom: 4,
+    }
+    ,
+    handle: {
+        fontSize: 16,
+        color: '#8b949e',
+    }
+    ,
+    statItem: {
+        alignItems: 'center',
+        marginHorizontal: 4,
+    }
+    ,
+    statNumber: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#ffffff',
+    }
+    ,
+    infoContainer: {
+        marginVertical: 8,
+        alignSelf: "flex-start"
+    }
+    ,
+    infoText: {
+        fontSize: 16,
+        color: '#ffffff',
+        marginBottom: 4,
+        textAlign: 'center',
+    }
+    ,
 });

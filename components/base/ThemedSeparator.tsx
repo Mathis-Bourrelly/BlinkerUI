@@ -13,7 +13,7 @@ export function ThemedSeparator({ barColor, text, maxWidth, ...rest }: Props) {
 
     if (text) {
         return (
-            <View style={[containerStyle, { maxWidth: maxWidth }]}>
+            <View style={[containerStyle, { maxWidth: maxWidth }]} {...rest}>
                 <ThemedSeparator barColor={colors.border} />
                 <ThemedText color={colors.border}> {text} </ThemedText>
                 <ThemedSeparator barColor={colors.border} />
@@ -21,7 +21,10 @@ export function ThemedSeparator({ barColor, text, maxWidth, ...rest }: Props) {
         );
     } else {
         return (
-            <View style={[rowStyle, { backgroundColor: barColor ?? colors.text }]} {...rest}></View>
+            <View
+                style={[rowStyle, { backgroundColor: barColor ?? colors.text, maxWidth: maxWidth }]}
+                {...rest}
+            ></View>
         );
     }
 }
@@ -35,5 +38,5 @@ const containerStyle: ViewStyle = {
 
 const rowStyle: ViewStyle = {
     height: 1,
-    flex: 1,
+    width: "100%"
 };

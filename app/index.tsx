@@ -10,7 +10,7 @@ import {Row} from "@/components/base/Row";
 import {LanguageDropdown} from "@/components/base/LanguageDropdown";
 import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
 import {ThemedButtonIcon} from "@/components/base/ThemedButtonIcon";
-import GoogleSignInButton from "@/components/base/GoogleSignInButton";
+import TabBar from "@/components/base/TabBar";
 
 
 export default function Index() {
@@ -38,6 +38,7 @@ export default function Index() {
                         <ThemeToggleButton/>
                     </Row>
                 </LinearGradient>
+                <TabBar/>
             </SafeAreaView>
         </>
     );
