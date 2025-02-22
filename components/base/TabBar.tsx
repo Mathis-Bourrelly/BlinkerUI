@@ -15,7 +15,7 @@ export default function TabBar() {
     };
     return (
         <View style={[styles.tabBar, dynamicColor]}>
-            <TouchableOpacity onPress={() => router.push("/search")}>
+            <TouchableOpacity onPress={() => router.push("/")}>
                 <Icon name="search" size={32} color={dynamicColor.color} />
             </TouchableOpacity>
 

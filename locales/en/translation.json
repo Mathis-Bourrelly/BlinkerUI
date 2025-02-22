@@ -22,5 +22,10 @@
     "password": "Password",
     "passwordForgotten": "Password forgotten",
     "wrongPassword": "Incorrect password"
+  },
+  "profile": {
+    "blink": "blink",
+    "follow": "follow",
+    "follower": "follower"
   }
 }

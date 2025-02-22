@@ -20,5 +20,10 @@
     "password": "パスワード",
     "passwordForgotten": "",
     "wrongPassword": ""
+  },
+  "profile": {
+    "blink": "",
+    "follow": "",
+    "follower": ""
   }
 }

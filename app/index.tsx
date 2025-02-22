@@ -11,6 +11,7 @@ import {LanguageDropdown} from "@/components/base/LanguageDropdown";
 import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
 import {ThemedButtonIcon} from "@/components/base/ThemedButtonIcon";
 import TabBar from "@/components/base/TabBar";
+import NavBar from "@/components/base/NavBar";
 
 
 export default function Index() {
@@ -24,6 +25,7 @@ export default function Index() {
             <Stack.Screen/>
             <SafeAreaView style={styles.container}>
                 <LinearGradient colors={gradientColors} style={styles.background}>
+                    <NavBar/>
                     <ThemedText variant={"Title"} color={colors.text}>
                         Home
                     </ThemedText>
@@ -31,7 +33,11 @@ export default function Index() {
                         text="Go to Login"
                         onPress={() => router.push("/login")}
                         iconName={"circled-left--v2"}
-
+                    />
+                    <ThemedButtonIcon
+                        text="Go to Profile"
+                        onPress={() => router.push("/profil")}
+                        iconName={"circled-left--v2"}
                     />
                     <Row gap={12}>
                         <LanguageDropdown/>

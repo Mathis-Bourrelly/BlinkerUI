@@ -1,37 +1,52 @@
-import React from 'react';
-import {StyleSheet, View, Text, ActivityIndicator, Image} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {LinearGradient} from 'expo-linear-gradient';
-import {Stack, useRouter} from 'expo-router';
-import {useTranslation} from 'react-i18next';
-
-import {useTheme} from '@/context/ThemeContext';
-import {useUserProfileQuery} from '@/hooks/interfaces/useProfileInterface';
-import {ThemedText} from '@/components/base/ThemedText';
-import {Row} from '@/components/base/Row';
-import {LanguageDropdown} from '@/components/base/LanguageDropdown';
-import {ThemeToggleButton} from '@/components/base/ThemeToggleButton';
-import {ThemedButtonIcon} from '@/components/base/ThemedButtonIcon';
-import TabBar from '@/components/base/TabBar';
+import React from "react";
+import {StyleSheet, View, ActivityIndicator, Image, useWindowDimensions} from "react-native";
+import {SafeAreaView} from "react-native-safe-area-context";
+import {LinearGradient} from "expo-linear-gradient";
+import {Stack, useRouter} from "expo-router";
+import {useTranslation} from "react-i18next";
+import {useTheme} from "@/context/ThemeContext";
+import {useUserProfileQuery} from "@/hooks/interfaces/useProfileInterface";
+import {ThemedText} from "@/components/base/ThemedText";
+import {Row} from "@/components/base/Row";
+import TabBar from "@/components/base/TabBar";
+import {LanguageDropdown} from "@/components/base/LanguageDropdown";
+import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
 import {ThemedSeparator} from "@/components/base/ThemedSeparator";
+import NavBar from "@/components/base/NavBar";
 
 export default function ProfileScreen() {
     const {colors} = useTheme();
     const {t} = useTranslation();
     const router = useRouter();
     const gradientColors = colors.gradient;
+    const {width} = useWindowDimensions();
+    const isDesktop = width >= 768;
 
     // Exemple d'ID utilisateur (à adapter selon votre logique)
-    const userID = '829669a1-8fc8-4398-b975-249fbda5045c';
+    const userID = "829669a1-8fc8-4398-b975-249fbda5045c";
 
-    // Récupération des données utilisateur via votre hook
     const {data, isLoading, error} = useUserProfileQuery(userID);
+
+    // Styles conditionnels pour desktop (plus d'espacement, layout centré, etc.)
+    const containerStyle = [
+        styles.headerContainer,
+        isDesktop && {paddingHorizontal: 50},
+    ];
+    const headerContainerStyle = [
+        styles.headerContainer,
+        isDesktop && {marginBottom: 20,paddingHorizontal: 50},
+    ];
+    const avatarStyle = [
+        styles.avatar,
+        isDesktop && { width: 120, height: 120, borderRadius: 60 }
+    ];
+
     return (
         <>
             <Stack.Screen/>
             <SafeAreaView style={styles.container}>
                 <LinearGradient colors={gradientColors} style={styles.background}>
-
+                    <NavBar/>
                     {isLoading && (
                         <ActivityIndicator size="large" color={colors.accent}/>
                     )}
@@ -43,123 +58,97 @@ export default function ProfileScreen() {
                     )}
 
                     {!isLoading && !error && data && (
-                        <>
-                            <View style={styles.headerContainer}>
-                                <Row gap={12}>
-                                    <Image
-                                        source={{uri: "https://i.pravatar.cc/250"}}
-                                        style={styles.avatar}
-                                    />
-                                    <View>
-                                        <ThemedText variant="Title" style={styles.username}>
-                                            {data.username}
-                                        </ThemedText>
-                                        <Text style={styles.handle}>
-                                            @{data.name}
-                                        </Text>
-                                        <Row>
-                                            <View style={styles.statItem}>
-                                                <ThemedText variant={"Body"}>
-                                                    {t('profile')}
-                                                </ThemedText>
-                                                <Text style={styles.statNumber}>
-                                                    {data.score}
-                                                </Text>
-                                            </View>
-                                            <View style={styles.statItem}>
-                                                <ThemedText variant={"Body"}>
-                                                    {t('profile')}
-                                                </ThemedText>
-                                                <Text style={styles.statNumber}>
-                                                    {data.score}
-                                                </Text>
-                                            </View>
-                                            <View style={styles.statItem}>
-                                                <ThemedText variant={"Body"}>
-                                                    {t('profile')}
-                                                </ThemedText>
-                                                <Text style={styles.statNumber}>
-                                                    {data.score}
-                                                </Text>
-                                            </View>
-                                        </Row>
-                                    </View>
-                                </Row>
-                                {data.bio && (
-                                    <View style={styles.infoContainer}>
+                        <View style={headerContainerStyle}>
+                            <Row gap={isDesktop ? 24 : 12}>
+                                <Image
+                                    source={{ uri: "https://i.pravatar.cc/250" }}
+                                    style={avatarStyle}
+                                />
+                                <View style={isDesktop && {paddingHorizontal: 20}}>
+                                    <ThemedText variant="SubTitle">
+                                        {data.username}
+                                    </ThemedText>
+                                    <ThemedText variant="Body" color={colors.textSecondary}>
+                                        @{data.name}
+                                    </ThemedText>
+                                    <Row gap={isDesktop ? 20 : 12}>
+                                        <View style={styles.statItem}>
+                                            <ThemedText variant={"Body"}>
+                                                {t('profile.follow')}
+                                            </ThemedText>
+                                            <ThemedText variant={"SubTitle"}>
+                                                {data.score}
+                                            </ThemedText>
+                                        </View>
+                                        <View style={styles.statItem}>
+                                            <ThemedText variant={"Body"}>
+                                                {t('profile.follower')}
+                                            </ThemedText>
+                                            <ThemedText variant={"SubTitle"}>
+                                                {data.score}
+                                            </ThemedText>
+                                        </View>
+                                        <View style={styles.statItem}>
+                                            <ThemedText variant={"Body"}>
+                                                {t('profile.blink')}
+                                            </ThemedText>
+                                            <ThemedText variant={"SubTitle"}>
+                                                {data.score}
+                                            </ThemedText>
+                                        </View>
+                                    </Row>
+                                </View>
+                            </Row>
+                            {data.bio && (
+                                <View style={styles.infoContainer}>
+                                    <ThemedText variant={"Body"}>
+                                        {data.bio}
+                                    </ThemedText>
+                                </View>
+                            )}
+                            <ThemedSeparator barColor={colors.border}/>
+                            <Row gap={isDesktop ? 24 : 12}>
+                                <LanguageDropdown/>
+                                <ThemeToggleButton/>
+                            </Row>
 
-                                        <Text style={styles.infoText}>
-                                            {data.bio}
-                                        </Text>
-                                    </View>
-                                )}
-                                <ThemedSeparator barColor={colors.border} maxWidth={300}/>
-                            </View>
-
-                        </>
+                        </View>
                     )}
-                </LinearGradient>
+                    {!isDesktop && (
+                        <TabBar/>
+                    )}
 
-                <TabBar/>
+                </LinearGradient>
             </SafeAreaView>
         </>
+
     );
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    }
-    ,
+        justifyContent: 'center',
+    },
     background: {
         flex: 1,
         alignItems: 'center',
         width: '100%',
-        padding: 20,
-    }
-    ,
+    },
     headerContainer: {
         alignItems: 'center',
-        marginBottom: 5
-    }
-    ,
+        marginTop: 12
+    },
     avatar: {
         width: 80,
         height: 80,
         borderRadius: 40,
-    }
-    ,
-    username: {
-        color: '#ffffff',
-        marginBottom: 4,
-    }
-    ,
-    handle: {
-        fontSize: 16,
-        color: '#8b949e',
-    }
-    ,
+    },
     statItem: {
         alignItems: 'center',
         marginHorizontal: 4,
-    }
-    ,
-    statNumber: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#ffffff',
-    }
-    ,
+    },
     infoContainer: {
         marginVertical: 8,
-        alignSelf: "flex-start"
-    }
-    ,
-    infoText: {
-        fontSize: 16,
-        color: '#ffffff',
-        marginBottom: 4,
-        textAlign: 'center',
-    }
-    ,
+        alignSelf: "flex-start",
+    },
 });

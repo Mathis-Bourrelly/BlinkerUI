@@ -1,20 +1,21 @@
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, ImageProps } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
 
-export function ThemedLogo() {
-    const { theme } = useTheme(); // Utilise le hook du contexte
+type ThemedLogoProps = {
+    width?: number;
+    height?: number;
+} & ImageProps;
+
+export function ThemedLogo({ width = 100, height = 100, ...props }: ThemedLogoProps) {
+    const { theme } = useTheme();
     const logoSource = theme === 'dark'
         ? require('@/assets/images/logo-dark.svg')
-        : require('@/assets/images/logo-light.svg'); // Charge le logo correspondant
+        : require('@/assets/images/logo-light.svg');
 
-    return <Image source={logoSource} style={styles.logo} resizeMode={"contain"} />;
+    return <Image source={logoSource} style={[styles.logo, { width, height }]} resizeMode="contain" {...props} />;
 }
 
 const styles = StyleSheet.create({
-    logo: {
-        borderWidth: 1,
-        borderColor:"#ffffff",
-        width: '50%',
-    },
+    logo: {},
 });
