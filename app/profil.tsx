@@ -28,13 +28,15 @@ export default function ProfileScreen() {
     const {data, isLoading, error} = useUserProfileQuery(userID);
 
     // Styles conditionnels pour desktop (plus d'espacement, layout centré, etc.)
-    const containerStyle = [
-        styles.headerContainer,
-        isDesktop && {paddingHorizontal: 50},
-    ];
+
     const headerContainerStyle = [
         styles.headerContainer,
-        isDesktop && {marginBottom: 20,paddingHorizontal: 50},
+        isDesktop && {
+            marginBottom: 20,
+            paddingHorizontal: 50,
+            width: '100%',
+            alignItems: 'flex-start',
+        },
     ];
     const avatarStyle = [
         styles.avatar,
@@ -135,7 +137,6 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     headerContainer: {
-        alignItems: 'center',
         marginTop: 12
     },
     avatar: {
