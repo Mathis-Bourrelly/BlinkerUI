@@ -12,6 +12,7 @@ import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
 import {ThemedButtonIcon} from "@/components/base/ThemedButtonIcon";
 import TabBar from "@/components/base/TabBar";
 import NavBar from "@/components/base/NavBar";
+import {InnerContainer} from "@/components/base/InnerContainer";
 
 
 export default function Index() {
@@ -25,24 +26,26 @@ export default function Index() {
             <Stack.Screen/>
             <SafeAreaView style={styles.container}>
                 <LinearGradient colors={gradientColors} style={styles.background}>
-                    <NavBar/>
-                    <ThemedText variant={"Title"} color={colors.text}>
-                        Home
-                    </ThemedText>
-                    <ThemedButtonIcon
-                        text="Go to Login"
-                        onPress={() => router.push("/login")}
-                        iconName={"circled-left--v2"}
-                    />
-                    <ThemedButtonIcon
-                        text="Go to Profile"
-                        onPress={() => router.push("/profil")}
-                        iconName={"circled-left--v2"}
-                    />
-                    <Row gap={12}>
-                        <LanguageDropdown/>
-                        <ThemeToggleButton/>
-                    </Row>
+                    <InnerContainer>
+                        <NavBar/>
+                        <ThemedText variant={"Title"} color={colors.text}>
+                            Home
+                        </ThemedText>
+                        <ThemedButtonIcon
+                            text="Go to Login"
+                            onPress={() => router.push("/login")}
+                            iconName={"circled-left--v2"}
+                        />
+                        <ThemedButtonIcon
+                            text="Go to Profile"
+                            onPress={() => router.push("/profil")}
+                            iconName={"circled-left--v2"}
+                        />
+                        <Row gap={12}>
+                            <LanguageDropdown/>
+                            <ThemeToggleButton/>
+                        </Row>
+                    </InnerContainer>
                 </LinearGradient>
                 <TabBar/>
             </SafeAreaView>
@@ -54,6 +57,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
+    },
+    innerContainer: {
+        maxWidth: 1536,
+        width: "100%",
+        paddingHorizontal: 8,
+        flex: 1
     },
     background: {
         flex: 1,

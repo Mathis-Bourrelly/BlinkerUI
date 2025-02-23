@@ -13,6 +13,7 @@ import {LanguageDropdown} from "@/components/base/LanguageDropdown";
 import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
 import {ThemedSeparator} from "@/components/base/ThemedSeparator";
 import NavBar from "@/components/base/NavBar";
+import {InnerContainer} from "@/components/base/InnerContainer";
 
 export default function ProfileScreen() {
     const {colors} = useTheme();
@@ -27,13 +28,11 @@ export default function ProfileScreen() {
 
     const {data, isLoading, error} = useUserProfileQuery(userID);
 
-    // Styles conditionnels pour desktop (plus d'espacement, layout centré, etc.)
 
     const headerContainerStyle = [
         styles.headerContainer,
         isDesktop && {
             marginBottom: 20,
-            paddingHorizontal: 50,
             width: '100%',
             alignItems: 'flex-start',
         },
@@ -48,6 +47,7 @@ export default function ProfileScreen() {
             <Stack.Screen/>
             <SafeAreaView style={styles.container}>
                 <LinearGradient colors={gradientColors} style={styles.background}>
+                    <InnerContainer>
                     <NavBar/>
                     {isLoading && (
                         <ActivityIndicator size="large" color={colors.accent}/>
@@ -60,6 +60,7 @@ export default function ProfileScreen() {
                     )}
 
                     {!isLoading && !error && data && (
+                        //@ts-ignore
                         <View style={headerContainerStyle}>
                             <Row gap={isDesktop ? 24 : 12}>
                                 <Image
@@ -119,7 +120,7 @@ export default function ProfileScreen() {
                     {!isDesktop && (
                         <TabBar/>
                     )}
-
+                    </InnerContainer>
                 </LinearGradient>
             </SafeAreaView>
         </>

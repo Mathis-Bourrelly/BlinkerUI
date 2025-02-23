@@ -6,6 +6,7 @@ import {router} from "expo-router";
 import {ThemedText} from "@/components/base/ThemedText";
 import {ThemedVerticalSeparator} from "@/components/base/ThemedVerticalSeparator";
 import {ThemedLogo} from "@/components/images/ThemedLogo";
+import {Row} from "@/components/base/Row";
 
 export default function NavBar() {
     const {width} = useWindowDimensions();
@@ -15,7 +16,7 @@ export default function NavBar() {
     return (
         <View style={styles.navBar}>
             <View style={styles.navLinkContainer}>
-                <ThemedLogo height={40} />
+                <ThemedLogo height={40}/>
                 <TouchableOpacity onPress={() => router.push("/")}>
                     <ThemedText>Acceuil</ThemedText>
                 </TouchableOpacity>
@@ -33,19 +34,20 @@ export default function NavBar() {
                 </TouchableOpacity>
                 <ThemedVerticalSeparator barColor={colors.border} height={20}/>
                 <TouchableOpacity onPress={() => router.push("/")}>
-                    <ThemedText>Notification</ThemedText>
-                </TouchableOpacity>
-                <ThemedVerticalSeparator barColor={colors.border} height={20}/>
-                <TouchableOpacity onPress={() => router.push("/")}>
                     <ThemedText>Messagerie</ThemedText>
                 </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => router.push("/profil")}>
-                <Image
-                    source={{uri: "https://i.pravatar.cc/32"}}
-                    style={[styles.avatar, {borderColor: colors.text}]}
-                />
-            </TouchableOpacity>
+            <Row gap={12}>
+                <TouchableOpacity onPress={() => router.push("/")}>
+                    <Icon name={"appointment-reminders"} size={32} color={colors.text}></Icon>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push("/profil")}>
+                    <Image
+                        source={{uri: "https://i.pravatar.cc/32"}}
+                        style={[styles.avatar, {borderColor: colors.text}]}
+                    />
+                </TouchableOpacity>
+            </Row>
         </View>
     );
 }
@@ -54,7 +56,7 @@ const styles = StyleSheet.create({
     navBar: {
         height: 60,
         flexDirection: "row",
-        justifyContent: "space-around",
+        justifyContent: "space-between",
         alignItems: "center",
         width: "100%",
     },
