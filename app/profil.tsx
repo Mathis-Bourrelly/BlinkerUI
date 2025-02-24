@@ -14,6 +14,7 @@ import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
 import {ThemedSeparator} from "@/components/base/ThemedSeparator";
 import NavBar from "@/components/base/NavBar";
 import {InnerContainer} from "@/components/base/InnerContainer";
+import {FollowList} from "@/components/base/FollowList";
 
 export default function ProfileScreen() {
     const {colors} = useTheme();
@@ -120,6 +121,7 @@ export default function ProfileScreen() {
                     {!isDesktop && (
                         <TabBar/>
                     )}
+                        <FollowList userID={userID} />
                     </InnerContainer>
                 </LinearGradient>
             </SafeAreaView>
