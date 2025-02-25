@@ -18,7 +18,7 @@ export default function NavBar() {
             <View style={styles.navLinkContainer}>
                 <ThemedLogo height={40}/>
                 <TouchableOpacity onPress={() => router.push("/")}>
-                    <ThemedText>Acceuil</ThemedText>
+                    <ThemedText>Accueil</ThemedText>
                 </TouchableOpacity>
                 <ThemedVerticalSeparator barColor={colors.border} height={20}/>
                 <TouchableOpacity onPress={() => router.push("/")}>
