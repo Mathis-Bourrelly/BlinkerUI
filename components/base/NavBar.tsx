@@ -7,10 +7,12 @@ import {ThemedText} from "@/components/base/ThemedText";
 import {ThemedVerticalSeparator} from "@/components/base/ThemedVerticalSeparator";
 import {ThemedLogo} from "@/components/images/ThemedLogo";
 import {Row} from "@/components/base/Row";
+import {useUser} from "@/context/UserContext";
 
 export default function NavBar() {
     const {width} = useWindowDimensions();
     const {colors} = useTheme();
+    const { user } = useUser();
     if (width < 768) return null;
 
     return (
@@ -41,7 +43,7 @@ export default function NavBar() {
                 <TouchableOpacity onPress={() => router.push("/")}>
                     <Icon name={"appointment-reminders"} size={32} color={colors.text}></Icon>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push("/profil")}>
+                <TouchableOpacity onPress={() => router.push(`/profile/${user?.userID}`)}>
                     <Image
                         source={{uri: "https://i.pravatar.cc/32"}}
                         style={[styles.avatar, {borderColor: colors.text}]}

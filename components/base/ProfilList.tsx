@@ -19,7 +19,7 @@ export function ProfilList({ fetchProfiles }: UserListProps) {
         isLoading,
         error,
     } = fetchProfiles();
-
+    //@ts-ignore
     const profiles = data ? data.pages.flatMap(page => page.data) : [];
 
     if (isLoading) {

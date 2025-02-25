@@ -12,9 +12,29 @@ export const storeToken = async (token: string) => {
     }
 };
 
+export const storeUserID = async (userID: string) => {
+    try {
+        await AsyncStorage.setItem('userID', userID);
+    } catch (e) {
+        console.error(e);
+    }
+};
+
 export const getToken = async () => {
     try {
         const value = await AsyncStorage.getItem('token');
+        if (value !== null) {
+            return value
+        }
+    } catch (e) {
+        console.error(e);
+        router.push("/login");
+    }
+};
+
+export const getUserID = async () => {
+    try {
+        const value = await AsyncStorage.getItem('userID');
         if (value !== null) {
             return value
         }
@@ -32,6 +52,7 @@ type LoginCredentials = {
 type LoginResponse = {
     message: string;
     token: string;
+    userID: string;
 };
 
 export function useLoginMutation() {
@@ -55,6 +76,7 @@ export function useLoginMutation() {
             }
 
             await storeToken(data.token);
+            await storeUserID(data.userID);
             return data;
         }
     });

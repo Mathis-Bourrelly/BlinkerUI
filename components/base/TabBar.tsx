@@ -3,10 +3,12 @@ import { View, TouchableOpacity, Image, StyleSheet, useWindowDimensions } from "
 import { Icon } from "@/components/images/Icon";
 import {useTheme} from "@/context/ThemeContext";
 import {router} from "expo-router";
+import {useUser} from "@/context/UserContext";
 
 export default function TabBar() {
     const { width } = useWindowDimensions();
     const { colors } = useTheme();
+    const { user } = useUser();
     if (width > 768) return null;
     const dynamicColor = {
         color: colors.text,
@@ -23,7 +25,7 @@ export default function TabBar() {
                 <Icon name="home" size={32} color={dynamicColor.color} />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => router.push("/profil")}>
+            <TouchableOpacity onPress={() => router.push(`/profile/${user?.userID}`)}>
                 <Image
                     source={{ uri: "https://i.pravatar.cc/32" }}
                     style={[styles.avatar, {borderColor: colors.text}]}

@@ -20,7 +20,6 @@ export default function followsScreen() {
     const {width} = useWindowDimensions();
     const isDesktop = width >= 768;
 
-    // Exemple d'ID utilisateur (à adapter selon votre logique)
     const { userID } = useLocalSearchParams<{ userID: string }>();
 
     return (
@@ -35,6 +34,7 @@ export default function followsScreen() {
                         )}
 
                         <ThemedText variant={"Title"}>{t('profile.follow')}</ThemedText>
+                        {/*@ts-ignore*/}
                         <ProfilList fetchProfiles={() => useUserFollowingQuery(userID)} />
                     </InnerContainer>
                 </LinearGradient>

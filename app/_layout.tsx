@@ -5,7 +5,8 @@ import {ThemeProvider} from '@/context/ThemeContext';
 import * as Font from 'expo-font';
 import AppLoading from 'expo-app-loading'; // For loading screen
 import {NavigationContainer} from '@react-navigation/native';
-import {Slot} from 'expo-router'; // This renders the current route/page content
+import {Slot} from 'expo-router';
+import {UserProvider} from "@/context/UserContext"; // This renders the current route/page content
 
 const queryClient = new QueryClient();
 
@@ -35,7 +36,9 @@ export default function RootLayout() {
     return (
         <QueryClientProvider client={queryClient}>
             <ThemeProvider>
-                <Slot/>
+                <UserProvider>
+                    <Slot/>
+                </UserProvider>
             </ThemeProvider>
         </QueryClientProvider>
     );
