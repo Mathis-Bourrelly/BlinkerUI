@@ -1,14 +1,16 @@
-export interface User {
-    userID: string;
-    name: string;
-    email: string;
-    role: string;
-    isVerified: boolean;
-}
+import {Profiles} from "@/types/Profiles";
+
 
 export interface FollowsResponse {
     page: number;
     limit: number;
     total: number;
-    data: User[];
+    data: Profiles[];
+}
+
+export interface FollowersResponse {
+    page: number;
+    limit: number;
+    total: number;
+    data: Profiles[];
 }

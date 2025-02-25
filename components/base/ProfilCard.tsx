@@ -1,32 +1,24 @@
-// components/UserCard.tsx
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
+import { Profiles } from '@/types/Profiles'
 
-export interface Follow {
-    userID: string;
-    display_name: string;
-    username: string;
-    name: string;
-    avatarUrl?: string;
-}
-
-type UserCardProps = {
-    follow: Follow;
+type ProfilCardProps = {
+    profil: Profiles;
 };
 
-export function UserCard({ follow }: UserCardProps) {
+export function ProfilCard({ profil }: ProfilCardProps) {
     const { colors } = useTheme();
-
+    console.log(profil)
     return (
         <View style={[styles.card, { borderColor: colors.border, backgroundColor: colors.card }]}>
             <Image
-                source={{ uri: follow.avatarUrl || 'https://i.pravatar.cc/40' }}
+                source={{ uri: profil.avatarUrl || 'https://i.pravatar.cc/40' }}
                 style={styles.avatar}
             />
             <View style={styles.info}>
-                <Text style={[styles.display_name, { color: colors.text }]}>{follow.display_name}</Text>
-                <Text style={[styles.username, { color: colors.textSecondary }]}>@{follow.username}</Text>
+                <Text style={[styles.display_name, { color: colors.text }]}>{profil.display_name}</Text>
+                <Text style={[styles.username, { color: colors.textSecondary }]}>@{profil.username}</Text>
             </View>
         </View>
     );

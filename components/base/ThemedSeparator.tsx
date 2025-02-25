@@ -13,18 +13,26 @@ export function ThemedSeparator({ barColor, text, maxWidth, ...rest }: Props) {
 
     if (text) {
         return (
-            <View style={[containerStyle, { maxWidth: maxWidth }]} {...rest}>
+            <View style={[containerStyle, { maxWidth }]} {...rest}>
+                {/* Barre à gauche */}
                 <ThemedSeparator barColor={colors.border} />
-                <ThemedText color={colors.border}> {text} </ThemedText>
+                {/* Conteneur pour centrer verticalement le texte */}
+                <View style={textContainerStyle}>
+                    <ThemedText color={colors.border}>{text}</ThemedText>
+                </View>
+                {/* Barre à droite */}
                 <ThemedSeparator barColor={colors.border} />
             </View>
         );
     } else {
         return (
             <View
-                style={[rowStyle, { backgroundColor: barColor ?? colors.text, maxWidth: maxWidth }]}
+                style={[
+                    rowStyle,
+                    { backgroundColor: barColor ?? colors.text, maxWidth },
+                ]}
                 {...rest}
-            ></View>
+            />
         );
     }
 }
@@ -33,10 +41,19 @@ const containerStyle: ViewStyle = {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    width: "100%",
+    alignSelf: "center",
+    width: "50%",
 };
 
 const rowStyle: ViewStyle = {
     height: 1,
-    width: "100%"
+    width: "100%",
+    alignSelf: "center",
+};
+
+const textContainerStyle: ViewStyle = {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 12,
 };

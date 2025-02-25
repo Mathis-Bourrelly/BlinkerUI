@@ -1,15 +1,15 @@
 import React from 'react';
-import { FlatList, ActivityIndicator, StyleSheet, View, Text } from 'react-native';
-import { useUserFollowsQuery } from '@/hooks/useUserFollowsQuery';
-import { UserCard } from './UserCard';
+import { FlatList, ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
+import { ProfilCard } from './ProfilCard';
+import { UseInfiniteQueryResult } from '@tanstack/react-query';
+import { Profiles } from '@/types/Profiles'
 
-type FollowListProps = {
-    userID: string;
+type UserListProps = {
+    fetchProfiles: () => UseInfiniteQueryResult<{ data: Profiles[] }, Error>; // Fonction pour récupérer les profils
 };
 
-export function FollowList({ userID }: FollowListProps) {
-    console.log(userID);
+export function ProfilList({ fetchProfiles }: UserListProps) {
     const { colors } = useTheme();
     const {
         data,
@@ -18,9 +18,9 @@ export function FollowList({ userID }: FollowListProps) {
         isFetchingNextPage,
         isLoading,
         error,
-    } = useUserFollowsQuery(userID);
+    } = fetchProfiles();
 
-    const follows = data ? data.pages.flatMap(page => page.follows) : [];
+    const profiles = data ? data.pages.flatMap(page => page.data) : [];
 
     if (isLoading) {
         return <ActivityIndicator size="large" color={colors.accent} />;
@@ -29,11 +29,11 @@ export function FollowList({ userID }: FollowListProps) {
     if (error) {
         return <Text style={{ color: colors.danger }}>Error: {error.message}</Text>;
     }
-
     return (
         <FlatList
-            data={data?.pages.flatMap(page => page.data)}
-            renderItem={({ item }) => <UserCard follow={item} />}
+            data={profiles}
+            keyExtractor={(item) => item.userID}
+            renderItem={({ item }) => <ProfilCard profil={item} />}
             onEndReached={() => {
                 if (hasNextPage) {
                     fetchNextPage();
