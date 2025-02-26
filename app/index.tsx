@@ -13,14 +13,17 @@ import {ThemedButtonIcon} from "@/components/base/ThemedButtonIcon";
 import TabBar from "@/components/base/TabBar";
 import NavBar from "@/components/base/NavBar";
 import {InnerContainer} from "@/components/base/InnerContainer";
+import {getUserID} from "@/hooks/useLoginMutation";
+import {useUser} from "@/context/UserContext";
 
 
 export default function Index() {
     const {colors} = useTheme();
+    const {user} = useUser();
     const {t} = useTranslation();
     const router = useRouter();
     const gradientColors = colors.gradient;
-
+    console.log(user)
     return (
         <>
             <Stack.Screen/>
@@ -38,7 +41,7 @@ export default function Index() {
                         />
                         <ThemedButtonIcon
                             text="Go to Profile"
-                            onPress={() => router.push("/profil")}
+                            onPress={() => router.push(`/profile/${user.userID}`)}
                             iconName={"circled-left--v2"}
                         />
                         <Row gap={12}>

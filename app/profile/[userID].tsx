@@ -2,7 +2,7 @@ import React from "react";
 import {StyleSheet, View, ActivityIndicator, Image, useWindowDimensions, TouchableOpacity} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
-import {router, Stack, useRouter} from "expo-router";
+import {router, Stack, useLocalSearchParams, useRouter} from "expo-router";
 import {useTranslation} from "react-i18next";
 import {useTheme} from "@/context/ThemeContext";
 import {useUserProfileQuery} from "@/hooks/interfaces/useProfileInterface";
@@ -23,8 +23,7 @@ export default function ProfileScreen() {
     const {width} = useWindowDimensions();
     const isDesktop = width >= 768;
 
-    // Exemple d'ID utilisateur (à adapter selon votre logique)
-    const userID = "829669a1-8fc8-4398-b975-249fbda5045c";
+    const { userID } = useLocalSearchParams<{ userID: string }>();
 
     const {data, isLoading, error} = useUserProfileQuery(userID);
 
@@ -64,7 +63,7 @@ export default function ProfileScreen() {
                             <View style={headerContainerStyle}>
                                 <Row gap={isDesktop ? 24 : 12}>
                                     <Image
-                                        source={{uri: "https://i.pravatar.cc/250"}}
+                                        source={{uri: data.avatarUrl}}
                                         style={avatarStyle}
                                     />
                                     <View style={isDesktop && {paddingHorizontal: 20}}>
@@ -81,7 +80,7 @@ export default function ProfileScreen() {
                                                         {t('profile.follow')}
                                                     </ThemedText>
                                                     <ThemedText variant={"SubTitle"}>
-                                                        {data.score}
+                                                        {data.followingCount}
                                                     </ThemedText>
                                                 </View>
                                             </TouchableOpacity>
@@ -91,7 +90,7 @@ export default function ProfileScreen() {
                                                         {t('profile.follower')}
                                                     </ThemedText>
                                                     <ThemedText variant={"SubTitle"}>
-                                                        {data.score}
+                                                        {data.followersCount}
                                                     </ThemedText>
                                                 </View>
                                             </TouchableOpacity>
@@ -100,7 +99,7 @@ export default function ProfileScreen() {
                                                     {t('profile.blink')}
                                                 </ThemedText>
                                                 <ThemedText variant={"SubTitle"}>
-                                                    {data.score}
+                                                    {data.blinksCount}
                                                 </ThemedText>
                                             </View>
                                         </Row>

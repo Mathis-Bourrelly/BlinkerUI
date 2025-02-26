@@ -21,7 +21,6 @@ export default function followersScreen() {
     const {width} = useWindowDimensions();
     const isDesktop = width >= 768;
 
-    // Exemple d'ID utilisateur (à adapter selon votre logique)
     const { userID } = useLocalSearchParams<{ userID: string }>();
 
     return (
@@ -34,8 +33,8 @@ export default function followersScreen() {
                         {!isDesktop && (
                             <TabBar/>
                         )}
-
                         <ThemedText variant={"Title"}>{t('profile.follower')}</ThemedText>
+                        {/*@ts-ignore*/}
                         <ProfilList fetchProfiles={() => useUserFollowersQuery(userID)} />
                     </InnerContainer>
                 </LinearGradient>

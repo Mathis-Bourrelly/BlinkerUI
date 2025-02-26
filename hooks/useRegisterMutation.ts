@@ -4,8 +4,8 @@ import { Endpoint } from "@/constants/Endpoint";
 type RegisterCredentials = {
     email: string;
     password: string;
-    name: string;
-    role?: string;
+    username: string;
+    display_name: string;
 };
 
 type RegisterResponse = {

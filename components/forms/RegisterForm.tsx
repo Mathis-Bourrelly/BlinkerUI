@@ -9,14 +9,21 @@ import { useTheme } from "@/context/ThemeContext";
 import { useRouter } from "expo-router";
 
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/;
+// Pour le username : lettres, chiffres, underscore, tiret ; pas d'espaces, 1 à 50 caractères
+const USERNAME_REGEX = /^[A-Za-z0-9_-]{1,50}$/;
+// Longueur max du display_name : 255 caractères
+const DISPLAY_NAME_MAX_LENGTH = 255;
 
 type RegisterFormProps = {
     onMessage: (msg: string) => void;
 };
 
 export function RegisterForm({ onMessage }: RegisterFormProps) {
-    const [name, setName] = useState("");
-    const [nameError, setNameError] = useState("");
+    const [username, setUsername] = useState("");
+    const [usernameError, setUsernameError] = useState("");
+
+    const [displayName, setDisplayName] = useState("");
+    const [displayNameError, setDisplayNameError] = useState("");
 
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState("");
@@ -35,11 +42,26 @@ export function RegisterForm({ onMessage }: RegisterFormProps) {
     function validateForm(): boolean {
         let isValid = true;
 
-        if (!name) {
-            setNameError('login.fieldNameRequired');
+        // Validation du username
+        if (!username) {
+            setUsernameError('login.fieldUsernameRequired');
+            isValid = false;
+        } else if (!USERNAME_REGEX.test(username)) {
+            setUsernameError('login.invalidUsername');
             isValid = false;
         } else {
-            setNameError('');
+            setUsernameError('');
+        }
+
+        // Validation du display_name
+        if (!displayName) {
+            setDisplayNameError('login.fieldDisplayNameRequired');
+            isValid = false;
+        } else if (displayName.length > DISPLAY_NAME_MAX_LENGTH) {
+            setDisplayNameError('login.displayNameTooLong');
+            isValid = false;
+        } else {
+            setDisplayNameError('');
         }
 
         if (!email) {
@@ -78,7 +100,7 @@ export function RegisterForm({ onMessage }: RegisterFormProps) {
     const handleRegister = () => {
         const valid = validateForm();
         if (valid) {
-            mutate({ name, email, password }, {
+            mutate({ username, display_name: displayName, email, password }, {
                 onSuccess: (data) => {
                     onMessage(`Success: ${data.message}`);
                     router.push("/");
@@ -91,14 +113,42 @@ export function RegisterForm({ onMessage }: RegisterFormProps) {
     return (
         <View style={RegisterFormStyle.form}>
             <ThemedText variant="Title">{t('login.createAccount')}</ThemedText>
-            <ThemedTextInput value={name} onChangeText={setName} placeholder={t("login.name")} errorText={nameError} />
-            <ThemedTextInput value={email} onChangeText={setEmail} placeholder={t("login.email")} errorText={emailError} />
-            <ThemedTextInput value={password} onChangeText={setPassword} placeholder={t("login.password")} isPassword={true} errorText={passwordError} />
-            <ThemedTextInput value={confirmPassword} onChangeText={setConfirmPassword} placeholder={t("login.confirmPassword")} isPassword={true} errorText={confirmPasswordError} />
+            <ThemedTextInput
+                value={username}
+                onChangeText={setUsername}
+                placeholder={t("login.username")}
+                errorText={usernameError}
+            />
+            <ThemedTextInput
+                value={displayName}
+                onChangeText={setDisplayName}
+                placeholder={t("login.displayName")}
+                errorText={displayNameError}
+            />
+            <ThemedTextInput
+                value={email}
+                onChangeText={setEmail}
+                placeholder={t("login.email")}
+                errorText={emailError}
+            />
+            <ThemedTextInput
+                value={password}
+                onChangeText={setPassword}
+                placeholder={t("login.password")}
+                isPassword={true}
+                errorText={passwordError}
+            />
+            <ThemedTextInput
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder={t("login.confirmPassword")}
+                isPassword={true}
+                errorText={confirmPasswordError}
+            />
             <View style={RegisterFormStyle.registerButton}>
-            <GradientButton text={t("login.continue")} onPress={handleRegister} />
+                <GradientButton text={t("login.continue")} onPress={handleRegister} />
             </View>
-                {isPending && <ActivityIndicator color={colors.text} />}
+            {isPending && <ActivityIndicator color={colors.text} />}
         </View>
     );
 }
@@ -109,11 +159,11 @@ const RegisterFormStyle = StyleSheet.create({
         alignItems: "center",
         width: "100%",
         maxWidth: 300,
-        flex:1
+        flex: 1,
     },
     registerButton: {
         marginTop: 40,
         marginBottom: 20,
         width: "100%",
-    }
+    },
 });

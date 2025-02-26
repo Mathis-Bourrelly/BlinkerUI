@@ -13,6 +13,9 @@ export interface Profile {
     bio?: string; // Optionnel
     avatarUrl?: string; // Optionnel
     score: number;
+    followingCount: number;
+    followersCount: number;
+    blinksCount: number;
 }
 
 export interface Follow {
