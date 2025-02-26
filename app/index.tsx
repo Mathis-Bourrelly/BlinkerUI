@@ -13,7 +13,6 @@ import {ThemedButtonIcon} from "@/components/base/ThemedButtonIcon";
 import TabBar from "@/components/base/TabBar";
 import NavBar from "@/components/base/NavBar";
 import {InnerContainer} from "@/components/base/InnerContainer";
-import {getUserID} from "@/hooks/useLoginMutation";
 import {useUser} from "@/context/UserContext";
 
 
@@ -37,11 +36,6 @@ export default function Index() {
                         <ThemedButtonIcon
                             text="Go to Login"
                             onPress={() => router.push("/login")}
-                            iconName={"circled-left--v2"}
-                        />
-                        <ThemedButtonIcon
-                            text="Go to Profile"
-                            onPress={() => router.push(`/profile/${user.userID}`)}
                             iconName={"circled-left--v2"}
                         />
                         <Row gap={12}>

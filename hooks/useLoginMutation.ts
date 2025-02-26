@@ -12,14 +12,6 @@ export const storeToken = async (token: string) => {
     }
 };
 
-export const storeUserID = async (userID: string) => {
-    try {
-        await AsyncStorage.setItem('userID', userID);
-    } catch (e) {
-        console.error(e);
-    }
-};
-
 export const getToken = async () => {
     try {
         const value = await AsyncStorage.getItem('token');
@@ -32,17 +24,6 @@ export const getToken = async () => {
     }
 };
 
-export const getUserID = async () => {
-    try {
-        const value = await AsyncStorage.getItem('userID');
-        if (value !== null) {
-            return value
-        }
-    } catch (e) {
-        console.error(e);
-        router.push("/login");
-    }
-};
 
 type LoginCredentials = {
     email: string;
@@ -56,6 +37,7 @@ type LoginResponse = {
 };
 
 export function useLoginMutation() {
+
     return useMutation<LoginResponse, Error, LoginCredentials>({
         mutationFn: async (credentials: LoginCredentials) => {
             const response = await fetch(`${Endpoint.url}/login`, {
@@ -74,9 +56,7 @@ export function useLoginMutation() {
                 console.log(data);
                 throw new Error(data.message);
             }
-
             await storeToken(data.token);
-            await storeUserID(data.userID);
             return data;
         }
     });
