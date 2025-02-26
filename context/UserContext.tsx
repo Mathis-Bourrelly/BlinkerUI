@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {usePostMutation} from "@/hooks/repository/usePostMutation";
+import {getToken} from "@/hooks/useLoginMutation";
 
 type User = {
-    userID: string;
+    userID: string | null;
     //avatarUrl: string;
 };
 
@@ -16,16 +18,30 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUserState] = useState<User | null>(null);
-
+    const { mutate } = usePostMutation("/auth");
     // Charger les informations de l'utilisateur au montage du composant
     useEffect(() => {
         const loadUser = async () => {
             try {
                 const storedUserID = await AsyncStorage.getItem("userID");
                 //const storedAvatarUrl = await AsyncStorage.getItem("avatarUrl");
-                if (storedUserID) {
-                    setUserState({ userID: storedUserID });
+                if (storedUserID !== null && storedUserID !== undefined) {
+                    const token = await getToken()
+                    mutate(
+                        {
+                            body: { token },
+                        },
+                        {
+                            onSuccess: (data) => {
+                                setUser(data.decoded);
+                            },
+                            onError: (error) => {
+                                console.log("error",error);
+                            }
+                        }
+                    );
                 }
+                setUserState({ userID: storedUserID });
             } catch (error) {
                 console.error("Erreur lors du chargement de l'utilisateur", error);
             }
@@ -36,7 +52,9 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const setUser = async (user: User) => {
         setUserState(user);
         try {
-            await AsyncStorage.setItem("userID", user.userID);
+            if (typeof user.userID === "string") {
+                await AsyncStorage.setItem("userID", user.userID);
+            }
             //await AsyncStorage.setItem("avatarUrl", user.avatarUrl);
         } catch (error) {
             console.error("Erreur lors du stockage de l'utilisateur", error);
