@@ -15,6 +15,12 @@ import NavBar from "@/components/base/NavBar";
 import {InnerContainer} from "@/components/base/InnerContainer";
 import {useUser} from "@/context/UserContext";
 
+import {useFetchQuery} from "@/hooks/repository/useFetchQuery";
+import {BlinkList} from "@/components/base/BlinkList";
+import {useBlinksQuery} from "@/hooks/interfaces/useBlinkInterface"
+import { BlinkType } from '@/types/BlinksType';
+import { UseInfiniteQueryResult } from '@tanstack/react-query';
+
 
 export default function Index() {
     const {colors} = useTheme();
@@ -22,7 +28,9 @@ export default function Index() {
     const {t} = useTranslation();
     const router = useRouter();
     const gradientColors = colors.gradient;
-    console.log(user)
+    const blinkID = "65826765-e2f8-4e92-aa03-ed7b8d226222"
+    const BlinkData = useFetchQuery(`/blinks/${blinkID}`, ["Blinks"]);
+
     return (
         <>
             <Stack.Screen/>
@@ -38,6 +46,8 @@ export default function Index() {
                             onPress={() => router.push("/login")}
                             iconName={"circled-left--v2"}
                         />
+
+                        <BlinkList/>
                         <Row gap={12}>
                             <LanguageDropdown/>
                             <ThemeToggleButton/>

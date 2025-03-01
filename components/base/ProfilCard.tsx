@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
-import { Profiles } from '@/types/Profiles'
+import { ProfilesType } from '@/types/ProfilesType'
 
 type ProfilCardProps = {
-    profil: Profiles;
+    profil: ProfilesType;
 };
 
 export function ProfilCard({ profil }: ProfilCardProps) {

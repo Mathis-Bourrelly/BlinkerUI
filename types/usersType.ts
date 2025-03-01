@@ -1,4 +1,4 @@
-export interface User {
+export interface UserType {
     userID: string;
     name: string;
     password: string;
@@ -7,7 +7,7 @@ export interface User {
     isVerified: boolean;
 }
 
-export interface Profile {
+export interface ProfileType {
     userID: string;
     username: string;
     bio?: string; // Optionnel
@@ -18,7 +18,7 @@ export interface Profile {
     blinksCount: number;
 }
 
-export interface Follow {
+export interface FollowType {
     id: number;
     fromUserID: string;
     targetUserID: string;
