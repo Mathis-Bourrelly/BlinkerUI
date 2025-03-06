@@ -3,7 +3,8 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { useGoogleLoginMutation } from '@/hooks/useGoogleLoginMutation';
 import { useRouter } from "expo-router";
-import {storeToken, storeUserID} from "@/hooks/useLoginMutation";
+import {storeToken} from "@/hooks/useLoginMutation";
+import {useUser} from "@/context/UserContext";
 import {useTranslation} from "react-i18next";
 import uri from "ajv/lib/runtime/uri";
 import {useTheme} from "@/context/ThemeContext";
@@ -12,6 +13,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function GoogleSignInButton() {
     const {t} = useTranslation();
+    const {storeUser} = useUser();
     const [request, response, promptAsync] = Google.useAuthRequest({
         iosClientId: 'YOUR_IOS_CLIENT_ID',
         androidClientId: 'YOUR_ANDROID_CLIENT_ID',
@@ -30,7 +32,7 @@ export default function GoogleSignInButton() {
                 onSuccess: (data) => {
                     if (data?.token) {
                         storeToken(data.token);
-                        storeUserID(data.userID);
+                        storeUser(data.userID);
                         router.push("/");
                     }
                 },

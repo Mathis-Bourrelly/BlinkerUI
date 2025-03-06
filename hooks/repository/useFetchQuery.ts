@@ -15,7 +15,7 @@ export function useFetchQuery(path: string, queryKey: any[], headers?: any) {
                     ...headers, // Permet de rajouter d'autres headers si besoin
                 }
             });
-            if (res.status === 401) {
+            if (res.status === 401 ) {
                 router.push("/login")
             }
 

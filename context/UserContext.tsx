@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {usePostMutation} from "@/hooks/repository/usePostMutation";
 import {getToken} from "@/hooks/useLoginMutation";
+import {router} from "expo-router";
 
 type User = {
     userID: string | null;
@@ -10,7 +11,7 @@ type User = {
 
 type UserContextType = {
     user: User | null;
-    setUser: (user: User) => void;
+    storeUser: (user: User) => void;
     clearUser: () => void;
 };
 
@@ -25,22 +26,18 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             try {
                 const storedUserID = await AsyncStorage.getItem("userID");
                 //const storedAvatarUrl = await AsyncStorage.getItem("avatarUrl");
-                if (storedUserID !== null && storedUserID !== undefined) {
+                if (storedUserID !== null || storedUserID !== undefined) {
                     const token = await getToken()
-                    mutate(
-                        {
-                            body: { token },
-                        },
+                    mutate({body: { token },},
                         {
                             onSuccess: (data) => {
-                                setUser(data.decoded);
+                                storeUser(data.decoded);
                             },
                             onError: (error) => {
-                                console.log("error",error);
+                                router.push("/login")
                             }
                         }
-                    );
-                }
+                    );}
                 setUserState({ userID: storedUserID });
             } catch (error) {
                 console.error("Erreur lors du chargement de l'utilisateur", error);
@@ -49,7 +46,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loadUser();
     }, []);
 
-    const setUser = async (user: User) => {
+    const storeUser = async (user: User) => {
         setUserState(user);
         try {
             if (typeof user.userID === "string") {
@@ -72,7 +69,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <UserContext.Provider value={{ user, setUser, clearUser }}>
+        <UserContext.Provider value={{ user, storeUser: storeUser, clearUser }}>
             {children}
         </UserContext.Provider>
     );

@@ -28,8 +28,6 @@ export default function Index() {
     const {t} = useTranslation();
     const router = useRouter();
     const gradientColors = colors.gradient;
-    const blinkID = "65826765-e2f8-4e92-aa03-ed7b8d226222"
-    const BlinkData = useFetchQuery(`/blinks/${blinkID}`, ["Blinks"]);
 
     return (
         <>

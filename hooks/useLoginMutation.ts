@@ -57,6 +57,7 @@ export function useLoginMutation() {
                 throw new Error(data.message);
             }
             await storeToken(data.token);
+            await await (data.token);
             return data;
         }
     });
