@@ -4,6 +4,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { BlinkType } from "@/types/BlinksType";
 import { Icon } from "@/components/images/Icon";
 import {ThemedSeparator} from "@/components/base/ThemedSeparator";
+import VideoPlayer from "@/components/base/VideoPlayer";
 
 export function BlinkCard({ blink }: { blink: BlinkType }) {
     const { colors } = useTheme();
@@ -40,14 +41,9 @@ export function BlinkCard({ blink }: { blink: BlinkType }) {
 
             {/* Affichage des vidéos */}
             {videoContent.map((content, index) => (
-                <Text
-                    key={content.contentID}
-                    style={[styles.videoLink, { color: colors.accent }]}
-                    onPress={() => Linking.openURL(content.content)}
-                >
-                    Vidéo à regarder
-                </Text>
+                <VideoPlayer key={content.contentID} videoID={content.content} />
             ))}
+
             <ThemedSeparator barColor={colors.border} />
             {/* Pied de carte avec likes, commentaires, partages */}
             <View style={styles.footer}>
