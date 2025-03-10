@@ -1,11 +1,11 @@
-import {StyleSheet, TextInput} from "react-native";
-import {useTheme} from "@/context/ThemeContext";
-import {Fonts} from "@/constants/Fonts";
-import {ThemedText} from "@/components/base/ThemedText";
-import {useTranslation} from "react-i18next";
+import React from "react";
+import { StyleSheet, TextInput, TextInputProps } from "react-native";
+import { useTheme } from "@/context/ThemeContext";
+import { Fonts } from "@/constants/Fonts";
+import { ThemedText } from "@/components/base/ThemedText";
+import { useTranslation } from "react-i18next";
 
-
-type Props = {
+type Props = TextInputProps & {
     value: string;
     onChangeText: (value: string) => void;
     placeholder?: string;
@@ -14,35 +14,55 @@ type Props = {
     titleText?: string;
 };
 
-export function ThemedTextInput({value, onChangeText, placeholder, isPassword, errorText, titleText}: Props) {
-    const {colors} = useTheme();
+export function ThemedTextInput({
+                                    value,
+                                    onChangeText,
+                                    placeholder,
+                                    isPassword,
+                                    errorText,
+                                    titleText,
+                                    ...rest
+                                }: Props) {
+    const { colors } = useTheme();
     const { t } = useTranslation();
-    const dynamicText = {
-        color: colors.text,
-        borderColor: colors.border,
-        isPassword: isPassword,
-        errorText: errorText,
-        titleText: errorText
-    };
-    const dynamicBackground = {
-        backgroundColor: colors.background,
-    };
 
     return (
         <>
             {titleText && (
-                <ThemedText style={[styles.inputTitle, dynamicText]} variant={"Body"} color={colors.text}>{titleText}</ThemedText>
+                <ThemedText
+                    style={styles.inputTitle}
+                    variant="Body"
+                    color={colors.text}
+                >
+                    {titleText}
+                </ThemedText>
             )}
             <TextInput
-                style={[styles.input, dynamicText, dynamicBackground]}  // Combine styles statiques et dynamiques
+                style={[
+                    styles.input,
+                    {
+                        // On force ici la couleur du texte via le thème
+                        color: colors.text,
+                        borderColor: errorText ? colors.danger : colors.border,
+                        backgroundColor: colors.background,
+                    },
+                    rest.multiline ? styles.multiline : {},
+                    rest.style,
+                ]}
                 onChangeText={onChangeText}
                 value={value}
                 placeholder={placeholder}
-                placeholderTextColor={colors.textSecondary}  // Utiliser une couleur thématique pour le placeholder
+                placeholderTextColor={colors.textSecondary}
                 secureTextEntry={isPassword ?? false}
+                {...rest}
             />
             {errorText && (
-                <ThemedText variant={"Body"} color={colors.danger}><ThemedText variant={"BodyBold"} color={colors.danger}>{t('base.error')}</ThemedText> : {t(errorText)}</ThemedText>
+                <ThemedText variant="Body" color={colors.danger}>
+                    <ThemedText variant="BodyBold" color={colors.danger}>
+                        {t("base.error")}
+                    </ThemedText>
+                    : {t(errorText)}
+                </ThemedText>
             )}
         </>
     );
@@ -50,7 +70,7 @@ export function ThemedTextInput({value, onChangeText, placeholder, isPassword, e
 
 const styles = StyleSheet.create({
     input: {
-        ...Fonts.Body,  // Utilise le style défini dans Fonts
+        ...Fonts.Body,
         borderRadius: 30,
         marginBottom: 8,
         marginTop: 4,
@@ -61,6 +81,9 @@ const styles = StyleSheet.create({
     },
     inputTitle: {
         alignSelf: "flex-start",
-        marginStart: 14
-    }
+        marginStart: 14,
+    },
+    multiline: {
+        textAlignVertical: "top",
+    },
 });
