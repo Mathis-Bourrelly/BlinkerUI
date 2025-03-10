@@ -1,5 +1,5 @@
-export const Endpoint = {
-    //url: "https://dev.blinker.eterny.fr"
-    url: "http://localhost:3011"
-}
+import Config from "react-native-config";
 
+export const Endpoint = {
+    url: Config.API_URL,
+};
