@@ -10,13 +10,13 @@ import {Row} from "@/components/base/Row";
 import {LanguageDropdown} from "@/components/base/LanguageDropdown";
 import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
 import {ThemedButtonIcon} from "@/components/base/ThemedButtonIcon";
-import TabBar from "@/components/base/TabBar";
-import NavBar from "@/components/base/NavBar";
+import TabBar from "@/components/feature/TabBar";
+import NavBar from "@/components/feature/NavBar";
 import {InnerContainer} from "@/components/base/InnerContainer";
 import {useUser} from "@/context/UserContext";
 
 import {useFetchQuery} from "@/hooks/repository/useFetchQuery";
-import {BlinkList} from "@/components/base/BlinkList";
+import {BlinkList} from "@/components/feature/BlinkList";
 import {useBlinksQuery} from "@/hooks/interfaces/useBlinkInterface"
 import { BlinkType } from '@/types/BlinksType';
 import { UseInfiniteQueryResult } from '@tanstack/react-query';

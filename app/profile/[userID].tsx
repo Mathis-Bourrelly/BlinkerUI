@@ -8,11 +8,11 @@ import {useTheme} from "@/context/ThemeContext";
 import {useUserProfileQuery} from "@/hooks/interfaces/useProfileInterface";
 import {ThemedText} from "@/components/base/ThemedText";
 import {Row} from "@/components/base/Row";
-import TabBar from "@/components/base/TabBar";
+import TabBar from "@/components/feature/TabBar";
 import {LanguageDropdown} from "@/components/base/LanguageDropdown";
 import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
 import {ThemedSeparator} from "@/components/base/ThemedSeparator";
-import NavBar from "@/components/base/NavBar";
+import NavBar from "@/components/feature/NavBar";
 import {InnerContainer} from "@/components/base/InnerContainer";
 
 export default function ProfileScreen() {

@@ -7,10 +7,10 @@ import {useTranslation} from "react-i18next";
 import {useTheme} from "@/context/ThemeContext";
 import {useUserFollowersQuery} from "@/hooks/interfaces/useProfileInterface";
 import {ThemedText} from "@/components/base/ThemedText";
-import TabBar from "@/components/base/TabBar";
-import NavBar from "@/components/base/NavBar";
+import TabBar from "@/components/feature/TabBar";
+import NavBar from "@/components/feature/NavBar";
 import {InnerContainer} from "@/components/base/InnerContainer";
-import {ProfilList} from "@/components/base/ProfilList";
+import {ProfilList} from "@/components/feature/ProfilList";
 
 
 export default function followersScreen() {

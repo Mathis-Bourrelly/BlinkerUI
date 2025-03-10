@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { View, Text, Image, StyleSheet, Linking } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { BlinkType } from "@/types/BlinksType";
@@ -8,6 +8,32 @@ import VideoPlayer from "@/components/base/VideoPlayer";
 
 export function BlinkCard({ blink }: { blink: BlinkType }) {
     const { colors } = useTheme();
+    const currentTime = new Date().getTime()
+    console.log("currentTime", currentTime)
+    console.log("blinkCreatedAt",new Date(blink.createdAt).getTime())
+    const [timeRemaining, settimeRemaining] = useState(new Date(currentTime - new Date(blink.createdAt).getTime()).getTime());
+    console.log(timeRemaining)
+
+    const [days, setdays] = useState(0);
+    const [hours, sethours] = useState(0);
+    const [mins, setmins] = useState(0);
+    const [secs, setsecs] = useState(0);
+
+    // countdown timer
+    useEffect(() => {
+        if (timeRemaining < 0) return;
+        const intervalId = setInterval(() => {
+
+            settimeRemaining(timeRemaining - 1000);
+
+
+            setsecs(Math.floor((timeRemaining / 1000) % 60));
+            setmins(Math.floor((timeRemaining / 1000 / 60) % 60));
+            sethours(Math.floor((timeRemaining / 1000 / 60 / 60) % 24));
+            setdays(Math.floor((timeRemaining / 1000 / 60 / 60 / 24)));
+        }, 600);
+        return () => clearInterval(intervalId);
+    }, [timeRemaining]);
 
     // Extraire le premier contenu texte s'il existe
     const textContent = blink.contents.filter(c => c.contentType === "text");
@@ -23,7 +49,7 @@ export function BlinkCard({ blink }: { blink: BlinkType }) {
                     <Text style={[styles.username, { color: colors.text }]}>{blink.profile.display_name}</Text>
                     <Text style={[styles.handle, { color: colors.textSecondary }]}>@{blink.profile.username}</Text>
                 </View>
-                <Text style={[styles.time, { color: colors.textSecondary }]}>{new Date(blink.createdAt).toLocaleTimeString()}</Text>
+                <Text style={[styles.time, { color: colors.textSecondary }]}>{days > 0 ? `${days} jour${days > 1 ? "s" : ""}` : hours > 0 || mins > 0 ? `${hours}:${mins}` : `${secs}s`}</Text>
             </View>
             <ThemedSeparator barColor={colors.border} />
 
