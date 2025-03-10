@@ -1,41 +1,48 @@
-import React, {useEffect, useState} from "react";
-import { View, Text, Image, StyleSheet, Linking } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, StyleSheet } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { BlinkType } from "@/types/BlinksType";
 import { Icon } from "@/components/images/Icon";
-import {ThemedSeparator} from "@/components/base/ThemedSeparator";
+import { ThemedSeparator } from "@/components/base/ThemedSeparator";
 import VideoPlayer from "@/components/base/VideoPlayer";
+import { LinearGradient } from "expo-linear-gradient";
+import { ThemedText } from "@/components/base/ThemedText";
 
-export function BlinkCard({ blink }: { blink: BlinkType }) {
+export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (blinkID: string) => void }) {
     const { colors } = useTheme();
-    const currentTime = new Date().getTime()
-    console.log("currentTime", currentTime)
-    console.log("blinkCreatedAt",new Date(blink.createdAt).getTime())
-    const [timeRemaining, settimeRemaining] = useState(new Date(currentTime - new Date(blink.createdAt).getTime()).getTime());
-    console.log(timeRemaining)
 
-    const [days, setdays] = useState(0);
-    const [hours, sethours] = useState(0);
-    const [mins, setmins] = useState(0);
-    const [secs, setsecs] = useState(0);
+    const [days, setDays] = useState(0);
+    const [hours, setHours] = useState(0);
+    const [mins, setMins] = useState(0);
+    const [secs, setSecs] = useState(0);
+    const [isCritical, setIsCritical] = useState(false);
 
-    // countdown timer
     useEffect(() => {
-        if (timeRemaining < 0) return;
+        const expirationTime = new Date(blink.createdAt).getTime() + 24 * 60 * 60 * 1000; // Création + 24h
         const intervalId = setInterval(() => {
+            const now = Date.now();
+            const timeLeft = Math.max(0, expirationTime - now);
 
-            settimeRemaining(timeRemaining - 1000);
+            // Met à jour les états pour les jours, heures, minutes, secondes
+            setSecs(Math.floor((timeLeft / 1000) % 60));
+            setMins(Math.floor((timeLeft / 1000 / 60) % 60));
+            setHours(Math.floor((timeLeft / 1000 / 60 / 60) % 24));
+            setDays(Math.floor(timeLeft / 1000 / 60 / 60 / 24));
 
+            // Si le temps restant est inférieur à 10 minutes, définir l'état critique
+            setIsCritical(timeLeft < 10 * 60 * 1000);
 
-            setsecs(Math.floor((timeRemaining / 1000) % 60));
-            setmins(Math.floor((timeRemaining / 1000 / 60) % 60));
-            sethours(Math.floor((timeRemaining / 1000 / 60 / 60) % 24));
-            setdays(Math.floor((timeRemaining / 1000 / 60 / 60 / 24)));
-        }, 600);
-        return () => clearInterval(intervalId);
-    }, [timeRemaining]);
+            // Lorsque le temps est écoulé, appeler onExpire
+            if (timeLeft <= 0) {
+                clearInterval(intervalId);
+                onExpire(blink.blinkID);
+            }
+        }, 1000);
 
-    // Extraire le premier contenu texte s'il existe
+        return () => clearInterval(intervalId); // Nettoyage à la fin
+    }, [blink.createdAt, onExpire]); // Re-exécute l'effet lorsque `createdAt` change
+
+    // Extraire les contenus
     const textContent = blink.contents.filter(c => c.contentType === "text");
     const imageContent = blink.contents.filter(c => c.contentType === "image");
     const videoContent = blink.contents.filter(c => c.contentType === "video");
@@ -49,34 +56,45 @@ export function BlinkCard({ blink }: { blink: BlinkType }) {
                     <Text style={[styles.username, { color: colors.text }]}>{blink.profile.display_name}</Text>
                     <Text style={[styles.handle, { color: colors.textSecondary }]}>@{blink.profile.username}</Text>
                 </View>
-                <Text style={[styles.time, { color: colors.textSecondary }]}>{days > 0 ? `${days} jour${days > 1 ? "s" : ""}` : hours > 0 || mins > 0 ? `${hours}:${mins}` : `${secs}s`}</Text>
+                <LinearGradient
+                    colors={isCritical ? colors.dangerGradient : colors.accentGradient}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 0, y: 1 }}
+                    style={[styles.timeContainer, { borderColor: isCritical ? colors.dangerTimer : colors.accent, borderWidth: 2 }]}
+                >
+                    <ThemedText variant={"Body"}>
+                        {days > 0 ? `${days} jour${days > 1 ? "s" : ""}`
+                            : hours > 0 || mins > 0 ? `${hours}h ${mins}m`
+                                : `${secs}s`}
+                    </ThemedText>
+                </LinearGradient>
             </View>
             <ThemedSeparator barColor={colors.border} />
 
             {/* Contenu du Blink */}
-            {textContent.map((content, index) => (
+            {textContent.map((content) => (
                 <Text key={content.contentID} style={[styles.text, { color: colors.text }]}>
                     {content.content}
                 </Text>
             ))}
 
             {/* Affichage des images */}
-            {imageContent.map((content, index) => (
+            {imageContent.map((content) => (
                 <Image key={content.contentID} source={{ uri: content.content }} resizeMode={"contain"} style={styles.image} />
             ))}
 
             {/* Affichage des vidéos */}
-            {videoContent.map((content, index) => (
+            {videoContent.map((content) => (
                 <VideoPlayer key={content.contentID} videoID={content.content} />
             ))}
 
             <ThemedSeparator barColor={colors.border} />
             {/* Pied de carte avec likes, commentaires, partages */}
             <View style={styles.footer}>
-                <Text style={{ color: colors.text }}><Icon name={"filled-like"} size={24} color={colors.text}/> {blink.likeCount}</Text>
-                <Text style={{ color: colors.text }}><Icon name={"dislike"} size={24} color={colors.text}/> {blink.dislikeCount}</Text>
-                <Text style={{ color: colors.text }}><Icon name={"comments--v1"} size={24} color={colors.text}/> {blink.commentCount}</Text>
-                <Text style={{ color: colors.text }}><Icon name={"share"} size={24} color={colors.text}/> {blink.shareCount}</Text>
+                <Text style={{ color: colors.text }}><Icon name={"filled-like"} size={24} color={colors.text} /> {blink.likeCount}</Text>
+                <Text style={{ color: colors.text }}><Icon name={"dislike"} size={24} color={colors.text} /> {blink.dislikeCount}</Text>
+                <Text style={{ color: colors.text }}><Icon name={"comments--v1"} size={24} color={colors.text} /> {blink.commentCount}</Text>
+                <Text style={{ color: colors.text }}><Icon name={"share"} size={24} color={colors.text} /> {blink.shareCount}</Text>
             </View>
         </View>
     );
@@ -106,16 +124,19 @@ const styles = StyleSheet.create({
     handle: {
         fontSize: 14,
     },
-    time: {
+    timeContainer: {
+        paddingHorizontal: 4,
+        paddingVertical: 2,
         marginLeft: "auto",
-        fontSize: 12,
+        borderRadius: 20,
+        borderWidth: 2,
     },
     text: {
         fontSize: 15,
         marginVertical: 5,
     },
     image: {
-        width: '100%',
+        width: "100%",
         height: 200,
         marginVertical: 5,
         borderRadius: 8,
@@ -123,7 +144,7 @@ const styles = StyleSheet.create({
     videoLink: {
         fontSize: 15,
         marginVertical: 5,
-        textDecorationLine: 'underline',
+        textDecorationLine: "underline",
     },
     footer: {
         flexDirection: "row",

@@ -36,15 +36,6 @@ export default function Index() {
                 <LinearGradient colors={gradientColors} style={styles.background}>
                     <InnerContainer>
                         <NavBar/>
-                        <ThemedText variant={"Title"} color={colors.text}>
-                            Home
-                        </ThemedText>
-                        <ThemedButtonIcon
-                            text="Go to Login"
-                            onPress={() => router.push("/login")}
-                            iconName={"circled-left--v2"}
-                        />
-
                         <BlinkList/>
                         <Row gap={12}>
                             <LanguageDropdown/>
