@@ -3,7 +3,6 @@ import { usePostMutation } from "@/hooks/repository/usePostMutation";
 import { usePutMutation } from "@/hooks/repository/usePutMutation";
 import { useDeleteMutation } from "@/hooks/repository/useDeleteMutation";
 import { usePaginatedQuery } from "@/hooks/usePaginatedQuery";
-import { Endpoint } from "@/constants/Endpoint";
 import { BlinkType } from "@/types/BlinksType";
 
 export function useBlinkInterface(blinkID: string, queryKeys: string[] = []) {
@@ -11,7 +10,7 @@ export function useBlinkInterface(blinkID: string, queryKeys: string[] = []) {
 }
 
 export function useCreateBlinkMutation() {
-    return usePostMutation(`${Endpoint.url}/blinks`);
+    return usePostMutation(`${process.env.EXPO_PUBLIC_API_URL}/blinks`);
 }
 
 export function useUpdateBlinkMutation(blinkID: string) {

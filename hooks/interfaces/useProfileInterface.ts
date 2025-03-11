@@ -3,7 +3,6 @@ import { usePostMutation } from "@/hooks/repository/usePostMutation";
 import { usePutMutation } from "@/hooks/repository/usePutMutation";
 import { useDeleteMutation } from "@/hooks/repository/useDeleteMutation";
 import { usePaginatedQuery } from "@/hooks/usePaginatedQuery";
-import { Endpoint } from "@/constants/Endpoint";
 import { ProfileType } from "@/types/usersType";
 
 export function useUserProfileQuery(userID: string, queryKeys: string[] = []) {
@@ -11,7 +10,7 @@ export function useUserProfileQuery(userID: string, queryKeys: string[] = []) {
 }
 
 export function useCreateProfileMutation() {
-    return usePostMutation(`${Endpoint.url}/profiles`);
+    return usePostMutation(`${process.env.EXPO_PUBLIC_API_URL}/profiles`);
 }
 
 export function useUpdateProfileMutation(userID: string) {

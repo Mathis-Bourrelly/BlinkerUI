@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { Endpoint } from "@/constants/Endpoint";
+
 
 type RegisterCredentials = {
     email: string;
@@ -16,7 +16,7 @@ type RegisterResponse = {
 export function useRegisterMutation() {
     return useMutation<RegisterResponse, Error, RegisterCredentials>({
         mutationFn: async (credentials: RegisterCredentials) => {
-            const response = await fetch(`${Endpoint.url}/users/register`, {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,12 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { Endpoint } from "@/constants/Endpoint";
+
 
 type GoogleLoginParams = { id_token: string };
-
 export function useGoogleLoginMutation() {
     return useMutation({
         mutationFn: async ({ id_token }: GoogleLoginParams) => {
-            const response = await fetch(`${Endpoint.url}/auth/google`, {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/auth/google`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -1,5 +1,4 @@
 import { useMutation } from "@tanstack/react-query";
-import {Endpoint} from "@/constants/Endpoint";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {router} from "expo-router";
 
@@ -40,7 +39,7 @@ export function useLoginMutation() {
 
     return useMutation<LoginResponse, Error, LoginCredentials>({
         mutationFn: async (credentials: LoginCredentials) => {
-            const response = await fetch(`${Endpoint.url}/login`, {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

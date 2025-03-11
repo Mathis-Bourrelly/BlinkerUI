@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Endpoint } from "@/constants/Endpoint";
+
 import { getToken } from "@/hooks/useLoginMutation"; // Récupération du token
 import { router } from "expo-router";
 
@@ -12,14 +12,14 @@ type PaginatedResponse<T> = {
 
 export function usePaginatedQuery<T>(
     queryKey: string,    // Clé pour React Query (ex: "followers", "following", "search")
-    endpoint: string,    // URL relative de l'API (ex: "/following/following")
+    route: string,    // URL relative de l'API (ex: "/following/following")
     params?: Record<string, any> // Paramètres supplémentaires (ex: { userID, searchTerm })
 ) {
     return useInfiniteQuery<PaginatedResponse<T>>({
         queryKey: [queryKey, params], // Cache différent selon les paramètres
         queryFn: async ({ pageParam = 1 }) => {
             const token = await getToken();
-            const url = new URL(`${Endpoint.url}${endpoint}`);
+            const url = new URL(`${process.env.EXPO_PUBLIC_API_URL}${route}`);
 
             // Ajout des paramètres dynamiques (ex: userID, searchTerm)
             // @ts-ignore
@@ -44,7 +44,7 @@ export function usePaginatedQuery<T>(
             }
 
             if (!res.ok) {
-                throw new Error(`Failed to fetch data from ${endpoint}`);
+                throw new Error(`Failed to fetch data from ${route}`);
             }
 
             return res.json();

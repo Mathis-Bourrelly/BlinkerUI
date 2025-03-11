@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Endpoint } from "@/constants/Endpoint";
+
 import {getToken} from "@/hooks/useLoginMutation";
 import {router} from "expo-router"; // Un hook qui récupère le token
 
@@ -7,7 +7,7 @@ export function useFetchQuery(path: string, queryKey: any[], headers?: any) {
     return useQuery({
         queryKey,
         queryFn: async () => {
-            const res = await fetch(`${Endpoint.url}${path}`, {
+            const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}${path}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

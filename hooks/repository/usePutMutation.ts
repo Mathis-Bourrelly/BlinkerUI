@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { Endpoint } from "@/constants/Endpoint";
+
 
 export function usePutMutation<T>(path: string, token?: string) {
     return useMutation({
         mutationFn: async (data: T) => {
-            const res = await fetch(`${Endpoint.url}${path}`, {
+            const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}${path}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
