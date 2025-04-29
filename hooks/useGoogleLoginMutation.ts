@@ -5,7 +5,7 @@ type GoogleLoginParams = { id_token: string };
 export function useGoogleLoginMutation() {
     return useMutation({
         mutationFn: async ({ id_token }: GoogleLoginParams) => {
-            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/auth/google`, {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/login/google`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

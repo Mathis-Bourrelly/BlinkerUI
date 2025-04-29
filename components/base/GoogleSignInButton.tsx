@@ -3,7 +3,7 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { useGoogleLoginMutation } from '@/hooks/useGoogleLoginMutation';
 import { useRouter } from "expo-router";
-import {storeToken} from "@/hooks/useLoginMutation";
+import {storeToken} from "@/hooks/useSetToken";
 import {useUser} from "@/context/UserContext";
 import {useTranslation} from "react-i18next";
 import uri from "ajv/lib/runtime/uri";
@@ -30,10 +30,12 @@ export default function GoogleSignInButton() {
         if (response?.type === "success" && response?.params?.id_token) {
             loginWithGoogle({ id_token: response.params.id_token }, {
                 onSuccess: (data) => {
-                    if (data?.token) {
-                        storeToken(data.token);
-                        storeUser(data.userID);
-                        router.push("/");
+                    if (data?.token && data?.userID) {
+                        // Store token and user data
+                        storeToken(data.token)
+                            .then(() => storeUser({ userID: data.userID }))
+                            .then(() => router.push("/"))
+                            .catch(err => console.error("Error storing Google auth data:", err));
                     }
                 },
                 onError: (err) => {

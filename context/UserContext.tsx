@@ -11,7 +11,7 @@ type User = {
 
 type UserContextType = {
     user: User | null;
-    storeUser: (user: User) => void;
+    storeUser: (user: User) => Promise<void>;
     clearUser: () => void;
 };
 
@@ -19,28 +19,54 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUserState] = useState<User | null>(null);
-    const { mutate } = usePostMutation("/auth");
-    // Charger les informations de l'utilisateur au montage du composant
+    const [token, setToken] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const { mutate } = usePostMutation("/checkToken");
+
     useEffect(() => {
         const loadUser = async () => {
             try {
+                setIsLoading(true);
                 const storedUserID = await AsyncStorage.getItem("userID");
-                //const storedAvatarUrl = await AsyncStorage.getItem("avatarUrl");
-                if (storedUserID !== null || storedUserID !== undefined) {
-                    const token = await getToken()
-                    mutate({body: { token },},
+                const storedToken = await getToken();
+
+                if (storedUserID && storedToken) {
+                    setToken(storedToken);
+
+                    // Use the token directly in the headers for the API call
+                    mutate(
+                        {
+                            body: {}
+                        },
                         {
                             onSuccess: (data) => {
-                                storeUser(data.decoded);
+                                if (data.valid) {
+                                    storeUser({ userID: storedUserID });
+                                } else {
+                                    // Token invalide, rediriger vers login
+                                    clearUser();
+                                    router.push("/login");
+                                }
+                                setIsLoading(false);
                             },
                             onError: (error) => {
-                                router.push("/login")
+                                // En cas d'erreur, rediriger vers login
+                                console.error("Token validation error:", error);
+                                clearUser();
+                                router.push("/login");
+                                setIsLoading(false);
                             }
                         }
-                    );}
-                setUserState({ userID: storedUserID });
+                    );
+                } else {
+                    // Pas de token ou userID, rediriger vers login
+                    setIsLoading(false);
+                    router.push("/login");
+                }
             } catch (error) {
                 console.error("Erreur lors du chargement de l'utilisateur", error);
+                setIsLoading(false);
+                router.push("/login");
             }
         };
         loadUser();
@@ -60,8 +86,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const clearUser = async () => {
         setUserState(null);
+        setToken(null);
         try {
             await AsyncStorage.removeItem("userID");
+            await AsyncStorage.removeItem("token");
             //await AsyncStorage.removeItem("avatarUrl");
         } catch (error) {
             console.error("Erreur lors de la suppression des données utilisateur", error);
@@ -69,7 +97,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <UserContext.Provider value={{ user, storeUser: storeUser, clearUser }}>
+        <UserContext.Provider value={{ user, storeUser, clearUser }}>
             {children}
         </UserContext.Provider>
     );
@@ -82,3 +110,4 @@ export const useUser = (): UserContextType => {
     }
     return context;
 };
+
