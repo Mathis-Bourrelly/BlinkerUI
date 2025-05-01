@@ -45,6 +45,7 @@ export function BlinkList() {
                 }
             }}
             onEndReachedThreshold={0.5}
+            showsVerticalScrollIndicator={false}
             ListFooterComponent={isFetchingNextPage ? <ActivityIndicator size="small" color={colors.accent} /> : null}
             contentContainerStyle={styles.listContainer}
         />
