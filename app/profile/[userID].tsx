@@ -24,8 +24,12 @@ export default function ProfileScreen() {
     const isDesktop = width >= 768;
 
     const { userID } = useLocalSearchParams<{ userID: string }>();
+    console.log('Profile page - userID:', userID);
 
     const {data, isLoading, error} = useUserProfileQuery(userID);
+
+    // Debug log to check profile data
+    console.log('Profile data:', data);
 
 
     const headerContainerStyle = [
@@ -63,8 +67,9 @@ export default function ProfileScreen() {
                             <View style={headerContainerStyle}>
                                 <Row gap={isDesktop ? 24 : 12}>
                                     <Image
-                                        source={{uri: data.avatarUrl}}
+                                        source={{uri: data.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`}}
                                         style={avatarStyle}
+                                        onError={(e) => console.log('Error loading profile image:', e.nativeEvent.error)}
                                     />
                                     <View style={isDesktop && {paddingHorizontal: 20}}>
                                         <ThemedText variant="SubTitle">

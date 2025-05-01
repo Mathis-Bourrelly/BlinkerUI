@@ -13,6 +13,10 @@ export default function NavBar() {
     const {width} = useWindowDimensions();
     const {colors} = useTheme();
     const { user } = useUser();
+
+    // Debug log to check if user and avatarUrl are available
+    console.log("NavBar user:", user);
+
     if (width < 768) return null;
 
     return (
@@ -44,8 +48,9 @@ export default function NavBar() {
                     <Icon name={"appointment-reminders"} size={32} color={colors.text}></Icon>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => router.push(`/profile/${user?.userID}`)}>
+                    {/* Use user's avatar URL if available, otherwise use a default avatar */}
                     <Image
-                        source={{uri: "https://i.pravatar.cc/32"}}
+                        source={{uri: user?.avatarUrl || "https://i.pravatar.cc/32"}}
                         style={[styles.avatar, {borderColor: colors.text}]}
                     />
                 </TouchableOpacity>

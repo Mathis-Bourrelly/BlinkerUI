@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {usePostMutation} from "@/hooks/repository/usePostMutation";
-import {getToken} from "@/hooks/useLoginMutation";
+import {getToken} from "@/hooks/useSetToken";
 import {router} from "expo-router";
 
 type User = {
     userID: string | null;
-    //avatarUrl: string;
+    avatarUrl?: string;
 };
 
 type UserContextType = {
@@ -29,6 +29,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setIsLoading(true);
                 const storedUserID = await AsyncStorage.getItem("userID");
                 const storedToken = await getToken();
+                const storedAvatarUrl = await AsyncStorage.getItem("avatarUrl");
 
                 if (storedUserID && storedToken) {
                     setToken(storedToken);
@@ -41,7 +42,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         {
                             onSuccess: (data) => {
                                 if (data.valid) {
-                                    storeUser({ userID: storedUserID });
+                                    storeUser({
+                                        userID: storedUserID,
+                                        avatarUrl: storedAvatarUrl || undefined
+                                    });
                                 } else {
                                     // Token invalide, rediriger vers login
                                     clearUser();
@@ -73,12 +77,16 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const storeUser = async (user: User) => {
+        console.log("Storing user with data:", user);
         setUserState(user);
         try {
             if (typeof user.userID === "string") {
                 await AsyncStorage.setItem("userID", user.userID);
             }
-            //await AsyncStorage.setItem("avatarUrl", user.avatarUrl);
+            if (user.avatarUrl) {
+                console.log("Storing avatarUrl in AsyncStorage:", user.avatarUrl);
+                await AsyncStorage.setItem("avatarUrl", user.avatarUrl);
+            }
         } catch (error) {
             console.error("Erreur lors du stockage de l'utilisateur", error);
         }
@@ -90,7 +98,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             await AsyncStorage.removeItem("userID");
             await AsyncStorage.removeItem("token");
-            //await AsyncStorage.removeItem("avatarUrl");
+            await AsyncStorage.removeItem("avatarUrl");
         } catch (error) {
             console.error("Erreur lors de la suppression des données utilisateur", error);
         }

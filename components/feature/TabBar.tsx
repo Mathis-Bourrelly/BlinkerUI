@@ -9,6 +9,10 @@ export default function TabBar() {
     const { width } = useWindowDimensions();
     const { colors } = useTheme();
     const { user } = useUser();
+
+    // Debug log to check if user and avatarUrl are available
+    console.log("TabBar user:", user);
+
     if (width > 768) return null;
     const dynamicColor = {
         color: colors.text,
@@ -27,7 +31,7 @@ export default function TabBar() {
 
             <TouchableOpacity onPress={() => router.push(`/profile/${user?.userID}`)}>
                 <Image
-                    source={{ uri: "https://i.pravatar.cc/32" }}
+                    source={{ uri: user?.avatarUrl || "https://i.pravatar.cc/32" }}
                     style={[styles.avatar, {borderColor: colors.text}]}
                 />
             </TouchableOpacity>

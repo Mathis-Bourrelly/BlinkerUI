@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { BlinkType } from "@/types/BlinksType";
 import { Icon } from "@/components/images/Icon";
@@ -7,6 +7,7 @@ import { ThemedSeparator } from "@/components/base/ThemedSeparator";
 import VideoPlayer from "@/components/base/VideoPlayer";
 import { LinearGradient } from "expo-linear-gradient";
 import { ThemedText } from "@/components/base/ThemedText";
+import { router } from "expo-router";
 
 export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (blinkID: string) => void }) {
     const { colors } = useTheme();
@@ -51,11 +52,17 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
         <View style={[styles.blinkContainer, { backgroundColor: colors.card }]}>
             {/* En-tête */}
             <View style={styles.header}>
-                <Image source={{ uri: blink.profile.avatar_url }} style={styles.avatar} />
-                <View>
-                    <Text style={[styles.username, { color: colors.text }]}>{blink.profile.display_name}</Text>
-                    <Text style={[styles.handle, { color: colors.textSecondary }]}>@{blink.profile.username}</Text>
-                </View>
+                <TouchableOpacity
+                    onPress={() => router.push(`/profile/${blink.userID}`)}
+                    activeOpacity={0.7}
+                    style={{ flexDirection: "row", alignItems: "center" }}
+                >
+                    <Image source={{ uri: blink.profile.avatar_url }} style={styles.avatar} />
+                    <View>
+                        <Text style={[styles.username, { color: colors.text }]}>{blink.profile.display_name}</Text>
+                        <Text style={[styles.handle, { color: colors.textSecondary }]}>@{blink.profile.username}</Text>
+                    </View>
+                </TouchableOpacity>
                 <LinearGradient
                     colors={isCritical ? colors.dangerGradient : colors.accentGradient}
                     start={{ x: 0, y: 0 }}
@@ -123,6 +130,10 @@ const styles = StyleSheet.create({
     },
     handle: {
         fontSize: 14,
+    },
+    profileTouchable: {
+        flexDirection: "row",
+        alignItems: "center",
     },
     timeContainer: {
         paddingHorizontal: 4,
