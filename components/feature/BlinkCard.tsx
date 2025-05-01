@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { BlinkType } from "@/types/BlinksType";
 import { Icon } from "@/components/images/Icon";
@@ -8,9 +8,35 @@ import VideoPlayer from "@/components/base/VideoPlayer";
 import { LinearGradient } from "expo-linear-gradient";
 import { ThemedText } from "@/components/base/ThemedText";
 import { router } from "expo-router";
+import { useLikeMutation, useDislikeMutation, useCheckInteractionStatus } from "@/hooks/interfaces/useInteractionInterface";
 
 export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (blinkID: string) => void }) {
     const { colors } = useTheme();
+    const likeMutation = useLikeMutation();
+    const dislikeMutation = useDislikeMutation();
+    const { data: interactionStatus } = useCheckInteractionStatus(blink.blinkID);
+
+    // États locaux pour mettre à jour l'UI immédiatement sans attendre la réponse du serveur
+    const [localLikeCount, setLocalLikeCount] = useState(blink.likeCount);
+    const [localDislikeCount, setLocalDislikeCount] = useState(blink.dislikeCount);
+    const [isLiking, setIsLiking] = useState(false);
+    const [isDisliking, setIsDisliking] = useState(false);
+    const [hasLiked, setHasLiked] = useState(interactionStatus?.hasLiked || false); // L'utilisateur a-t-il liké ce post
+    const [hasDisliked, setHasDisliked] = useState(interactionStatus?.hasDisliked || false); // L'utilisateur a-t-il disliké ce post
+
+    // Mettre à jour les états locaux quand les props changent
+    useEffect(() => {
+        setLocalLikeCount(blink.likeCount);
+        setLocalDislikeCount(blink.dislikeCount);
+    }, [blink.likeCount, blink.dislikeCount]);
+
+    // Mettre à jour les états d'interaction quand les données d'interaction changent
+    useEffect(() => {
+        if (interactionStatus) {
+            setHasLiked(interactionStatus.hasLiked);
+            setHasDisliked(interactionStatus.hasDisliked);
+        }
+    }, [interactionStatus]);
 
     const [days, setDays] = useState(0);
     const [hours, setHours] = useState(0);
@@ -42,6 +68,83 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
 
         return () => clearInterval(intervalId); // Nettoyage à la fin
     }, [blink.createdAt, onExpire]); // Re-exécute l'effet lorsque `createdAt` change
+
+    // Fonctions pour gérer les likes et dislikes
+    const handleLike = async () => {
+        if (isLiking) return; // Éviter les clics multiples
+
+        setIsLiking(true);
+        try {
+            // Si déjà liké, on retire le like
+            if (hasLiked) {
+                // Optimistic update
+                setLocalLikeCount(prev => prev - 1);
+                setHasLiked(false);
+            }
+            // Sinon, on ajoute un like
+            else {
+                // Optimistic update
+                setLocalLikeCount(prev => prev + 1);
+                setHasLiked(true);
+
+                // Si le post était disliké, on retire le dislike
+                if (hasDisliked) {
+                    setLocalDislikeCount(prev => prev - 1);
+                    setHasDisliked(false);
+                }
+            }
+
+            // Appel API
+            await likeMutation.mutateAsync(blink.blinkID);
+        } catch (error) {
+            // Rollback en cas d'erreur
+            setLocalLikeCount(blink.likeCount);
+            setLocalDislikeCount(blink.dislikeCount);
+            setHasLiked(false);
+            setHasDisliked(false);
+            console.error('Error liking blink:', error);
+        } finally {
+            setIsLiking(false);
+        }
+    };
+
+    const handleDislike = async () => {
+        if (isDisliking) return; // Éviter les clics multiples
+
+        setIsDisliking(true);
+        try {
+            // Si déjà disliké, on retire le dislike
+            if (hasDisliked) {
+                // Optimistic update
+                setLocalDislikeCount(prev => prev - 1);
+                setHasDisliked(false);
+            }
+            // Sinon, on ajoute un dislike
+            else {
+                // Optimistic update
+                setLocalDislikeCount(prev => prev + 1);
+                setHasDisliked(true);
+
+                // Si le post était liké, on retire le like
+                if (hasLiked) {
+                    setLocalLikeCount(prev => prev - 1);
+                    setHasLiked(false);
+                }
+            }
+
+            // Appel API
+            await dislikeMutation.mutateAsync(blink.blinkID);
+        } catch (error) {
+            // Rollback en cas d'erreur
+            setLocalLikeCount(blink.likeCount);
+            setLocalDislikeCount(blink.dislikeCount);
+            setHasLiked(false);
+            setHasDisliked(false);
+            console.error('Error disliking blink:', error);
+        } finally {
+            setIsDisliking(false);
+        }
+    };
 
     // Extraire les contenus
     const textContent = blink.contents.filter(c => c.contentType === "text");
@@ -98,10 +201,53 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
             <ThemedSeparator barColor={colors.border} />
             {/* Pied de carte avec likes, commentaires, partages */}
             <View style={styles.footer}>
-                <Text style={{ color: colors.text }}><Icon name={"filled-like"} size={24} color={colors.text} /> {blink.likeCount}</Text>
-                <Text style={{ color: colors.text }}><Icon name={"dislike"} size={24} color={colors.text} /> {blink.dislikeCount}</Text>
-                <Text style={{ color: colors.text }}><Icon name={"comments--v1"} size={24} color={colors.text} /> {blink.commentCount}</Text>
-                <Text style={{ color: colors.text }}><Icon name={"share"} size={24} color={colors.text} /> {blink.shareCount}</Text>
+                <TouchableOpacity
+                    style={styles.interactionButton}
+                    onPress={handleLike}
+                    disabled={isLiking}
+                >
+                    {isLiking ? (
+                        <ActivityIndicator size="small" color={colors.accent} />
+                    ) : (
+                        <View style={styles.interactionContent}>
+                            <Icon
+                                name={hasLiked ? "filled-like" : "like"}
+                                size={24}
+                                color={hasLiked ? colors.accent : colors.text}
+                            />
+                            <Text style={[styles.interactionText, { color: colors.text }]}>{localLikeCount}</Text>
+                        </View>
+                    )}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.interactionButton}
+                    onPress={handleDislike}
+                    disabled={isDisliking}
+                >
+                    {isDisliking ? (
+                        <ActivityIndicator size="small" color={colors.danger} />
+                    ) : (
+                        <View style={styles.interactionContent}>
+                            <Icon
+                                name={"dislike"}
+                                size={24}
+                                color={hasDisliked ? colors.danger : colors.text}
+                            />
+                            <Text style={[styles.interactionText, { color: colors.text }]}>{localDislikeCount}</Text>
+                        </View>
+                    )}
+                </TouchableOpacity>
+
+                <View style={styles.interactionContent}>
+                    <Icon name={"comments--v1"} size={24} color={colors.text} />
+                    <Text style={[styles.interactionText, { color: colors.text }]}>{blink.commentCount}</Text>
+                </View>
+
+                <View style={styles.interactionContent}>
+                    <Icon name={"share"} size={24} color={colors.text} />
+                    <Text style={[styles.interactionText, { color: colors.text }]}>{blink.shareCount}</Text>
+                </View>
             </View>
         </View>
     );
@@ -161,5 +307,19 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         marginTop: 10,
+    },
+    interactionButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 5,
+        borderRadius: 5,
+    },
+    interactionContent: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    interactionText: {
+        marginLeft: 5,
+        fontSize: 14,
     },
 });
