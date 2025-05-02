@@ -28,7 +28,7 @@ export default function NavBar() {
                 </TouchableOpacity>
                 <ThemedVerticalSeparator barColor={colors.border} height={20}/>
                 <TouchableOpacity onPress={() => router.push("/")}>
-                    <ThemedText>Tendance</ThemedText>
+                    <ThemedText>Tendances</ThemedText>
                 </TouchableOpacity>
                 <ThemedVerticalSeparator barColor={colors.border} height={20}/>
                 <TouchableOpacity onPress={() => router.push("/")}>
@@ -38,9 +38,9 @@ export default function NavBar() {
                 <TouchableOpacity onPress={() => router.push("/")}>
                     <ThemedText>Poster</ThemedText>
                 </TouchableOpacity>
-                <ThemedVerticalSeparator barColor={colors.border} height={20}/>
-                <TouchableOpacity onPress={() => router.push("/")}>
-                    <ThemedText>Messagerie</ThemedText>
+                <ThemedVerticalSeparator barColor={colors.border} height={20} />
+                <TouchableOpacity onPress={() => router.push("/messages")}>
+                <ThemedText>Messagerie</ThemedText>
                 </TouchableOpacity>
             </View>
             <Row gap={12}>
