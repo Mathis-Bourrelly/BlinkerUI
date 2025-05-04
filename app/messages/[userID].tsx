@@ -50,6 +50,7 @@ export default function MessageThreadScreen() {
           <FlatList
             data={messages}
             keyExtractor={(item) => item.id}
+            showsVerticalScrollIndicator={true}
             contentContainerStyle={styles.messagesContainer}
             renderItem={({ item }) => (
               <View

@@ -26,6 +26,7 @@
   "profile": {
     "blink": "blink",
     "follow": "follow",
-    "follower": "follower"
+    "follower": "follower",
+    "logout": "Logout"
   }
 }

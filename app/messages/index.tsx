@@ -33,6 +33,7 @@ export default function MessagesScreen() {
         <FlatList
           data={mockConversations}
           keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={true}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={[styles.card, { borderBottomColor: colors.border }]}

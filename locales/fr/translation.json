@@ -26,6 +26,7 @@
   "profile": {
     "blink": "blink",
     "follow": "surveillé",
-    "follower": "surveillant"
+    "follower": "surveillant",
+    "logout": "Se déconnecter"
   }
 }

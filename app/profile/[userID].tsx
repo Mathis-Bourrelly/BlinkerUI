@@ -14,6 +14,8 @@ import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
 import {ThemedSeparator} from "@/components/base/ThemedSeparator";
 import NavBar from "@/components/feature/NavBar";
 import {InnerContainer} from "@/components/base/InnerContainer";
+import {useUser} from "@/context/UserContext";
+import {Icon} from "@/components/images/Icon";
 
 export default function ProfileScreen() {
     const {colors} = useTheme();
@@ -22,6 +24,7 @@ export default function ProfileScreen() {
     const gradientColors = colors.gradient;
     const {width} = useWindowDimensions();
     const isDesktop = width >= 768;
+    const {user, clearUser} = useUser();
 
     const { userID } = useLocalSearchParams<{ userID: string }>();
     console.log('Profile page - userID:', userID);
@@ -121,6 +124,20 @@ export default function ProfileScreen() {
                                 <Row gap={isDesktop ? 24 : 12}>
                                     <LanguageDropdown/>
                                     <ThemeToggleButton/>
+                                    {user && user.userID === userID && (
+                                        <TouchableOpacity
+                                            style={[styles.logoutButton, { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.danger }]}
+                                            onPress={() => {
+                                                clearUser();
+                                                router.push('/login');
+                                            }}
+                                        >
+                                            <Icon name="exit" size={24} color={colors.danger} />
+                                            <ThemedText variant="Body" color={colors.danger}>
+                                                {t('profile.logout')}
+                                            </ThemedText>
+                                        </TouchableOpacity>
+                                    )}
                                 </Row>
 
                             </View>
@@ -160,5 +177,13 @@ const styles = StyleSheet.create({
     infoContainer: {
         marginVertical: 8,
         alignSelf: "flex-start",
+    },
+    logoutButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        gap: 8,
     },
 });

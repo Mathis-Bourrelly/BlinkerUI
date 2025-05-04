@@ -81,7 +81,7 @@ const CreateBlinkForm = () => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={true}>
             <ThemedText>Créer un Blink</ThemedText>
             <View style={styles.buttonContainer}>
                 <ThemedButtonIcon text={"Texte"} iconName={"text"} onPress={() => addBlock("text")} />

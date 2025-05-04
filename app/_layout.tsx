@@ -7,6 +7,7 @@ import AppLoading from 'expo-app-loading'; // For loading screen
 import {NavigationContainer} from '@react-navigation/native';
 import {Slot} from 'expo-router';
 import {UserProvider} from "@/context/UserContext"; // This renders the current route/page content
+import WebStyles from './web-styles'; // Import web-specific styles
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
             <ThemeProvider>
                 <UserProvider>
+                    <WebStyles />
                     <Slot/>
                 </UserProvider>
             </ThemeProvider>

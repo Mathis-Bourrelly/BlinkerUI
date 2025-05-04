@@ -40,6 +40,7 @@ export function ProfilList({ fetchProfiles }: UserListProps) {
                 }
             }}
             onEndReachedThreshold={0.5}
+            showsVerticalScrollIndicator={true}
             ListFooterComponent={
                 isFetchingNextPage ? <ActivityIndicator size="small" color={colors.accent} /> : null
             }
