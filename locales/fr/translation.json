@@ -4,6 +4,27 @@
     "or": "ou",
     "return": "retour"
   },
+  "common": {
+    "hour": "h",
+    "day": "j",
+    "score": "Score"
+  },
+  "messages": {
+    "title": "Messagerie",
+    "placeholder": "Écris un message...",
+    "send": "Envoyer",
+    "noMessages": "Pas de messages",
+    "startConversation": "Commencez une conversation",
+    "typing": "est en train d'écrire...",
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "lastSeen": "Vu dernièrement",
+    "errorLoading": "Erreur lors du chargement des messages",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "expiresIn": "Expire dans",
+    "expired": "Expiré"
+  },
   "language": "Français",
   "login": {
     "alreadyAccount": "J'ai déja un compte",
@@ -27,6 +48,11 @@
     "blink": "blink",
     "follow": "surveillé",
     "follower": "surveillant",
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "score": "Score utilisateur",
+    "scoreDescriptionLow": "Nouvel utilisateur avec contenu basique",
+    "scoreDescriptionMedium": "Utilisateur régulier avec bon contenu",
+    "scoreDescriptionHigh": "Utilisateur établi avec contenu de qualité",
+    "scoreInfo": "Votre score détermine la durée de disponibilité de vos messages"
   }
 }

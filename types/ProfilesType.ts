@@ -3,4 +3,5 @@ export interface ProfilesType {
     display_name: string;
     username: string;
     avatar_url?: string;
+    score?: number;
 }

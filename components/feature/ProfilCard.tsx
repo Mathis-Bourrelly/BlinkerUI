@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { ProfilesType } from '@/types/ProfilesType';
 import { router } from 'expo-router';
+import { ScoreDot } from '@/components/feature/ScoreDot';
 
 type ProfilCardProps = {
     profil: ProfilesType;
@@ -27,7 +28,14 @@ export function ProfilCard({ profil }: ProfilCardProps) {
                 />
                 <View style={styles.info}>
                     <Text style={[styles.display_name, { color: colors.text }]}>{profil.display_name}</Text>
-                    <Text style={[styles.username, { color: colors.textSecondary }]}>@{profil.username}</Text>
+                    <View style={styles.usernameContainer}>
+                        <Text style={[styles.username, { color: colors.textSecondary }]}>@{profil.username}</Text>
+                        {profil.score !== undefined && (
+                            <View style={styles.scoreDotContainer}>
+                                <ScoreDot score={profil.score} size={8} />
+                            </View>
+                        )}
+                    </View>
                 </View>
             </View>
         </TouchableOpacity>
@@ -57,5 +65,12 @@ const styles = StyleSheet.create({
     },
     username: {
         fontSize: 14,
+    },
+    usernameContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    scoreDotContainer: {
+        marginLeft: 4,
     },
 });

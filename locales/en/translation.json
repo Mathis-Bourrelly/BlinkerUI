@@ -4,6 +4,27 @@
     "or": "or",
     "return": "return"
   },
+  "common": {
+    "hour": "h",
+    "day": "d",
+    "score": "Score"
+  },
+  "messages": {
+    "title": "Messages",
+    "placeholder": "Write a message...",
+    "send": "Send",
+    "noMessages": "No messages",
+    "startConversation": "Start a conversation",
+    "typing": "is typing...",
+    "online": "Online",
+    "offline": "Offline",
+    "lastSeen": "Last seen",
+    "errorLoading": "Error loading messages",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "expiresIn": "Expires in",
+    "expired": "Expired"
+  },
   "language": "English",
   "login": {
     "alreadyAccount": "I have an account",
@@ -27,6 +48,11 @@
     "blink": "blink",
     "follow": "follow",
     "follower": "follower",
-    "logout": "Logout"
+    "logout": "Logout",
+    "score": "User Score",
+    "scoreDescriptionLow": "New user with basic content",
+    "scoreDescriptionMedium": "Regular user with good content",
+    "scoreDescriptionHigh": "Established user with quality content",
+    "scoreInfo": "Your score determines how long your messages remain available"
   }
 }

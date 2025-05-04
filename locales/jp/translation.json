@@ -4,6 +4,11 @@
     "or": "",
     "return": ""
   },
+  "common": {
+    "hour": "時間",
+    "day": "日",
+    "score": "スコア"
+  },
   "language": "日本語",
   "login": {
     "confirmPassword": "",
@@ -24,6 +29,11 @@
   "profile": {
     "blink": "",
     "follow": "",
-    "follower": ""
+    "follower": "",
+    "score": "ユーザースコア",
+    "scoreDescriptionLow": "",
+    "scoreDescriptionMedium": "",
+    "scoreDescriptionHigh": "",
+    "scoreInfo": ""
   }
 }

@@ -16,6 +16,8 @@ import NavBar from "@/components/feature/NavBar";
 import {InnerContainer} from "@/components/base/InnerContainer";
 import {useUser} from "@/context/UserContext";
 import {Icon} from "@/components/images/Icon";
+import {ScoreDot} from "@/components/feature/ScoreDot";
+import {useFormatUserScore} from "@/utils/scoreUtils";
 
 export default function ProfileScreen() {
     const {colors} = useTheme();
@@ -25,6 +27,7 @@ export default function ProfileScreen() {
     const {width} = useWindowDimensions();
     const isDesktop = width >= 768;
     const {user, clearUser} = useUser();
+    const {formatScore, getScoreDotColor} = useFormatUserScore();
 
     const { userID } = useLocalSearchParams<{ userID: string }>();
     console.log('Profile page - userID:', userID);
@@ -78,9 +81,14 @@ export default function ProfileScreen() {
                                         <ThemedText variant="SubTitle">
                                             {data.display_name}
                                         </ThemedText>
-                                        <ThemedText variant="Body" color={colors.textSecondary}>
-                                            @{data.username}
-                                        </ThemedText>
+                                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                            <ThemedText variant="Body" color={colors.textSecondary}>
+                                                @{data.username}
+                                            </ThemedText>
+                                            <View style={{marginLeft: 6}}>
+                                                <ScoreDot score={data.score} showValue={true} size={10} />
+                                            </View>
+                                        </View>
                                         <Row gap={isDesktop ? 20 : 12}>
                                             <TouchableOpacity onPress={() => router.push(`/following/${userID}`)}>
                                                 <View style={styles.statItem}>
