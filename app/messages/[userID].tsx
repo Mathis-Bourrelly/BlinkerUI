@@ -1,15 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  TextInput,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
-  Image,
-} from "react-native";
+import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useTheme } from "@/context/ThemeContext";
@@ -17,9 +7,6 @@ import { useTranslation } from "react-i18next";
 import NavBar from "@/components/feature/NavBar";
 import TabBar from "@/components/feature/TabBar";
 import { InnerContainer } from "@/components/base/InnerContainer";
-import { ThemedText } from "@/components/base/ThemedText";
-import { Icon } from "@/components/images/Icon";
-import { ScoreDot } from "@/components/feature/ScoreDot";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   useMessagesBetweenQuery,
@@ -31,6 +18,15 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { MessageType } from "@/types/MessagesType";
 import { useFormatMessageDate } from "@/utils/dateUtils";
+
+// Composants de messages
+import { MessageThreadLoadingState } from "@/components/feature/messages/MessageThreadLoadingState";
+import { MessageThreadErrorState } from "@/components/feature/messages/MessageThreadErrorState";
+import { ContactHeader } from "@/components/feature/messages/ContactHeader";
+import { MessageInput } from "@/components/feature/messages/MessageInput";
+import { MessageList } from "@/components/feature/messages/MessageList";
+import { MessageThreadFooter } from "@/components/feature/messages/MessageThreadFooter";
+import { messageThreadStyles } from "@/components/feature/messages/MessageThreadStyles";
 
 export default function MessageThreadScreen() {
   const { colors } = useTheme();
@@ -174,304 +170,47 @@ export default function MessageThreadScreen() {
   // Déterminer l'état de chargement et d'erreur global
   const isLoading = isLoadingConversation || isLoadingMessages;
   const error = errorConversation || errorMessages;
+  const gradientColors = colors.gradient;
 
   if (isLoading) {
-    return (
-      <>
-        <Stack.Screen />
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-          <InnerContainer>
-            <NavBar />
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={colors.accent} />
-            </View>
-            <TabBar />
-          </InnerContainer>
-        </SafeAreaView>
-      </>
-    );
+    return <MessageThreadLoadingState />;
   }
 
   if (error) {
-    return (
-      <>
-        <Stack.Screen />
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-          <InnerContainer>
-            <NavBar />
-            <View style={styles.errorContainer}>
-              <ThemedText style={{ color: colors.danger }}>{t("messages.errorLoading")}</ThemedText>
-            </View>
-            <TabBar />
-          </InnerContainer>
-        </SafeAreaView>
-      </>
-    );
+    return <MessageThreadErrorState />;
   }
 
   return (
     <>
       <Stack.Screen />
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-        <InnerContainer>
-          <NavBar />
+      <SafeAreaView style={messageThreadStyles.container}>
+        <LinearGradient colors={gradientColors} style={messageThreadStyles.background}>
+          <InnerContainer>
+            <NavBar />
 
-          {/* En-tête de conversation avec info de contact */}
-          <View style={[styles.contactHeader, { borderBottomColor: colors.border }]}>
-            <Image
-              source={{ uri: contactInfo.avatar_url }}
-              style={styles.contactAvatar}
-            />
-            <View style={styles.contactInfo}>
-              <ThemedText style={styles.contactName}>{contactInfo.display_name}</ThemedText>
-              <View style={styles.usernameRow}>
-                <ThemedText style={[styles.statusText, { color: colors.textSecondary }]}>@{contactInfo.username}</ThemedText>
-                <View style={styles.scoreDotContainer}>
-                  <ScoreDot score={contactInfo.score} size={8} />
-                </View>
-              </View>
-              <View style={styles.statusContainer}>
-                {contactInfo.isOnline ? (
-                  <>
-                    <View style={[styles.statusDot, { backgroundColor: colors.valide }]} />
-                    <ThemedText style={[styles.statusText, { color: colors.textSecondary }]}>
-                      {t("messages.online")}
-                    </ThemedText>
-                  </>
-                ) : (
-                  <ThemedText style={[styles.statusText, { color: colors.textSecondary }]}>
-                    {t("messages.offline")}
-                  </ThemedText>
-                )}
-              </View>
-            </View>
-          </View>
+            <ContactHeader contactInfo={contactInfo} />
 
-          {messages.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <ThemedText>{t("messages.noMessages")}</ThemedText>
-              <ThemedText>{t("messages.startConversation")}</ThemedText>
-            </View>
-          ) : (
-            <FlatList
+            <MessageList
               ref={flatListRef}
-              data={messages}
-              keyExtractor={(item) => item.messageID}
-              showsVerticalScrollIndicator={true}
-              contentContainerStyle={styles.messagesContainer}
-              renderItem={({ item }) => (
-                <View style={styles.messageWrapper}>
-                  {item.senderID === "me" ? (
-                    <View style={styles.sentMessageContainer}>
-                      <View style={styles.spacer} />
-                      <LinearGradient
-                        colors={colors.accentGradient}
-                        style={styles.messageBubble}
-                      >
-                        <ThemedText style={{ color: colors.textInvert }}>{item.content}</ThemedText>
-                        <View style={styles.messageFooter}>
-                          <ThemedText style={styles.messageTime}>
-                            {formatMessageDate(item.createdAt)}
-                          </ThemedText>
-                          <ThemedText style={styles.expiryTime}>
-                            {formatTimeRemaining(item.expiresAt)}
-                          </ThemedText>
-                        </View>
-                      </LinearGradient>
-                    </View>
-                  ) : (
-                    <View style={styles.receivedMessageContainer}>
-                      <View
-                        style={[styles.messageBubble, { backgroundColor: colors.card }]}
-                      >
-                        <ThemedText>{item.content}</ThemedText>
-                        <View style={styles.messageFooter}>
-                          <ThemedText style={styles.messageTime}>
-                            {formatMessageDate(item.createdAt)}
-                          </ThemedText>
-                          <ThemedText style={styles.expiryTime}>
-                            {formatTimeRemaining(item.expiresAt)}
-                          </ThemedText>
-                        </View>
-                      </View>
-                      <View style={styles.spacer} />
-                    </View>
-                  )}
-                </View>
-              )}
-            />
-          )}
-
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-            keyboardVerticalOffset={64}
-            style={[styles.inputContainer, { borderTopColor: colors.border }]}
-          >
-            <TouchableOpacity style={styles.attachButton}>
-              <Icon name="attachment" size={24} color={colors.accent} />
-            </TouchableOpacity>
-
-            <TextInput
-              style={[styles.input, { color: colors.text, backgroundColor: colors.card }]}
-              value={newMessage}
-              onChangeText={setNewMessage}
-              placeholder={t("messages.placeholder")}
-              placeholderTextColor={colors.textSecondary}
-              multiline
+              messages={messages}
+              formatMessageDate={formatMessageDate}
+              formatTimeRemaining={formatTimeRemaining}
             />
 
-            <TouchableOpacity
-              onPress={handleSend}
-              disabled={!newMessage.trim() || sendMessageMutation.isPending}
-              style={[styles.sendButton, { opacity: !newMessage.trim() || sendMessageMutation.isPending ? 0.5 : 1 }]}
-            >
-              {sendMessageMutation.isPending ? (
-                <ActivityIndicator size="small" color={colors.textInvert} />
-              ) : (
-                <LinearGradient
-                  colors={colors.accentGradient}
-                  style={styles.sendButtonGradient}
-                >
-                  <Icon name="send" size={24} color={colors.textInvert} />
-                </LinearGradient>
-              )}
-            </TouchableOpacity>
-          </KeyboardAvoidingView>
+            <MessageInput
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+              handleSend={handleSend}
+              isPending={sendMessageMutation.isPending}
+            />
 
-          <TabBar />
-        </InnerContainer>
+            <MessageThreadFooter />
+          </InnerContainer>
+        </LinearGradient>
+        <TabBar />
       </SafeAreaView>
     </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  contactHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-    borderBottomWidth: 1,
-  },
-  contactAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  contactInfo: {
-    flex: 1,
-  },
-  contactName: {
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  statusContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  usernameRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-  scoreDotContainer: {
-    marginLeft: 6,
-  },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 4,
-  },
-  statusText: {
-    fontSize: 12,
-  },
-  messagesContainer: {
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-  },
-  messageWrapper: {
-    marginBottom: 8,
-    width: "100%",
-  },
-  sentMessageContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    maxWidth: "100%",
-  },
-  receivedMessageContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    maxWidth: "100%",
-  },
-  spacer: {
-    flex: 1,
-    maxWidth: "25%",
-  },
-  messageBubble: {
-    padding: 10,
-    borderRadius: 12,
-    maxWidth: "75%",
-  },
-  messageFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 4,
-    opacity: 0.7,
-  },
-  messageTime: {
-    fontSize: 10,
-  },
-  expiryTime: {
-    fontSize: 10,
-    marginLeft: 8,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderTopWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: "transparent",
-  },
-  attachButton: {
-    marginRight: 8,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    maxHeight: 100,
-  },
-  sendButton: {
-    marginLeft: 8,
-  },
-  sendButtonGradient: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
+

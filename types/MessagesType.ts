@@ -33,6 +33,7 @@ export interface ConversationPreviewType {
     username: string;
     display_name: string;
     avatar_url?: string;
+    score?: number;
   };
   lastMessage: {
     content: string;
