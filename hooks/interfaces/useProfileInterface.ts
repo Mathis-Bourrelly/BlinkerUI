@@ -19,15 +19,15 @@ export function useUpdateProfileMutation(userID: string) {
     // If userID is 'current', we'll use a special endpoint for updating just the avatar
     if (userID === 'current') {
         return useMutation({
-            mutationFn: async (data: { userID: string, avatarUrl: string }) => {
+            mutationFn: async (data: { userID: string, avatar_url: string }) => {
                 console.log('Updating profile avatar with data:', data);
                 const token = await getToken();
                 if (!token) {
                     throw new Error('No authentication token found');
                 }
 
-                if (!data.userID || !data.avatarUrl) {
-                    throw new Error('Missing required data: userID or avatarUrl');
+                if (!data.userID || !data.avatar_url) {
+                    throw new Error('Missing required data: userID or avatar_url');
                 }
 
                 const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/profiles/update-avatar`, {

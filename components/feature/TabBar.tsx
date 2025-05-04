@@ -10,7 +10,7 @@ export default function TabBar() {
     const { colors } = useTheme();
     const { user } = useUser();
 
-    // Debug log to check if user and avatarUrl are available
+    // Debug log to check if user and avatar_url are available
     console.log("TabBar user:", user);
 
     if (width > 768) return null;
@@ -31,7 +31,7 @@ export default function TabBar() {
 
             <TouchableOpacity onPress={() => router.push(`/profile/${user?.userID}`)}>
                 <Image
-                    source={{ uri: user?.avatarUrl || "https://i.pravatar.cc/32" }}
+                    source={{ uri: user?.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png` }}
                     style={[styles.avatar, {borderColor: colors.text}]}
                 />
             </TouchableOpacity>

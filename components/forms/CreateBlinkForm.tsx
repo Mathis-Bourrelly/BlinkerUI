@@ -72,7 +72,7 @@ const CreateBlinkForm = () => {
             profile: {
                 display_name: "Nom de l'utilisateur",
                 username: "username",
-                avatar_url: "https://i.pravatar.cc/64",
+                avatar_url: `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`,
             },
         };
 

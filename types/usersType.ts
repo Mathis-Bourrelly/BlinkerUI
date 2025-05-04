@@ -11,7 +11,7 @@ export interface ProfileType {
     userID: string;
     username: string;
     bio?: string; // Optionnel
-    avatarUrl?: string; // Optionnel
+    avatar_url?: string; // Optionnel
     score: number;
     followingCount: number;
     followersCount: number;

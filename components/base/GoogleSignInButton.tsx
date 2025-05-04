@@ -102,7 +102,7 @@ export default function GoogleSignInButton() {
                         storeToken(data.token)
                             .then(() => storeUser({
                                 userID: data.userID,
-                                avatarUrl: userProfilePicture
+                                avatar_url: userProfilePicture
                             }))
                             .then(() => {
                                 // Update the user's profile in the backend with the Google profile picture
@@ -111,7 +111,7 @@ export default function GoogleSignInButton() {
                                     // Use the updateProfile mutation we defined earlier
                                     updateProfile({
                                         userID: data.userID,
-                                        avatarUrl: userProfilePicture
+                                        avatar_url: userProfilePicture
                                     }, {
                                         onSuccess: (response) => {
                                             console.log('Successfully updated profile with Google avatar:', response);

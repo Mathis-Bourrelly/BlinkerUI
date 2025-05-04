@@ -6,7 +6,7 @@ import {router} from "expo-router";
 
 type User = {
     userID: string | null;
-    avatarUrl?: string;
+    avatar_url?: string;
 };
 
 type UserContextType = {
@@ -29,7 +29,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setIsLoading(true);
                 const storedUserID = await AsyncStorage.getItem("userID");
                 const storedToken = await getToken();
-                const storedAvatarUrl = await AsyncStorage.getItem("avatarUrl");
+                const storedAvatarUrl = await AsyncStorage.getItem("avatar_url");
 
                 if (storedUserID && storedToken) {
                     setToken(storedToken);
@@ -44,7 +44,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                                 if (data.valid) {
                                     storeUser({
                                         userID: storedUserID,
-                                        avatarUrl: storedAvatarUrl || undefined
+                                        avatar_url: storedAvatarUrl || undefined
                                     });
                                 } else {
                                     // Token invalide, rediriger vers login
@@ -83,9 +83,9 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (typeof user.userID === "string") {
                 await AsyncStorage.setItem("userID", user.userID);
             }
-            if (user.avatarUrl) {
-                console.log("Storing avatarUrl in AsyncStorage:", user.avatarUrl);
-                await AsyncStorage.setItem("avatarUrl", user.avatarUrl);
+            if (user.avatar_url) {
+                console.log("Storing avatar_url in AsyncStorage:", user.avatar_url);
+                await AsyncStorage.setItem("avatar_url", user.avatar_url);
             }
         } catch (error) {
             console.error("Erreur lors du stockage de l'utilisateur", error);
@@ -98,7 +98,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             await AsyncStorage.removeItem("userID");
             await AsyncStorage.removeItem("token");
-            await AsyncStorage.removeItem("avatarUrl");
+            await AsyncStorage.removeItem("avatar_url");
         } catch (error) {
             console.error("Erreur lors de la suppression des données utilisateur", error);
         }
