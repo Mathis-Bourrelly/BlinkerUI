@@ -29,7 +29,7 @@ export function ContactHeader({ contactInfo }: ContactHeaderProps) {
         style={messageThreadStyles.contactAvatar}
       />
       <View style={messageThreadStyles.contactInfo}>
-        <ThemedText style={messageThreadStyles.contactName}>{contactInfo.display_name}</ThemedText>
+        <ThemedText style={[messageThreadStyles.contactName, { color: colors.text }]}>{contactInfo.display_name}</ThemedText>
         <View style={messageThreadStyles.usernameRow}>
           <ThemedText style={[messageThreadStyles.statusText, { color: colors.textSecondary }]}>@{contactInfo.username}</ThemedText>
           <View style={messageThreadStyles.scoreDotContainer}>

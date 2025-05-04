@@ -1,10 +1,11 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useMemo } from "react";
 import { FlatList, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemedText } from "@/components/base/ThemedText";
 import { Icon } from "@/components/images/Icon";
 import { MessageItem } from "./MessageItem";
+import { DateSeparator } from "./DateSeparator";
 import { MessageType } from "@/types/MessagesType";
 import { messageThreadStyles } from "./MessageThreadStyles";
 import { EmptyState } from "./EmptyState";
@@ -18,25 +19,94 @@ type MessageListProps = {
 export const MessageList = forwardRef<FlatList, MessageListProps>(
   ({ messages, formatMessageDate, formatTimeRemaining }, ref) => {
     const { colors } = useTheme();
+    const { t } = useTranslation();
 
     if (messages.length === 0) {
       return <EmptyState />;
     }
 
+    // Groupe les messages par date
+    const groupedMessages = useMemo(() => {
+      const groups: { date: string; messages: MessageType[] }[] = [];
+      let currentDate = "";
+      let currentGroup: MessageType[] = [];
+
+      // Trie les messages par date (du plus ancien au plus récent)
+      const sortedMessages = [...messages].sort((a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+
+      sortedMessages.forEach(message => {
+        // Obtenir la date formatée complète
+        const formattedDate = formatMessageDate(message.createdAt);
+
+        // Déterminer la date à utiliser pour le regroupement
+        let messageDate;
+
+        // Si c'est une heure (format HH:MM pour aujourd'hui), utiliser "Aujourd'hui"
+        if (formattedDate.includes(':')) {
+          messageDate = t('messages.today');
+        } else {
+          // Sinon, utiliser la date telle quelle ("hier" ou date au format court)
+          messageDate = formattedDate;
+        }
+
+        if (messageDate !== currentDate) {
+          // Si on a un nouveau groupe, on ajoute le précédent aux résultats
+          if (currentGroup.length > 0) {
+            groups.push({ date: currentDate, messages: currentGroup });
+          }
+          // On commence un nouveau groupe
+          currentDate = messageDate;
+          currentGroup = [message];
+        } else {
+          // On ajoute au groupe courant
+          currentGroup.push(message);
+        }
+      });
+
+      // On ajoute le dernier groupe
+      if (currentGroup.length > 0) {
+        groups.push({ date: currentDate, messages: currentGroup });
+      }
+
+      return groups;
+    }, [messages, formatMessageDate]);
+
+    // Prépare les données pour le FlatList
+    const flatListData = useMemo(() => {
+      const data: (MessageType | { type: 'date'; date: string; id: string })[] = [];
+
+      groupedMessages.forEach(group => {
+        // Ajoute le séparateur de date
+        data.push({ type: 'date', date: group.date, id: `date-${group.date}` });
+        // Ajoute les messages
+        data.push(...group.messages);
+      });
+
+      return data;
+    }, [groupedMessages]);
+
     return (
       <FlatList
         ref={ref}
-        data={messages}
-        keyExtractor={(item) => item.messageID}
+        data={flatListData}
+        keyExtractor={(item) => 'messageID' in item ? item.messageID : item.id}
         showsVerticalScrollIndicator={true}
         contentContainerStyle={messageThreadStyles.messagesContainer}
-        renderItem={({ item }) => (
-          <MessageItem
-            message={item}
-            formatMessageDate={formatMessageDate}
-            formatTimeRemaining={formatTimeRemaining}
-          />
-        )}
+        renderItem={({ item }) => {
+          if ('type' in item && item.type === 'date') {
+            return <DateSeparator date={item.date} />;
+          } else {
+            return (
+              <MessageItem
+                message={item as MessageType}
+                formatMessageDate={formatMessageDate}
+                formatTimeRemaining={formatTimeRemaining}
+              />
+            );
+          }
+        }}
       />
     );
   }

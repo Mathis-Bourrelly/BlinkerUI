@@ -31,11 +31,8 @@ export function MessageItem({ message, formatMessageDate, formatTimeRemaining }:
           >
             <ThemedText style={{ color: colors.textInvert }}>{message.content}</ThemedText>
             <View style={messageThreadStyles.messageFooter}>
-              <ThemedText style={messageThreadStyles.messageTime}>
-                {formatMessageDate(message.createdAt)}
-              </ThemedText>
-              <ThemedText style={messageThreadStyles.expiryTime}>
-                {formatTimeRemaining(message.expiresAt)}
+              <ThemedText style={[messageThreadStyles.expiryTime, { color: colors.textInvert }]}>
+                {formatTimeRemaining(message.expiresAt).replace("Expire dans ", "")}
               </ThemedText>
             </View>
           </LinearGradient>
@@ -45,13 +42,10 @@ export function MessageItem({ message, formatMessageDate, formatTimeRemaining }:
           <View
             style={[messageThreadStyles.messageBubble, { backgroundColor: colors.card }]}
           >
-            <ThemedText>{message.content}</ThemedText>
+            <ThemedText style={{ color: colors.text }}>{message.content}</ThemedText>
             <View style={messageThreadStyles.messageFooter}>
-              <ThemedText style={messageThreadStyles.messageTime}>
-                {formatMessageDate(message.createdAt)}
-              </ThemedText>
-              <ThemedText style={messageThreadStyles.expiryTime}>
-                {formatTimeRemaining(message.expiresAt)}
+              <ThemedText style={[messageThreadStyles.expiryTime, { color: colors.text }]}>
+                {formatTimeRemaining(message.expiresAt).replace("Expire dans ", "")}
               </ThemedText>
             </View>
           </View>
