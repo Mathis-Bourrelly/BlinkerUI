@@ -21,12 +21,12 @@ export const MessageList = forwardRef<FlatList, MessageListProps>(
     const { colors } = useTheme();
     const { t } = useTranslation();
 
-    if (messages.length === 0) {
-      return <EmptyState />;
-    }
-
     // Groupe les messages par date
     const groupedMessages = useMemo(() => {
+      if (messages.length === 0) {
+        return [];
+      }
+
       const groups: { date: string; messages: MessageType[] }[] = [];
       let currentDate = "";
       let currentGroup: MessageType[] = [];
@@ -71,10 +71,14 @@ export const MessageList = forwardRef<FlatList, MessageListProps>(
       }
 
       return groups;
-    }, [messages, formatMessageDate]);
+    }, [messages, formatMessageDate, t]);
 
     // Prépare les données pour le FlatList
     const flatListData = useMemo(() => {
+      if (groupedMessages.length === 0) {
+        return [];
+      }
+
       const data: (MessageType | { type: 'date'; date: string; id: string })[] = [];
 
       groupedMessages.forEach(group => {
@@ -86,6 +90,12 @@ export const MessageList = forwardRef<FlatList, MessageListProps>(
 
       return data;
     }, [groupedMessages]);
+
+    if (messages.length === 0) {
+      return <EmptyState />;
+    }
+
+
 
     return (
       <FlatList
