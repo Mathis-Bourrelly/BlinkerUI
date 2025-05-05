@@ -55,6 +55,7 @@
     "blink": "blink",
     "follow": "follow",
     "follower": "follower",
+    "following": "Following",
     "followButton": "Follow",
     "unfollow": "Unfollow",
     "errorLoadingProfile": "Error loading profile",

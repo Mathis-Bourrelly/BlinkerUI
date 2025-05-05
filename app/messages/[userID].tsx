@@ -89,7 +89,7 @@ export default function MessageThreadScreen() {
       });
     } else if (conversationData && conversationData.length > 0) {
       // Sinon, essayer de trouver les informations dans les données de conversation
-      const otherUserMessage = conversationData.find(msg => msg.senderID !== "me");
+      const otherUserMessage = conversationData.find((msg: { senderID: string; }) => msg.senderID !== "me");
       if (otherUserMessage && otherUserMessage.senderInfo) {
         setContactInfo({
           display_name: otherUserMessage.senderInfo.display_name || "Utilisateur",

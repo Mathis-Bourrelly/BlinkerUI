@@ -55,6 +55,7 @@
     "blink": "blink",
     "follow": "surveillé",
     "follower": "surveillant",
+    "following": "Abonné",
     "followButton": "Suivre",
     "unfollow": "Ne plus suivre",
     "errorLoadingProfile": "Erreur lors du chargement du profil",

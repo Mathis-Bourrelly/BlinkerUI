@@ -13,9 +13,11 @@ type PaginatedResponse<T> = {
 export function usePaginatedQuery<T>(
     queryKey: string,    // Clé pour React Query (ex: "followers", "following", "search")
     route: string,    // URL relative de l'API (ex: "/following/following")
-    params?: Record<string, any> // Paramètres supplémentaires (ex: { userID, searchTerm })
+    params?: Record<string, any>, // Paramètres supplémentaires (ex: { userID, searchTerm })
+    options?: { enabled?: boolean } // Options supplémentaires pour useInfiniteQuery
 ) {
     return useInfiniteQuery<PaginatedResponse<T>>({
+        enabled: options?.enabled !== undefined ? options.enabled : true,
         queryKey: [queryKey, params], // Cache différent selon les paramètres
         queryFn: async ({ pageParam = 1 }) => {
             const token = await getToken();
