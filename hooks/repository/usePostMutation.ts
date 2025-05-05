@@ -1,7 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { getToken } from "@/hooks/useSetToken";
 
-type PostMutationResponse = any;
+type PostMutationResponse = {
+    success: boolean;
+    status: number;
+    message: string;
+    data: any;
+};
 
 export function usePostMutation(path: string, token?: string) {
     return useMutation<PostMutationResponse, Error, { body: any }>({

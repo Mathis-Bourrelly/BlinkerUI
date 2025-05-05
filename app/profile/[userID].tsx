@@ -46,8 +46,8 @@ export default function ProfileScreen() {
 
     // Mettre à jour l'état local lorsque les données du profil sont chargées
     React.useEffect(() => {
-        if (data && data.isFollowing !== undefined) {
-            setIsFollowingState(data.isFollowing);
+        if (data?.data?.isFollowing !== undefined) {
+            setIsFollowingState(data.data.isFollowing);
         } else {
             // Réinitialiser l'état si nous n'avons pas de données
             setIsFollowingState(false);
@@ -114,20 +114,20 @@ export default function ProfileScreen() {
                             <View style={headerContainerStyle}>
                                 <Row gap={isDesktop ? 24 : 12}>
                                     <Image
-                                        source={{uri: data.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`}}
+                                        source={{uri: data.data.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`}}
                                         style={avatarStyle}
                                         onError={(e) => console.log('Error loading profile image:', e.nativeEvent.error)}
                                     />
                                     <View style={isDesktop && {paddingHorizontal: 20}}>
                                         <ThemedText variant="SubTitle">
-                                            {data.display_name}
+                                            {data.data.display_name}
                                         </ThemedText>
                                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                             <ThemedText variant="Body" color={colors.textSecondary}>
-                                                @{data.username}
+                                                @{data.data.username}
                                             </ThemedText>
                                             <View style={{marginLeft: 6}}>
-                                                <ScoreDot score={data.score} showValue={true} size={10} />
+                                                <ScoreDot score={data.data.score} showValue={true} size={10} />
                                             </View>
                                         </View>
 
@@ -187,7 +187,7 @@ export default function ProfileScreen() {
                                                         {t('profile.follow')}
                                                     </ThemedText>
                                                     <ThemedText variant={"SubTitle"}>
-                                                        {data.followingCount}
+                                                        {data.data.followingCount}
                                                     </ThemedText>
                                                 </View>
                                             </TouchableOpacity>
@@ -197,7 +197,7 @@ export default function ProfileScreen() {
                                                         {t('profile.follower')}
                                                     </ThemedText>
                                                     <ThemedText variant={"SubTitle"}>
-                                                        {data.followersCount}
+                                                        {data.data.followersCount}
                                                     </ThemedText>
                                                 </View>
                                             </TouchableOpacity>
@@ -212,17 +212,16 @@ export default function ProfileScreen() {
                                         </Row>
                                     </View>
                                 </Row>
-                                {data.bio && (
+                                {data.data.bio && (
                                     <View style={styles.infoContainer}>
                                         <ThemedText variant={"Body"}>
-                                            {data.bio}
+                                            {data.data.bio}
                                         </ThemedText>
                                     </View>
                                 )}
                                 <ThemedSeparator barColor={colors.border}/>
                                 <Row gap={isDesktop ? 24 : 12}>
-                                    <LanguageDropdown/>
-                                    <ThemeToggleButton/>
+                                    {/* Les options de langue et de thème sont maintenant dans le menu d'options de la NavBar */}
                                     {user && user.userID === userID && (
                                         <TouchableOpacity
                                             style={[styles.logoutButton, { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.danger }]}

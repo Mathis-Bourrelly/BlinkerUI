@@ -3,14 +3,10 @@ import { View } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemedText } from "@/components/base/ThemedText";
 import { messageThreadStyles } from "./MessageThreadStyles";
+import { MessageType } from "@/types/MessagesType";
 
 type MessageItemProps = {
-  message: {
-    senderID: string;
-    content: string;
-    createdAt: string;
-    expiresAt: string;
-  };
+  message: MessageType;
   formatMessageDate: (date: string) => string;
   formatTimeRemaining: (date: string) => string;
   currentUserID: string | null;
@@ -29,6 +25,11 @@ export function MessageItem({ message, formatMessageDate, formatTimeRemaining, c
           <View
             style={[messageThreadStyles.messageBubble, { backgroundColor: colors.card }]}
           >
+            {message.sender && message.sender.display_name && (
+              <ThemedText style={[messageThreadStyles.senderName, { color: colors.accent }]}>
+                {message.sender.display_name}
+              </ThemedText>
+            )}
             <ThemedText style={{ color: "white" }}>{message.content}</ThemedText>
             <View style={messageThreadStyles.messageFooter}>
               <ThemedText style={[messageThreadStyles.expiryTime, { color: "white" }]}>

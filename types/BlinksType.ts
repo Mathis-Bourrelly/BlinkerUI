@@ -5,6 +5,7 @@ export type BlinkType = {
     dislikeCount: number;
     commentCount: number;
     shareCount: number;
+    tier?: 'none' | 'bronze' | 'silver' | 'gold';
     createdAt: string;
     updatedAt: string;
     contents: { contentID: string; contentType: string; content: string; position: number }[];
@@ -12,5 +13,7 @@ export type BlinkType = {
         display_name: string;
         username: string;
         avatar_url: string;
+        userID: string;
     };
+    isLiked: boolean; // Maintenant non-optionnel car toujours fourni par l'API
 };

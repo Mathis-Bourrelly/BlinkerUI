@@ -41,7 +41,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         },
                         {
                             onSuccess: (data) => {
-                                if (data.valid) {
+                                if (data.success && data.data && data.data.valid) {
                                     storeUser({
                                         userID: storedUserID,
                                         avatar_url: storedAvatarUrl || undefined

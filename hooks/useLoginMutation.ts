@@ -30,16 +30,20 @@ type LoginCredentials = {
 };
 
 type LoginResponse = {
+    success: boolean;
+    status: number;
     message: string;
-    token: string;
-    userID: string;
+    data: {
+        token: string;
+        userID: string;
+    };
 };
 
 export function useLoginMutation() {
 
     return useMutation<LoginResponse, Error, LoginCredentials>({
         mutationFn: async (credentials: LoginCredentials) => {
-            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/auth/login`, {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,21 +53,20 @@ export function useLoginMutation() {
 
             const text = await response.text();
             let data: LoginResponse;
-            
+
             try {
               data = JSON.parse(text);
             } catch (e) {
               console.error('Réponse non JSON:', text);
               throw new Error('Réponse invalide du serveur');
             }
-            
+
             if (!response.ok) {
                 console.log(data);
                 throw new Error(data.message);
             }
-            
-            await storeToken(data.token);
-            (data.token);
+
+            await storeToken(data.data.token);
             return data;
         }
     });

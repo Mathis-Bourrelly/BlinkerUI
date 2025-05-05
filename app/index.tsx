@@ -37,10 +37,7 @@ export default function Index() {
                     <InnerContainer>
                         <NavBar/>
                         <BlinkList/>
-                        <Row gap={12}>
-                            <LanguageDropdown/>
-                            <ThemeToggleButton/>
-                        </Row>
+                        {/* Les options de langue et de thème sont maintenant dans le menu d'options de la NavBar */}
                     </InnerContainer>
                 </LinearGradient>
                 <TabBar/>

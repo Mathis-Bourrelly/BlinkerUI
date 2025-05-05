@@ -20,8 +20,14 @@ type Props = TextProps & {
     color?: string;
 }
 
-export function ThemedText({variant, color, ...rest}: Props) {
+export function ThemedText({variant, color, style, ...rest}: Props) {
     const {colors} = useTheme();
-    return <Text style={[styles[variant ?? "Body"], {color: color ?? colors.text}]} {...rest} />;
+    // Fusionner les styles pour s'assurer que la couleur du texte est toujours appliquée
+    const textStyle = [
+        styles[variant ?? "Body"],
+        {color: color ?? colors.text},
+        style // Permettre aux styles personnalisés de remplacer la couleur si nécessaire
+    ];
+    return <Text style={textStyle} {...rest} />;
 }
 

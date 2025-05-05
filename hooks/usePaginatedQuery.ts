@@ -1,13 +1,21 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { getToken } from "@/hooks/useLoginMutation"; // Récupération du token
+import { getToken } from "@/hooks/useSetToken"; // Récupération du token
 import { router } from "expo-router";
 
 type PaginatedResponse<T> = {
-    page: number;
-    limit: number;
-    total: number;
-    data: T[];
+    success: boolean;
+    status: number;
+    message: string;
+    data: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+        hasNextPage: boolean;
+        hasPrevPage: boolean;
+        data: T[];
+    };
 };
 
 export function usePaginatedQuery<T>(
@@ -53,7 +61,22 @@ export function usePaginatedQuery<T>(
         },
         initialPageParam: 1,
         getNextPageParam: (lastPage) => {
-            return lastPage.page * lastPage.limit < lastPage.total ? lastPage.page + 1 : undefined;
+            // Vérifier si la réponse contient les informations de pagination
+            if (lastPage.data && lastPage.data.hasNextPage !== undefined) {
+                return lastPage.data.hasNextPage ? lastPage.data.page + 1 : undefined;
+            }
+
+            // Fallback pour les API qui ne renvoient pas hasNextPage
+            // Calculer s'il y a plus de pages en fonction du total et des résultats actuels
+            if (lastPage.data && lastPage.data.total && lastPage.data.users) {
+                const currentPage = lastPage.data.page || 1;
+                const limit = lastPage.data.limit || 10;
+                const total = lastPage.data.total;
+                const hasMorePages = currentPage * limit < total;
+                return hasMorePages ? currentPage + 1 : undefined;
+            }
+
+            return undefined;
         },
     });
 }

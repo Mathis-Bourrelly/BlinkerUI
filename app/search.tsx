@@ -33,7 +33,14 @@ export default function SearchScreen() {
   useEffect(() => {
     const timer = setTimeout(() => {
       console.log('Setting debounced query:', searchQuery);
-      setDebouncedQuery(searchQuery);
+      // Ne mettre à jour la requête que si elle n'est pas vide
+      if (searchQuery.trim()) {
+        setDebouncedQuery(searchQuery);
+      } else {
+        // Réinitialiser les résultats si la requête est vide
+        setDebouncedQuery("");
+        setSearchResults([]);
+      }
     }, 500);
 
     return () => clearTimeout(timer);
@@ -62,10 +69,18 @@ export default function SearchScreen() {
     if (data?.pages) {
       try {
         const allResults = data.pages.flatMap(page => {
-          // Check if page.users exists and is an array
-          if (page && page.users && Array.isArray(page.users)) {
-            console.log(`Processing ${page.users.length} search results`);
-            return page.users;
+          // Vérifier la structure de réponse standard de l'API
+          if (page && page.success && page.data) {
+            // Vérifier si les résultats sont dans data.users (structure réelle de l'API)
+            if (Array.isArray(page.data.users)) {
+              console.log(`Processing ${page.data.users.length} search results from users array`);
+              return page.data.users;
+            }
+            // Fallback au cas où les résultats seraient dans data.data (structure attendue initialement)
+            else if (Array.isArray(page.data.data)) {
+              console.log(`Processing ${page.data.data.length} search results from data array`);
+              return page.data.data;
+            }
           }
           console.warn('Invalid page data structure:', page);
           return [];
@@ -102,7 +117,7 @@ export default function SearchScreen() {
         <LinearGradient colors={colors.gradient} style={styles.background}>
           <InnerContainer>
             <NavBar />
-            <ThemedText variant="Title" style={styles.title}>
+            <ThemedText variant="Title" style={[styles.title, { color: colors.text }]}>
               {t('search.title', 'Rechercher des utilisateurs')}
             </ThemedText>
 
@@ -132,7 +147,13 @@ export default function SearchScreen() {
               /* Error state */
               <View style={styles.messageContainer}>
                 <ThemedText variant="Body">{t('search.error', 'Une erreur est survenue')}</ThemedText>
-                {error && <ThemedText variant="Caption" style={{color: colors.danger}}>{error.toString()}</ThemedText>}
+                {error && (
+                  <ThemedText variant="Caption" style={{color: colors.danger}}>
+                    {error.message && error.message.includes("query")
+                      ? t('search.queryRequired', 'Veuillez entrer un terme de recherche')
+                      : error.toString()}
+                  </ThemedText>
+                )}
               </View>
             ) : searchResults.length === 0 && debouncedQuery.length > 0 ? (
               /* No results state */
@@ -168,10 +189,7 @@ export default function SearchScreen() {
               </>
             )}
 
-            <Row gap={12} style={styles.footer}>
-              <LanguageDropdown />
-              <ThemeToggleButton />
-            </Row>
+            {/* Les options de langue et de thème sont maintenant dans le menu d'options de la NavBar */}
           </InnerContainer>
         </LinearGradient>
         <TabBar />

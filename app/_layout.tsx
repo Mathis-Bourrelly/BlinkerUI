@@ -7,9 +7,19 @@ import AppLoading from 'expo-app-loading'; // For loading screen
 import {NavigationContainer} from '@react-navigation/native';
 import {Slot} from 'expo-router';
 import {UserProvider} from "@/context/UserContext"; // This renders the current route/page content
+import {MessageProvider} from "@/context/MessageContext"; // Provider pour les messages
 import WebStyles from './web-styles'; // Import web-specific styles
 
-const queryClient = new QueryClient();
+// Configuration globale de React Query
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 5000, // 5 secondes par défaut
+            refetchOnWindowFocus: false, // Désactiver le refetch automatique lors du focus de la fenêtre
+            retry: 1, // Limiter les tentatives de réessai
+        },
+    },
+});
 
 // Load fonts asynchronously
 async function loadFonts() {
@@ -38,8 +48,10 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
             <ThemeProvider>
                 <UserProvider>
-                    <WebStyles />
-                    <Slot/>
+                    <MessageProvider>
+                        <WebStyles />
+                        <Slot/>
+                    </MessageProvider>
                 </UserProvider>
             </ThemeProvider>
         </QueryClientProvider>

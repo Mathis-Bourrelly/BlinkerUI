@@ -8,21 +8,20 @@ import VideoPlayer from "@/components/base/VideoPlayer";
 import { LinearGradient } from "expo-linear-gradient";
 import { ThemedText } from "@/components/base/ThemedText";
 import { router } from "expo-router";
-import { useLikeMutation, useDislikeMutation, useCheckInteractionStatus } from "@/hooks/interfaces/useInteractionInterface";
+import { useLikeMutation, useDislikeMutation } from "@/hooks/interfaces/useInteractionInterface";
+import { useRemainingTimeQuery } from "@/hooks/interfaces/useBlinkInterface";
 
 export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (blinkID: string) => void }) {
     const { colors } = useTheme();
     const likeMutation = useLikeMutation();
     const dislikeMutation = useDislikeMutation();
-    const { data: interactionStatus } = useCheckInteractionStatus(blink.blinkID);
-
     // États locaux pour mettre à jour l'UI immédiatement sans attendre la réponse du serveur
     const [localLikeCount, setLocalLikeCount] = useState(blink.likeCount);
     const [localDislikeCount, setLocalDislikeCount] = useState(blink.dislikeCount);
     const [isLiking, setIsLiking] = useState(false);
     const [isDisliking, setIsDisliking] = useState(false);
-    const [hasLiked, setHasLiked] = useState(interactionStatus?.hasLiked || false); // L'utilisateur a-t-il liké ce post
-    const [hasDisliked, setHasDisliked] = useState(interactionStatus?.hasDisliked || false); // L'utilisateur a-t-il disliké ce post
+    const [hasLiked, setHasLiked] = useState(blink.isLiked || false); // L'utilisateur a-t-il liké ce post
+    const [hasDisliked, setHasDisliked] = useState(false); // L'utilisateur a-t-il disliké ce post
 
     // Mettre à jour les états locaux quand les props changent
     useEffect(() => {
@@ -30,13 +29,13 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
         setLocalDislikeCount(blink.dislikeCount);
     }, [blink.likeCount, blink.dislikeCount]);
 
-    // Mettre à jour les états d'interaction quand les données d'interaction changent
+    // Mettre à jour les états d'interaction quand les propriétés du blink changent
     useEffect(() => {
-        if (interactionStatus) {
-            setHasLiked(interactionStatus.hasLiked);
-            setHasDisliked(interactionStatus.hasDisliked);
-        }
-    }, [interactionStatus]);
+        setHasLiked(blink.isLiked || false);
+        // Dans le nouveau système, like et dislike sont mutuellement exclusifs
+        // Si le blink n'est pas liké, on ne peut pas savoir s'il est disliké sans appel API supplémentaire
+        // On laisse donc l'état dislike tel quel et il sera mis à jour lors des interactions
+    }, [blink.isLiked]);
 
     const [days, setDays] = useState(0);
     const [hours, setHours] = useState(0);
@@ -44,30 +43,75 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
     const [secs, setSecs] = useState(0);
     const [isCritical, setIsCritical] = useState(false);
 
+    // Utiliser le hook pour calculer le temps restant
+    const { data: remainingTimeData } = useRemainingTimeQuery(blink.blinkID);
+
     useEffect(() => {
-        const expirationTime = new Date(blink.createdAt).getTime() + 24 * 60 * 60 * 1000; // Création + 24h
+        // Utiliser le temps restant de l'API si disponible, sinon calculer à partir de createdAt
+        let timeLeft = 0;
+
+        if (remainingTimeData?.remainingTime) {
+            // Si nous avons des données de l'API, utiliser le temps restant en secondes
+            timeLeft = remainingTimeData.remainingTime * 1000; // Convertir en millisecondes
+        } else {
+            // Sinon, calculer à partir de la date de création (fallback)
+            const expirationTime = new Date(blink.createdAt).getTime() + 24 * 60 * 60 * 1000; // Création + 24h
+            timeLeft = Math.max(0, expirationTime - Date.now());
+        }
+
+        // Mettre à jour les états pour l'affichage
+        setSecs(Math.floor((timeLeft / 1000) % 60));
+        setMins(Math.floor((timeLeft / 1000 / 60) % 60));
+        setHours(Math.floor((timeLeft / 1000 / 60 / 60) % 24));
+        setDays(Math.floor(timeLeft / 1000 / 60 / 60 / 24));
+
+        // Si le temps restant est inférieur à 10 minutes, définir l'état critique
+        setIsCritical(timeLeft < 10 * 60 * 1000);
+
+        // Lorsque le temps est écoulé, appeler onExpire
+        if (timeLeft <= 0) {
+            onExpire(blink.blinkID);
+        }
+
+        // Configurer un intervalle pour mettre à jour le compte à rebours chaque seconde
         const intervalId = setInterval(() => {
-            const now = Date.now();
-            const timeLeft = Math.max(0, expirationTime - now);
+            // Décrémenter les secondes
+            setSecs(prev => {
+                if (prev > 0) return prev - 1;
 
-            // Met à jour les états pour les jours, heures, minutes, secondes
-            setSecs(Math.floor((timeLeft / 1000) % 60));
-            setMins(Math.floor((timeLeft / 1000 / 60) % 60));
-            setHours(Math.floor((timeLeft / 1000 / 60 / 60) % 24));
-            setDays(Math.floor(timeLeft / 1000 / 60 / 60 / 24));
+                // Si les secondes atteignent 0, décrémenter les minutes
+                setMins(prevMins => {
+                    if (prevMins > 0) return prevMins - 1;
 
-            // Si le temps restant est inférieur à 10 minutes, définir l'état critique
-            setIsCritical(timeLeft < 10 * 60 * 1000);
+                    // Si les minutes atteignent 0, décrémenter les heures
+                    setHours(prevHours => {
+                        if (prevHours > 0) return prevHours - 1;
 
-            // Lorsque le temps est écoulé, appeler onExpire
-            if (timeLeft <= 0) {
+                        // Si les heures atteignent 0, décrémenter les jours
+                        setDays(prevDays => {
+                            if (prevDays > 0) return prevDays - 1;
+                            return 0;
+                        });
+                        return 23; // Réinitialiser les heures à 23
+                    });
+                    return 59; // Réinitialiser les minutes à 59
+                });
+                return 59; // Réinitialiser les secondes à 59
+            });
+
+            // Vérifier si le temps est écoulé
+            if (days === 0 && hours === 0 && mins === 0 && secs === 0) {
                 clearInterval(intervalId);
                 onExpire(blink.blinkID);
             }
+
+            // Mettre à jour l'état critique
+            const totalSeconds = days * 86400 + hours * 3600 + mins * 60 + secs;
+            setIsCritical(totalSeconds < 600); // Moins de 10 minutes
         }, 1000);
 
         return () => clearInterval(intervalId); // Nettoyage à la fin
-    }, [blink.createdAt, onExpire]); // Re-exécute l'effet lorsque `createdAt` change
+    }, [blink.blinkID, blink.createdAt, remainingTimeData, onExpire]); // Re-exécute l'effet lorsque les données changent
 
     // Fonctions pour gérer les likes et dislikes
     const handleLike = async () => {
@@ -95,12 +139,26 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
             }
 
             // Appel API
-            await likeMutation.mutateAsync(blink.blinkID);
+            const response = await likeMutation.mutateAsync(blink.blinkID);
+
+            // Vérifier si la réponse est au format standard
+            if (response && 'success' in response) {
+                // Si l'opération a réussi, mettre à jour l'état en fonction de la réponse
+                if (response.success) {
+                    // Mise à jour en fonction de l'action effectuée (ajout ou suppression)
+                    if (response.data?.created) {
+                        setHasLiked(true);
+                        setHasDisliked(false);
+                    } else if (response.data?.removed) {
+                        setHasLiked(false);
+                    }
+                }
+            }
         } catch (error) {
             // Rollback en cas d'erreur
             setLocalLikeCount(blink.likeCount);
             setLocalDislikeCount(blink.dislikeCount);
-            setHasLiked(false);
+            setHasLiked(blink.isLiked || false);
             setHasDisliked(false);
             console.error('Error liking blink:', error);
         } finally {
@@ -133,12 +191,26 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
             }
 
             // Appel API
-            await dislikeMutation.mutateAsync(blink.blinkID);
+            const response = await dislikeMutation.mutateAsync(blink.blinkID);
+
+            // Vérifier si la réponse est au format standard
+            if (response && 'success' in response) {
+                // Si l'opération a réussi, mettre à jour l'état en fonction de la réponse
+                if (response.success) {
+                    // Mise à jour en fonction de l'action effectuée (ajout ou suppression)
+                    if (response.data?.created) {
+                        setHasDisliked(true);
+                        setHasLiked(false);
+                    } else if (response.data?.removed) {
+                        setHasDisliked(false);
+                    }
+                }
+            }
         } catch (error) {
             // Rollback en cas d'erreur
             setLocalLikeCount(blink.likeCount);
             setLocalDislikeCount(blink.dislikeCount);
-            setHasLiked(false);
+            setHasLiked(blink.isLiked || false);
             setHasDisliked(false);
             console.error('Error disliking blink:', error);
         } finally {

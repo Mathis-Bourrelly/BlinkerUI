@@ -1,8 +1,15 @@
 import { useMutation } from "@tanstack/react-query";
 import { getToken } from "@/hooks/useSetToken";
 
-export function usePutMutation<T = void>(path: string, token?: string) {
-    return useMutation({
+type PutMutationResponse = {
+    success: boolean;
+    status: number;
+    message: string;
+    data: any;
+};
+
+export function usePutMutation<T = void, R = PutMutationResponse>(path: string, token?: string) {
+    return useMutation<R, Error, T>({
         mutationFn: async (data?: T) => {
             // Récupérer le token si non fourni
             let authToken = token;

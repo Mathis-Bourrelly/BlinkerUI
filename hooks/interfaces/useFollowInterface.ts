@@ -1,9 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getToken } from "@/hooks/useSetToken";
+import { ProfileType } from "@/types/usersType";
 
 type FollowResponse = {
   success: boolean;
+  status: number;
   message: string;
+  data: any;
 };
 
 // Hook pour vérifier si l'utilisateur actuel suit un autre utilisateur
@@ -19,12 +22,12 @@ export function useIsFollowingQuery(targetUserID: string | undefined, currentUse
       }
 
       // Essayer d'obtenir les données du profil depuis le cache
-      const profileData = queryClient.getQueryData(["profile", targetUserID]);
+      const profileData = queryClient.getQueryData<{ data: { data: ProfileType } }>(["profile", targetUserID]);
 
       // Si nous avons déjà les données du profil et qu'elles contiennent isFollowing
-      if (profileData && typeof profileData === 'object' && 'isFollowing' in profileData) {
-        console.log(`Using cached profile data for isFollowing: ${profileData.isFollowing}`);
-        return profileData.isFollowing || false;
+      if (profileData?.data?.data?.isFollowing !== undefined) {
+        console.log(`Using cached profile data for isFollowing: ${profileData.data.data.isFollowing}`);
+        return profileData.data.data.isFollowing;
       }
 
       // Sinon, récupérer les données du profil
@@ -53,7 +56,7 @@ export function useIsFollowingQuery(targetUserID: string | undefined, currentUse
       // Mettre à jour le cache avec les données du profil
       queryClient.setQueryData(["profile", targetUserID], data);
 
-      return data.isFollowing || false;
+      return data.data?.isFollowing || false;
     },
     // Ne pas refetch automatiquement, seulement quand explicitement demandé
     staleTime: 60000, // 1 minute
@@ -87,7 +90,8 @@ export function useFollowMutation() {
         throw new Error(errorData.message || `Failed to follow user. Status: ${response.status}`);
       }
 
-      return response.json() as Promise<FollowResponse>;
+      const data = await response.json();
+      return data as FollowResponse;
     },
     onSuccess: (_, targetUserID) => {
       // Invalider les requêtes pour mettre à jour l'UI
@@ -123,7 +127,8 @@ export function useUnfollowMutation() {
         throw new Error(errorData.message || `Failed to unfollow user. Status: ${response.status}`);
       }
 
-      return response.json() as Promise<FollowResponse>;
+      const data = await response.json();
+      return data as FollowResponse;
     },
     onSuccess: (_, targetUserID) => {
       // Invalider les requêtes pour mettre à jour l'UI

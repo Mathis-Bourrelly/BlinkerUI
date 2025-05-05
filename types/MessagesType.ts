@@ -12,7 +12,15 @@ export interface MessageType {
   content: string;
   createdAt: string;
   expiresAt: string;
-  read: boolean;
+  isRead: boolean;
+  sender?: {
+    userID: string;
+    email?: string;
+    display_name?: string;
+    username?: string;
+    avatar_url?: string;
+    score?: number;
+  };
 }
 
 // For backward compatibility
@@ -28,17 +36,16 @@ export interface LegacyMessageType {
 
 export interface ConversationPreviewType {
   conversationID: string;
-  participant: {
-    userID: string;
-    username: string;
-    display_name: string;
-    avatar_url?: string;
-    score?: number;
-  };
+  userID: string;
+  username: string;
+  display_name: string;
+  avatar_url?: string;
   lastMessage: {
     content: string;
     createdAt: string;
-    read: boolean;
+    read: boolean; // Note: l'API peut renvoyer 'read' ou 'isRead'
+    isRead?: boolean; // Support pour les deux formats
+    isFromUser: boolean;
   };
   unreadCount: number;
 }

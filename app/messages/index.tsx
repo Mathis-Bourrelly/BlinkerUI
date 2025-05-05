@@ -8,6 +8,7 @@ import TabBar from "@/components/feature/TabBar";
 import { useConversationsQuery, useUnreadMessagesQuery } from "@/hooks/interfaces/useMessageInterface";
 import { ConversationPreviewType } from "@/types/MessagesType";
 import { LinearGradient } from "expo-linear-gradient";
+import { useMessageContext } from "@/context/MessageContext";
 
 // Composants de messages
 import { LoadingState } from "@/components/feature/messages/LoadingState";
@@ -22,6 +23,19 @@ export default function MessagesScreen() {
   const { colors } = useTheme();
   const { width } = useWindowDimensions();
   const isDesktop = width >= 768;
+  const { setEnableConversationsQuery, setEnableUnreadMessagesQuery } = useMessageContext();
+
+  // Activer les requêtes lorsque ce composant est monté
+  useEffect(() => {
+    setEnableConversationsQuery(true);
+    setEnableUnreadMessagesQuery(true);
+
+    // Désactiver les requêtes lorsque le composant est démonté
+    return () => {
+      setEnableConversationsQuery(false);
+      setEnableUnreadMessagesQuery(false);
+    };
+  }, [setEnableConversationsQuery, setEnableUnreadMessagesQuery]);
 
   // Récupérer les conversations et les messages non lus
   const { data: conversationsData, isLoading, error } = useConversationsQuery();
@@ -33,35 +47,13 @@ export default function MessagesScreen() {
   // Traiter les données de conversation de l'API
   useEffect(() => {
     if (conversationsData) {
-      // Transformer les données pour correspondre à la structure attendue
-      const transformedData = conversationsData.map(conversation => {
-        // Vérifier si les données sont déjà dans le bon format
-        if (conversation.participant) {
-          return conversation;
-        }
+      // Utiliser directement les données de l'API sans transformation
+      setConversations(conversationsData);
 
-        // Sinon, transformer les données
-        return {
-          conversationID: conversation.conversationID,
-          participant: {
-            userID: conversation.userID,
-            username: conversation.username,
-            display_name: conversation.display_name,
-            avatar_url: conversation.avatar_url,
-            score: conversation.score || 86400 // Valeur par défaut si non fournie
-          },
-          lastMessage: conversation.lastMessage,
-          unreadCount: conversation.unreadCount
-        };
-      });
-
-      // Mettre à jour l'état avec les données transformées
-      setConversations(transformedData);
-
-      // Afficher les données pour le débogage
-      console.log('Transformed conversations:', transformedData);
+      // Commentaire pour débogage si nécessaire
+      // console.log('Conversations:', conversationsData);
     }
-  }, [conversationsData, unreadMessages]);
+  }, [conversationsData]); // Retirer unreadMessages de la dépendance pour éviter les boucles
 
   if (isLoading) {
     return <LoadingState />;

@@ -1,13 +1,7 @@
 import React from "react";
-import { Row } from "@/components/base/Row";
-import { LanguageDropdown } from "@/components/base/LanguageDropdown";
-import { ThemeToggleButton } from "@/components/base/ThemeToggleButton";
+import { View } from "react-native";
 
 export function MessagesFooter() {
-  return (
-    <Row gap={12}>
-      <LanguageDropdown />
-      <ThemeToggleButton />
-    </Row>
-  );
+  // Les options de langue et de thème sont maintenant dans le menu d'options de la NavBar
+  return null;
 }

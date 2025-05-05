@@ -1,11 +1,20 @@
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { getToken } from "@/hooks/useSetToken";
 
-type InteractionResponse = {
-    created: boolean;
-    removed: boolean;
-    updated: boolean;
+type StandardResponse<T> = {
+    success: boolean;
+    status: number;
+    message: string;
+    data?: T;
 };
+
+type InteractionData = {
+    created?: boolean;
+    removed?: boolean;
+    updated?: boolean;
+};
+
+type InteractionResponse = StandardResponse<InteractionData>;
 
 export function useLikeMutation() {
     const queryClient = useQueryClient();
@@ -25,12 +34,13 @@ export function useLikeMutation() {
                 }
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ message: `HTTP error! Status: ${response.status}` }));
-                throw new Error(errorData.message || `Failed to like blink. Status: ${response.status}`);
+                throw new Error(data.message || `Failed to like blink. Status: ${response.status}`);
             }
 
-            return response.json() as Promise<InteractionResponse>;
+            return data as InteractionResponse;
         },
         onSuccess: () => {
             // Invalidate and refetch blinks query to update the UI
@@ -57,12 +67,13 @@ export function useDislikeMutation() {
                 }
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ message: `HTTP error! Status: ${response.status}` }));
-                throw new Error(errorData.message || `Failed to dislike blink. Status: ${response.status}`);
+                throw new Error(data.message || `Failed to dislike blink. Status: ${response.status}`);
             }
 
-            return response.json() as Promise<InteractionResponse>;
+            return data as InteractionResponse;
         },
         onSuccess: () => {
             // Invalidate and refetch blinks query to update the UI
@@ -71,10 +82,12 @@ export function useDislikeMutation() {
     });
 }
 
-// Cette fonction vérifie si l'utilisateur a déjà liké ou disliké un blink
-// Note: Cette fonction est un placeholder car l'API ne semble pas fournir cette information
-// Dans une implémentation réelle, vous devriez avoir un endpoint pour vérifier l'état des interactions
+// Cette fonction n'est plus nécessaire car nous utilisons directement la propriété isLiked du blink
+// qui est fournie par l'API. Elle est conservée pour référence mais n'est plus utilisée.
+/*
 export function useCheckInteractionStatus(blinkID: string) {
+    const queryClient = useQueryClient();
+
     return useQuery({
         queryKey: ['interaction', blinkID],
         queryFn: async () => {
@@ -83,26 +96,44 @@ export function useCheckInteractionStatus(blinkID: string) {
                 return { hasLiked: false, hasDisliked: false };
             }
 
-            // Ici, vous devriez faire un appel à l'API pour vérifier l'état des interactions
-            // Comme nous n'avons pas cet endpoint, nous retournons des valeurs par défaut
-            return { hasLiked: false, hasDisliked: false };
+            // Essayer de récupérer le blink depuis le cache
+            const cachedBlinks = queryClient.getQueriesData<{ data: any }>({ queryKey: ['blinks'] });
 
-            /* Exemple d'implémentation avec un endpoint réel:
-            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/interactions/status/${blinkID}`, {
+            // Parcourir tous les résultats mis en cache
+            for (const [, blinksData] of cachedBlinks) {
+                if (blinksData?.data?.data) {
+                    // Chercher le blink dans les données en cache
+                    const blink = blinksData.data.data.find(b => b.blinkID === blinkID);
+                    if (blink) {
+                        return {
+                            hasLiked: blink.isLiked || false,
+                            // Nous n'avons pas d'information sur les dislikes dans la nouvelle API
+                            hasDisliked: false
+                        };
+                    }
+                }
+            }
+
+            // Si nous n'avons pas trouvé le blink dans le cache, faire un appel API pour le récupérer
+            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/blinks/${blinkID}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
                 return { hasLiked: false, hasDisliked: false };
             }
 
-            return response.json();
-            */
+            return {
+                hasLiked: data.data?.isLiked || false,
+                hasDisliked: false
+            };
         },
-        // Ne pas refetch automatiquement, seulement quand explicitement demandé
         staleTime: Infinity,
         retry: false
     });
 }
+*/

@@ -18,7 +18,7 @@ export function BlinkList() {
 
     useEffect(() => {
         if (data?.pages) {
-            const allBlinks = data.pages.flatMap(page => page.data);
+            const allBlinks = data.pages.flatMap(page => page.data.data);
             setBlinks(allBlinks);
         }
     }, [data]);
@@ -116,9 +116,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
+        boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
         elevation: 5,
     },
 });

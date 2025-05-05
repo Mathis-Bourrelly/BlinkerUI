@@ -4,4 +4,5 @@ export interface ProfilesType {
     username: string;
     avatar_url?: string;
     score?: number;
+    isFollowing?: boolean; // Indique si l'utilisateur courant suit ce profil
 }

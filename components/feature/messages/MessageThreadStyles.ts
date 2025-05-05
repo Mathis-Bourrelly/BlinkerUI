@@ -111,10 +111,7 @@ export const messageThreadStyles = StyleSheet.create({
     borderRadius: 16,
     maxWidth: "75%",
     elevation: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.1)",
   },
   messageFooter: {
     flexDirection: "row",
@@ -128,6 +125,11 @@ export const messageThreadStyles = StyleSheet.create({
   expiryTime: {
     fontSize: 10,
     marginLeft: 8,
+  },
+  senderName: {
+    fontSize: 12,
+    fontWeight: "bold",
+    marginBottom: 4,
   },
   inputContainer: {
     flexDirection: "row",

@@ -31,8 +31,7 @@ export function ScoreDot({
   // Pour un score de 86400 (24h), on considère que c'est 1 jour
   const scoreInDays = score / 86400;
 
-  // Afficher les valeurs pour le débogage
-  console.log(`Score en secondes: ${score}, Score en jours: ${scoreInDays}`);
+  // Suppression du log de débogage qui cause des rendus excessifs
 
   // Déterminer la couleur en fonction du score en jours
   let dotColor;

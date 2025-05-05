@@ -1,9 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter, usePathname } from "expo-router";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { useUser } from "@/context/UserContext";
+import { useMessageContext } from "@/context/MessageContext";
 import NavBar from "@/components/feature/NavBar";
 import TabBar from "@/components/feature/TabBar";
 import { InnerContainer } from "@/components/base/InnerContainer";
@@ -32,12 +34,26 @@ import { messageThreadStyles } from "@/components/feature/messages/MessageThread
 export default function MessageThreadScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user } = useUser();
+  const { setEnableConversationsQuery, setEnableUnreadMessagesQuery } = useMessageContext();
   const params = useLocalSearchParams<{ userID: string; conversationID?: string }>();
   const userID = params.userID;
   const conversationID = params.conversationID;
   const [newMessage, setNewMessage] = useState("");
   const flatListRef = useRef<FlatList>(null);
   const { formatMessageDate, formatTimeRemaining } = useFormatMessageDate();
+
+  // Désactiver les requêtes inutiles sur cette page
+  useEffect(() => {
+    // S'assurer que les requêtes sont désactivées lorsque ce composant est monté
+    setEnableConversationsQuery(false);
+    setEnableUnreadMessagesQuery(false);
+
+    // Pas besoin de cleanup car nous voulons que les requêtes restent désactivées
+    // jusqu'à ce qu'un autre composant les active explicitement
+  }, [setEnableConversationsQuery, setEnableUnreadMessagesQuery]);
 
   // Récupérer les messages selon le mode (conversation ou entre utilisateurs)
   const {
@@ -67,6 +83,37 @@ export default function MessageThreadScreen() {
   // État local pour les messages
   const [messages, setMessages] = useState<MessageType[]>([]);
 
+  // Utiliser une référence pour suivre si les messages ont déjà été marqués comme lus
+  // Une référence ne déclenche pas de rendu lorsqu'elle est mise à jour
+  const messagesMarkedAsReadRef = useRef<{[key: string]: boolean}>({});
+
+  // Fonction pour marquer les messages comme lus
+  const markMessagesAsRead = useCallback(() => {
+    const key = conversationID || userID;
+
+    // Ne rien faire si les messages ont déjà été marqués comme lus
+    if (key && messagesMarkedAsReadRef.current[key]) {
+      return;
+    }
+
+    // Marquer les messages comme lus selon le mode (conversation ou entre utilisateurs)
+    if (conversationID) {
+      markConversationAsReadMutation.mutate(conversationID, {
+        onSuccess: () => {
+          // Marquer comme déjà lu pour éviter les appels répétés
+          messagesMarkedAsReadRef.current[conversationID] = true;
+        }
+      });
+    } else if (userID && userID !== "unknown") {
+      markAsReadMutation.mutate(userID, {
+        onSuccess: () => {
+          // Marquer comme déjà lu pour éviter les appels répétés
+          messagesMarkedAsReadRef.current[userID] = true;
+        }
+      });
+    }
+  }, [conversationID, userID, markConversationAsReadMutation, markAsReadMutation]);
+
   // Informations de contact pour l'autre utilisateur
   const [contactInfo, setContactInfo] = useState({
     display_name: userID === "unknown" ? "Conversation" : "",
@@ -78,57 +125,72 @@ export default function MessageThreadScreen() {
 
   // Mettre à jour les informations de contact avec les données de profil
   useEffect(() => {
-    if (profileData) {
+    console.log('Profile data:', profileData);
+
+    if (profileData && profileData.data) {
       // Si nous avons des données de profil, les utiliser
+      const profile = profileData.data;
       setContactInfo({
-        display_name: profileData.display_name || profileData.username || "Utilisateur",
-        username: profileData.username || "",
-        avatar_url: profileData.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`,
+        display_name: profile.display_name || profile.username || "Utilisateur",
+        username: profile.username || "",
+        avatar_url: profile.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`,
         isOnline: false, // L'API ne fournit pas cette information pour l'instant
-        score: profileData.score || 86400, // Utiliser le score de l'utilisateur ou la valeur par défaut
+        score: profile.score || 86400, // Utiliser le score de l'utilisateur ou la valeur par défaut
       });
     } else if (conversationData && conversationData.length > 0) {
       // Sinon, essayer de trouver les informations dans les données de conversation
-      const otherUserMessage = conversationData.find((msg: { senderID: string; }) => msg.senderID !== "me");
-      if (otherUserMessage && otherUserMessage.senderInfo) {
+      console.log('Conversation data:', conversationData);
+
+      // Trouver un message d'un autre utilisateur
+      const currentUserID = user?.userID;
+      const otherUserMessage = conversationData.find((msg) => msg.senderID !== currentUserID);
+
+      if (otherUserMessage && otherUserMessage.sender) {
+        console.log('Found sender info in message:', otherUserMessage.sender);
         setContactInfo({
-          display_name: otherUserMessage.senderInfo.display_name || "Utilisateur",
-          username: otherUserMessage.senderInfo.username || "",
-          avatar_url: otherUserMessage.senderInfo.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`,
+          display_name: otherUserMessage.sender.display_name || "Utilisateur",
+          username: otherUserMessage.sender.username || "",
+          avatar_url: otherUserMessage.sender.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`,
           isOnline: false, // L'API ne fournit pas cette information pour l'instant
-          score: otherUserMessage.senderInfo.score || 86400, // Utiliser le score de l'utilisateur ou la valeur par défaut
+          score: otherUserMessage.sender.score || 86400, // Utiliser le score de l'utilisateur ou la valeur par défaut
         });
       }
     }
-  }, [profileData, conversationData]);
+  }, [profileData, conversationData, user?.userID]);
 
   // Traiter les données de messages de l'API
   useEffect(() => {
     if (conversationData) {
       // Utiliser les données réelles de l'API pour les conversations
       setMessages(conversationData);
-
-      // Marquer les messages de la conversation comme lus
-      if (conversationID) {
-        markConversationAsReadMutation.mutate(conversationID);
-      }
     } else if (messagesData) {
       // Utiliser les données réelles de l'API pour les messages entre utilisateurs
       setMessages(messagesData);
-
-      // Marquer les messages comme lus (ancienne méthode)
-      if (userID && userID !== "unknown") {
-        markAsReadMutation.mutate(userID);
-      }
     }
-  }, [userID, conversationID, conversationData, messagesData]);
+  }, [conversationData, messagesData]);
+
+  // Appeler markMessagesAsRead lorsque les données sont chargées
+  useEffect(() => {
+    // Attendre un court instant pour éviter les appels trop fréquents
+    const timer = setTimeout(() => {
+      markMessagesAsRead();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [conversationID, userID, markMessagesAsRead]);
 
   // Défiler vers le bas lorsque de nouveaux messages sont ajoutés
   useEffect(() => {
+    // Utiliser requestAnimationFrame au lieu de setTimeout pour éviter les problèmes de rendu
     if (flatListRef.current && messages.length > 0) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: false });
-      }, 100);
+      const scrollToEnd = () => {
+        if (flatListRef.current) {
+          flatListRef.current.scrollToEnd({ animated: false });
+        }
+      };
+
+      // Utiliser requestAnimationFrame pour s'assurer que le scroll se produit après le rendu
+      requestAnimationFrame(scrollToEnd);
     }
   }, [messages.length]);
 
@@ -153,16 +215,36 @@ export default function MessageThreadScreen() {
     sendMessageMutation.mutate(messageData, {
       onSuccess: (data) => {
         // Si l'API renvoie le message créé, l'utiliser
-        if (data && data.message) {
-          setMessages([...messages, data.message]);
+        if (data && data.data) {
+          setMessages([...messages, data.data]);
+
+          // Si nous avons reçu un conversationID et que nous n'en avions pas avant, mettre à jour l'URL
+          if (data.data.conversationID && !conversationID) {
+            router.setParams({
+              conversationID: data.data.conversationID
+            });
+          }
+
+          // Réinitialiser le marquage pour permettre de marquer les nouveaux messages comme lus
+          const key = data.data.conversationID || userID;
+          if (key) {
+            messagesMarkedAsReadRef.current[key] = false;
+
+            // Attendre un court instant puis marquer les messages comme lus
+            setTimeout(() => {
+              markMessagesAsRead();
+            }, 1000);
+          }
         }
 
         setNewMessage("");
 
-        // Défiler vers le bas
-        setTimeout(() => {
-          flatListRef.current?.scrollToEnd({ animated: true });
-        }, 100);
+        // Défiler vers le bas en utilisant requestAnimationFrame au lieu de setTimeout
+        requestAnimationFrame(() => {
+          if (flatListRef.current) {
+            flatListRef.current.scrollToEnd({ animated: true });
+          }
+        });
       },
       onError: (error) => {
         console.error("Failed to send message:", error);

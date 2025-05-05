@@ -20,25 +20,17 @@ export function ConversationItem({ conversation }: ConversationItemProps) {
   const { formatMessageDate } = useFormatMessageDate();
 
   const handlePress = () => {
-    // If we have a participant, navigate with both userID and conversationID
-    // Otherwise, just navigate with conversationID
-    if (conversation.participant) {
-      router.push({
-        pathname: "/messages/[userID]",
-        params: {
-          userID: conversation.participant.userID,
-          conversationID: conversation.conversationID
-        },
-      });
-    } else {
-      router.push({
-        pathname: "/messages/[userID]",
-        params: {
-          userID: "unknown",
-          conversationID: conversation.conversationID
-        },
-      });
-    }
+    // Navigate with both userID and conversationID
+    router.push({
+      pathname: "/messages/[userID]",
+      params: {
+        userID: conversation.userID,
+        conversationID: conversation.conversationID
+      },
+    });
+
+    // Debug log
+    console.log('Conversation clicked:', conversation);
   };
 
   return (
@@ -50,8 +42,8 @@ export function ConversationItem({ conversation }: ConversationItemProps) {
       <View style={messagesStyles.conversationContainer}>
         <Image
           source={{
-            uri: conversation.participant && conversation.participant.avatar_url
-              ? conversation.participant.avatar_url
+            uri: conversation.avatar_url
+              ? conversation.avatar_url
               : `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`
           }}
           style={messagesStyles.avatar}
@@ -61,20 +53,13 @@ export function ConversationItem({ conversation }: ConversationItemProps) {
           <View style={messagesStyles.row}>
             <View style={messagesStyles.nameContainer}>
               <ThemedText style={[messagesStyles.name, { color: colors.text }]}>
-                {conversation.participant?.display_name || "User"}
+                {conversation.display_name || "User"}
               </ThemedText>
-              {conversation.participant?.userID && (
-                <View style={messagesStyles.usernameRow}>
-                  <ThemedText style={[messagesStyles.username, { color: colors.textSecondary }]}>
-                    @{conversation.participant.username}
-                  </ThemedText>
-                  {conversation.participant.score && (
-                    <View style={messagesStyles.scoreDotContainer}>
-                      <ScoreDot score={conversation.participant.score} size={8} />
-                    </View>
-                  )}
-                </View>
-              )}
+              <View style={messagesStyles.usernameRow}>
+                <ThemedText style={[messagesStyles.username, { color: colors.textSecondary }]}>
+                  @{conversation.username}
+                </ThemedText>
+              </View>
             </View>
             <ThemedText style={[messagesStyles.date, { color: colors.textSecondary }]}>
               {formatMessageDate(conversation.lastMessage?.createdAt || new Date().toISOString())}
@@ -86,11 +71,11 @@ export function ConversationItem({ conversation }: ConversationItemProps) {
               style={[
                 messagesStyles.preview,
                 { color: colors.textSecondary },
-                conversation.lastMessage && !conversation.lastMessage.read && [messagesStyles.unreadText, { color: colors.text }]
+                conversation.lastMessage && !(conversation.lastMessage.read ?? conversation.lastMessage.isRead) && [messagesStyles.unreadText, { color: colors.text }]
               ]}
               numberOfLines={1}
             >
-              {conversation.lastMessage?.content || t("messages.noMessages")}
+              {conversation.lastMessage?.isFromUser ? `${t("messages.you")}: ` : ""}{conversation.lastMessage?.content || t("messages.noMessages")}
             </ThemedText>
 
             {conversation.unreadCount > 0 && (

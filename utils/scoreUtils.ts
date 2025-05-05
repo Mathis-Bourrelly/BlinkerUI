@@ -58,8 +58,7 @@ export function useFormatUserScore() {
     // Convert seconds to days for comparison
     const scoreInDays = scoreInSeconds / 86400;
 
-    // Afficher les valeurs pour le débogage
-    console.log(`Score en secondes: ${scoreInSeconds}, Score en jours: ${scoreInDays}`);
+    // Suppression du log de débogage qui cause des rendus excessifs
 
     // Pour un score de 86400 (24h/1j), on utilise la couleur d'accent
     if (scoreInSeconds === 86400) {

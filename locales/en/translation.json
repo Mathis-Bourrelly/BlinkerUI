@@ -23,7 +23,8 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "expiresIn": "Expires in",
-    "expired": "Expired"
+    "expired": "Expired",
+    "you": "You"
   },
   "language": "English",
   "login": {

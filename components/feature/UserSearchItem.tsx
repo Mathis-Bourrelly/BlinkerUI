@@ -84,7 +84,7 @@ export function UserSearchItem({ user }: UserSearchItemProps) {
             <ScoreDot score={user.score} showText />
           </Row>
           {user.bio && (
-            <ThemedText variant="Caption" numberOfLines={1} style={styles.bio}>
+            <ThemedText variant="Caption" numberOfLines={1} style={[styles.bio, { color: colors.text }]}>
               {user.bio}
             </ThemedText>
           )}

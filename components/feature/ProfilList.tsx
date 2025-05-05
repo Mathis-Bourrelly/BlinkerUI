@@ -19,8 +19,8 @@ export function ProfilList({ fetchProfiles }: UserListProps) {
         isLoading,
         error,
     } = fetchProfiles();
-    //@ts-ignore
-    const profiles = data ? data.pages.flatMap(page => page.data) : [];
+    // Extraire les profils des données paginées avec la nouvelle structure de réponse
+    const profiles = data ? data.pages.flatMap(page => page.data.data) : [];
 
     if (isLoading) {
         return <ActivityIndicator size="large" color={colors.accent} />;

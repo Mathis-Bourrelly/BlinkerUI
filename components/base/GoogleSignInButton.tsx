@@ -97,20 +97,20 @@ export default function GoogleSignInButton() {
 
             loginWithGoogle({ id_token: response.params.id_token }, {
                 onSuccess: (data) => {
-                    if (data?.token && data?.userID) {
+                    if (data?.data?.token && data?.data?.userID) {
                         // Store token and user data with profile picture
-                        storeToken(data.token)
+                        storeToken(data.data.token)
                             .then(() => storeUser({
-                                userID: data.userID,
+                                userID: data.data.userID,
                                 avatar_url: userProfilePicture
                             }))
                             .then(() => {
                                 // Update the user's profile in the backend with the Google profile picture
                                 if (userProfilePicture) {
-                                    console.log('Updating profile with Google avatar for userID:', data.userID);
+                                    console.log('Updating profile with Google avatar for userID:', data.data.userID);
                                     // Use the updateProfile mutation we defined earlier
                                     updateProfile({
-                                        userID: data.userID,
+                                        userID: data.data.userID,
                                         avatar_url: userProfilePicture
                                     }, {
                                         onSuccess: (response) => {
