@@ -15,6 +15,7 @@ import {
   useConversationMessagesQuery,
   useMarkConversationAsReadMutation
 } from "@/hooks/interfaces/useMessageInterface";
+import { useUserProfileQuery } from "@/hooks/interfaces/useProfileInterface";
 import { useQueryClient } from "@tanstack/react-query";
 import { MessageType } from "@/types/MessagesType";
 import { useFormatMessageDate } from "@/utils/dateUtils";
@@ -51,6 +52,12 @@ export default function MessageThreadScreen() {
     error: errorMessages
   } = (!conversationID && userID !== "unknown") ? useMessagesBetweenQuery(userID as string) : { data: null, isLoading: false, error: null };
 
+  // Récupérer les informations de profil de l'utilisateur si nous avons un userID valide
+  const {
+    data: profileData,
+    isLoading: isLoadingProfile
+  } = (userID !== "unknown") ? useUserProfileQuery(userID as string) : { data: null, isLoading: false };
+
   // Mutations pour envoyer et marquer comme lus
   const sendMessageMutation = useSendMessageMutation();
   const markAsReadMutation = useMarkAsReadMutation();
@@ -69,13 +76,21 @@ export default function MessageThreadScreen() {
     score: 86400, // Valeur par défaut (24 heures)
   });
 
-  // Mettre à jour les informations de contact si nous avons des données de conversation
+  // Mettre à jour les informations de contact avec les données de profil
   useEffect(() => {
-    if (conversationData && conversationData.length > 0) {
-      // Trouver un message de l'autre utilisateur pour obtenir son ID
+    if (profileData) {
+      // Si nous avons des données de profil, les utiliser
+      setContactInfo({
+        display_name: profileData.display_name || profileData.username || "Utilisateur",
+        username: profileData.username || "",
+        avatar_url: profileData.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`,
+        isOnline: false, // L'API ne fournit pas cette information pour l'instant
+        score: profileData.score || 86400, // Utiliser le score de l'utilisateur ou la valeur par défaut
+      });
+    } else if (conversationData && conversationData.length > 0) {
+      // Sinon, essayer de trouver les informations dans les données de conversation
       const otherUserMessage = conversationData.find(msg => msg.senderID !== "me");
       if (otherUserMessage && otherUserMessage.senderInfo) {
-        // Mettre à jour les informations de contact avec les données réelles
         setContactInfo({
           display_name: otherUserMessage.senderInfo.display_name || "Utilisateur",
           username: otherUserMessage.senderInfo.username || "",
@@ -85,7 +100,7 @@ export default function MessageThreadScreen() {
         });
       }
     }
-  }, [conversationData]);
+  }, [profileData, conversationData]);
 
   // Traiter les données de messages de l'API
   useEffect(() => {
@@ -135,40 +150,28 @@ export default function MessageThreadScreen() {
     }
 
     // Envoyer le message via la mutation
-    sendMessageMutation.mutate(
-      messageData,
-      {
-        onSuccess: (data) => {
-          // Si l'API renvoie le message créé, l'utiliser
-          if (data && data.message) {
-            setMessages([...messages, data.message]);
-          } else {
-            // Sinon, invalider les requêtes pour récupérer les messages mis à jour
-            if (conversationID) {
-              // Rafraîchir les messages de la conversation
-              queryClient.invalidateQueries({ queryKey: ["messages", "conversation", conversationID] });
-            } else if (userID !== "unknown") {
-              // Rafraîchir les messages entre utilisateurs
-              queryClient.invalidateQueries({ queryKey: ["messages", userID] });
-            }
-          }
+    sendMessageMutation.mutate(messageData, {
+      onSuccess: (data) => {
+        // Si l'API renvoie le message créé, l'utiliser
+        if (data && data.message) {
+          setMessages([...messages, data.message]);
+        }
 
-          setNewMessage("");
+        setNewMessage("");
 
-          // Défiler vers le bas
-          setTimeout(() => {
-            flatListRef.current?.scrollToEnd({ animated: true });
-          }, 100);
-        },
-        onError: (error) => {
-          console.error("Failed to send message:", error);
-        },
-      }
-    );
+        // Défiler vers le bas
+        setTimeout(() => {
+          flatListRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      },
+      onError: (error) => {
+        console.error("Failed to send message:", error);
+      },
+    });
   };
 
   // Déterminer l'état de chargement et d'erreur global
-  const isLoading = isLoadingConversation || isLoadingMessages;
+  const isLoading = isLoadingConversation || isLoadingMessages || isLoadingProfile;
   const error = errorConversation || errorMessages;
   const gradientColors = colors.gradient;
 
@@ -188,7 +191,7 @@ export default function MessageThreadScreen() {
           <InnerContainer>
             <NavBar />
 
-            <ContactHeader contactInfo={contactInfo} />
+            <ContactHeader contactInfo={contactInfo} userID={userID} />
 
             <MessageList
               ref={flatListRef}
@@ -212,5 +215,3 @@ export default function MessageThreadScreen() {
     </>
   );
 }
-
-

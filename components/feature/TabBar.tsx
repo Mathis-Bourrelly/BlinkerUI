@@ -21,12 +21,16 @@ export default function TabBar() {
     };
     return (
         <View style={[styles.tabBar, dynamicColor]}>
-            <TouchableOpacity onPress={() => router.push("/")}>
+            <TouchableOpacity onPress={() => router.push("/search")}>
                 <Icon name="search" size={32} color={dynamicColor.color} />
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => router.push("/")}>
                 <Icon name="home" size={32} color={dynamicColor.color} />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.push("/messages")}>
+                <Icon name="chat" size={32} color={dynamicColor.color} />
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => router.push(`/profile/${user?.userID}`)}>

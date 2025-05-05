@@ -26,6 +26,13 @@
     "passwordForgotten": "",
     "wrongPassword": ""
   },
+  "search": {
+    "title": "ユーザー検索",
+    "placeholder": "名前または@ユーザー名で検索",
+    "noResults": "結果が見つかりません",
+    "error": "エラーが発生しました",
+    "enterQuery": "検索語を入力してください"
+  },
   "profile": {
     "blink": "",
     "follow": "",

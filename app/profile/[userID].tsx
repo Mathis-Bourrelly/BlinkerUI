@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import {StyleSheet, View, ActivityIndicator, Image, useWindowDimensions, TouchableOpacity} from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {router, Stack, useLocalSearchParams, useRouter} from "expo-router";
@@ -18,6 +19,7 @@ import {useUser} from "@/context/UserContext";
 import {Icon} from "@/components/images/Icon";
 import {ScoreDot} from "@/components/feature/ScoreDot";
 import {useFormatUserScore} from "@/utils/scoreUtils";
+import {useFollowMutation, useUnfollowMutation} from "@/hooks/interfaces/useFollowInterface";
 
 export default function ProfileScreen() {
     const {colors} = useTheme();
@@ -28,11 +30,50 @@ export default function ProfileScreen() {
     const isDesktop = width >= 768;
     const {user, clearUser} = useUser();
     const {formatScore, getScoreDotColor} = useFormatUserScore();
+    const queryClient = useQueryClient();
 
     const { userID } = useLocalSearchParams<{ userID: string }>();
     console.log('Profile page - userID:', userID);
 
     const {data, isLoading, error} = useUserProfileQuery(userID);
+
+    // Mutations pour suivre/ne plus suivre
+    const followMutation = useFollowMutation();
+    const unfollowMutation = useUnfollowMutation();
+
+    // État local pour gérer l'état de suivi pendant les mutations
+    const [isFollowingState, setIsFollowingState] = useState(false);
+
+    // Mettre à jour l'état local lorsque les données du profil sont chargées
+    React.useEffect(() => {
+        if (data && data.isFollowing !== undefined) {
+            setIsFollowingState(data.isFollowing);
+        } else {
+            // Réinitialiser l'état si nous n'avons pas de données
+            setIsFollowingState(false);
+        }
+    }, [data, userID]);
+
+    // Fonction pour gérer le suivi/ne plus suivre
+    const handleFollowToggle = () => {
+        if (isFollowingState) {
+            unfollowMutation.mutate(userID as string, {
+                onSuccess: () => {
+                    setIsFollowingState(false);
+                    // Invalider la requête du profil pour obtenir les données mises à jour
+                    queryClient.invalidateQueries({ queryKey: ["profile", userID] });
+                }
+            });
+        } else {
+            followMutation.mutate(userID as string, {
+                onSuccess: () => {
+                    setIsFollowingState(true);
+                    // Invalider la requête du profil pour obtenir les données mises à jour
+                    queryClient.invalidateQueries({ queryKey: ["profile", userID] });
+                }
+            });
+        }
+    };
 
     // Debug log to check profile data
     console.log('Profile data:', data);
@@ -89,6 +130,56 @@ export default function ProfileScreen() {
                                                 <ScoreDot score={data.score} showValue={true} size={10} />
                                             </View>
                                         </View>
+
+                                        {/* Boutons d'action (seulement si ce n'est pas le profil de l'utilisateur actuel) */}
+                                        {user && user.userID !== userID && (
+                                            <View style={styles.actionButtonsContainer}>
+                                                {/* Bouton Follow/Unfollow */}
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.followButton,
+                                                        {
+                                                            backgroundColor: isFollowingState ? colors.background : colors.accent,
+                                                            borderWidth: isFollowingState ? 1 : 0,
+                                                            borderColor: colors.accent
+                                                        }
+                                                    ]}
+                                                    onPress={handleFollowToggle}
+                                                    disabled={followMutation.isPending || unfollowMutation.isPending}
+                                                >
+                                                    {followMutation.isPending || unfollowMutation.isPending ? (
+                                                        <ActivityIndicator size="small" color={isFollowingState ? colors.accent : colors.textInvert} />
+                                                    ) : (
+                                                        <ThemedText
+                                                            variant="Body"
+                                                            color={isFollowingState ? colors.accent : colors.textInvert}
+                                                        >
+                                                            {isFollowingState ? t('profile.unfollow') : t('profile.followButton')}
+                                                        </ThemedText>
+                                                    )}
+                                                </TouchableOpacity>
+
+                                                {/* Bouton Envoyer un message */}
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.messageButton,
+                                                        {
+                                                            backgroundColor: colors.background,
+                                                            borderWidth: 1,
+                                                            borderColor: colors.accent
+                                                        }
+                                                    ]}
+                                                    onPress={() => router.push(`/messages/${userID}`)}
+                                                >
+                                                    <ThemedText
+                                                        variant="Body"
+                                                        color={colors.accent}
+                                                    >
+                                                        {t('profile.sendMessage')}
+                                                    </ThemedText>
+                                                </TouchableOpacity>
+                                            </View>
+                                        )}
                                         <Row gap={isDesktop ? 20 : 12}>
                                             <TouchableOpacity onPress={() => router.push(`/following/${userID}`)}>
                                                 <View style={styles.statItem}>
@@ -193,5 +284,22 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         borderRadius: 8,
         gap: 8,
+    },
+    actionButtonsContainer: {
+        flexDirection: 'row',
+        marginTop: 10,
+        gap: 10,
+    },
+    followButton: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        alignSelf: 'flex-start',
+    },
+    messageButton: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        alignSelf: 'flex-start',
     },
 });

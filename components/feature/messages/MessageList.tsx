@@ -2,6 +2,7 @@ import React, { forwardRef, useMemo } from "react";
 import { FlatList, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
+import { useUser } from "@/context/UserContext";
 import { ThemedText } from "@/components/base/ThemedText";
 import { Icon } from "@/components/images/Icon";
 import { MessageItem } from "./MessageItem";
@@ -20,6 +21,7 @@ export const MessageList = forwardRef<FlatList, MessageListProps>(
   ({ messages, formatMessageDate, formatTimeRemaining }, ref) => {
     const { colors } = useTheme();
     const { t } = useTranslation();
+    const { user } = useUser();
 
     // Groupe les messages par date
     const groupedMessages = useMemo(() => {
@@ -113,6 +115,7 @@ export const MessageList = forwardRef<FlatList, MessageListProps>(
                 message={item as MessageType}
                 formatMessageDate={formatMessageDate}
                 formatTimeRemaining={formatTimeRemaining}
+                currentUserID={user?.userID || null}
               />
             );
           }

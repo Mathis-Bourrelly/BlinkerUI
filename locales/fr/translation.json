@@ -44,10 +44,21 @@
     "passwordForgotten": "Mot de passe oublié",
     "wrongPassword": "Mot de passe incorrect"
   },
+  "search": {
+    "title": "Rechercher des utilisateurs",
+    "placeholder": "Rechercher par nom ou @username",
+    "noResults": "Aucun résultat trouvé",
+    "error": "Une erreur est survenue",
+    "enterQuery": "Entrez un terme de recherche"
+  },
   "profile": {
     "blink": "blink",
     "follow": "surveillé",
     "follower": "surveillant",
+    "followButton": "Suivre",
+    "unfollow": "Ne plus suivre",
+    "errorLoadingProfile": "Erreur lors du chargement du profil",
+    "sendMessage": "Envoyer un message",
     "logout": "Se déconnecter",
     "score": "Score utilisateur",
     "scoreDescriptionLow": "Nouvel utilisateur avec contenu basique",

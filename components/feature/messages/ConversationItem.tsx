@@ -25,17 +25,17 @@ export function ConversationItem({ conversation }: ConversationItemProps) {
     if (conversation.participant) {
       router.push({
         pathname: "/messages/[userID]",
-        params: { 
-          userID: conversation.participant.userID, 
-          conversationID: conversation.conversationID 
+        params: {
+          userID: conversation.participant.userID,
+          conversationID: conversation.conversationID
         },
       });
     } else {
       router.push({
         pathname: "/messages/[userID]",
-        params: { 
-          userID: "unknown", 
-          conversationID: conversation.conversationID 
+        params: {
+          userID: "unknown",
+          conversationID: conversation.conversationID
         },
       });
     }
@@ -60,7 +60,7 @@ export function ConversationItem({ conversation }: ConversationItemProps) {
         <View style={messagesStyles.messageContent}>
           <View style={messagesStyles.row}>
             <View style={messagesStyles.nameContainer}>
-              <ThemedText style={messagesStyles.name}>
+              <ThemedText style={[messagesStyles.name, { color: colors.text }]}>
                 {conversation.participant?.display_name || "User"}
               </ThemedText>
               {conversation.participant?.userID && (

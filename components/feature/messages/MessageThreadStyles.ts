@@ -47,11 +47,13 @@ export const messageThreadStyles = StyleSheet.create({
     marginHorizontal: 12,
     marginTop: 8,
   },
+  contactAvatarContainer: {
+    marginRight: 12,
+  },
   contactAvatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginRight: 12,
   },
   contactInfo: {
     flex: 1,

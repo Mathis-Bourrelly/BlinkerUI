@@ -42,10 +42,14 @@ export default function NavBar() {
                 <TouchableOpacity onPress={() => router.push("/messages")}>
                 <ThemedText>Messagerie</ThemedText>
                 </TouchableOpacity>
+                <ThemedVerticalSeparator barColor={colors.border} height={20} />
+                <TouchableOpacity onPress={() => router.push("/search")}>
+                <ThemedText>Rechercher</ThemedText>
+                </TouchableOpacity>
             </View>
             <Row gap={12}>
-                <TouchableOpacity onPress={() => router.push("/")}>
-                    <Icon name={"appointment-reminders"} size={32} color={colors.text}></Icon>
+                <TouchableOpacity onPress={() => router.push("/search")}>
+                    <Icon name={"search"} size={32} color={colors.text}></Icon>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => router.push(`/profile/${user?.userID}`)}>
                     {/* Use user's avatar URL if available, otherwise use a default avatar */}

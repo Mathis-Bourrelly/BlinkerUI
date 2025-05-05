@@ -33,8 +33,33 @@ export default function MessagesScreen() {
   // Traiter les données de conversation de l'API
   useEffect(() => {
     if (conversationsData) {
-      // Utiliser les données réelles de l'API
-      setConversations(conversationsData);
+      // Transformer les données pour correspondre à la structure attendue
+      const transformedData = conversationsData.map(conversation => {
+        // Vérifier si les données sont déjà dans le bon format
+        if (conversation.participant) {
+          return conversation;
+        }
+
+        // Sinon, transformer les données
+        return {
+          conversationID: conversation.conversationID,
+          participant: {
+            userID: conversation.userID,
+            username: conversation.username,
+            display_name: conversation.display_name,
+            avatar_url: conversation.avatar_url,
+            score: conversation.score || 86400 // Valeur par défaut si non fournie
+          },
+          lastMessage: conversation.lastMessage,
+          unreadCount: conversation.unreadCount
+        };
+      });
+
+      // Mettre à jour l'état avec les données transformées
+      setConversations(transformedData);
+
+      // Afficher les données pour le débogage
+      console.log('Transformed conversations:', transformedData);
     }
   }, [conversationsData, unreadMessages]);
 

@@ -1,8 +1,9 @@
 import { useFetchQuery } from "@/hooks/repository/useFetchQuery";
 import { usePostMutation } from "@/hooks/repository/usePostMutation";
 import { usePutMutation } from "@/hooks/repository/usePutMutation";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { MessageType, ConversationPreviewType, ConversationType, LegacyMessageType } from "@/types/MessagesType";
+import { getToken } from "@/hooks/useSetToken";
 
 // Récupérer les conversations de l'utilisateur
 export function useConversationsQuery() {
@@ -24,16 +25,36 @@ export function useUnreadMessagesQuery() {
   return useFetchQuery(`/messages/unread`, ["messages", "unread"]);
 }
 
-// Envoyer un nouveau message avec conversationID
+// Envoyer un nouveau message
 export function useSendMessageMutation() {
   const queryClient = useQueryClient();
 
-  return usePostMutation<{
-    conversationID?: string;
-    receiverID?: string;
-    content: string;
-  }>("/messages", {
-    onSuccess: (data, variables) => {
+  return useMutation({
+    mutationFn: async (messageData: {
+      conversationID?: string;
+      receiverID?: string;
+      content: string;
+    }) => {
+      // Toujours utiliser l'endpoint /messages comme spécifié dans la documentation API
+      const endpoint = "/messages";
+
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await getToken()}`
+        },
+        body: JSON.stringify(messageData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to send message' }));
+        throw new Error(errorData.message || 'Failed to send message');
+      }
+
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
       // Invalider les requêtes pour mettre à jour l'UI
       if (variables.conversationID) {
         queryClient.invalidateQueries({ queryKey: ["messages", "conversation", variables.conversationID] });
@@ -50,8 +71,24 @@ export function useSendMessageMutation() {
 export function useMarkConversationAsReadMutation() {
   const queryClient = useQueryClient();
 
-  return usePutMutation<void, string>("/messages/read/conversation/{conversationID}", {
-    onSuccess: (data, conversationID) => {
+  // Utiliser directement useMutation pour créer la mutation
+  return useMutation({
+    mutationFn: async (conversationID: string) => {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/messages/read/conversation/${conversationID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await getToken()}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to mark conversation as read');
+      }
+
+      return response.json().catch(() => ({})); // Retourner un objet vide si pas de JSON
+    },
+    onSuccess: (_, conversationID) => {
       // Invalider les requêtes pour mettre à jour l'UI
       queryClient.invalidateQueries({ queryKey: ["messages", "conversation", conversationID] });
       queryClient.invalidateQueries({ queryKey: ["messages", "unread"] });
@@ -64,8 +101,24 @@ export function useMarkConversationAsReadMutation() {
 export function useMarkAsReadMutation() {
   const queryClient = useQueryClient();
 
-  return usePutMutation<void, string>("/messages/read/{senderID}", {
-    onSuccess: (data, senderID) => {
+  // Utiliser directement useMutation pour créer la mutation
+  return useMutation({
+    mutationFn: async (senderID: string) => {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/messages/read/${senderID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await getToken()}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to mark messages as read');
+      }
+
+      return response.json().catch(() => ({})); // Retourner un objet vide si pas de JSON
+    },
+    onSuccess: (_, senderID) => {
       // Invalider les requêtes pour mettre à jour l'UI
       queryClient.invalidateQueries({ queryKey: ["messages", senderID] });
       queryClient.invalidateQueries({ queryKey: ["messages", "unread"] });

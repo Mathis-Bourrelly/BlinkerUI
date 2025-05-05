@@ -2,7 +2,6 @@ import React from "react";
 import { View } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemedText } from "@/components/base/ThemedText";
-import { LinearGradient } from "expo-linear-gradient";
 import { messageThreadStyles } from "./MessageThreadStyles";
 
 type MessageItemProps = {
@@ -14,42 +13,44 @@ type MessageItemProps = {
   };
   formatMessageDate: (date: string) => string;
   formatTimeRemaining: (date: string) => string;
+  currentUserID: string | null;
 };
 
-export function MessageItem({ message, formatMessageDate, formatTimeRemaining }: MessageItemProps) {
+export function MessageItem({ message, formatMessageDate, formatTimeRemaining, currentUserID }: MessageItemProps) {
   const { colors } = useTheme();
-  const isSentByMe = message.senderID === "me";
+
+  // Déterminer si le message est envoyé par l'utilisateur actuel en comparant les IDs
+  const isSentByMe = currentUserID !== null && message.senderID === currentUserID;
 
   return (
     <View style={messageThreadStyles.messageWrapper}>
-      {isSentByMe ? (
-        <View style={messageThreadStyles.sentMessageContainer}>
-          <View style={messageThreadStyles.spacer} />
-          <LinearGradient
-            colors={colors.accentGradient}
-            style={messageThreadStyles.messageBubble}
-          >
-            <ThemedText style={{ color: colors.textInvert }}>{message.content}</ThemedText>
-            <View style={messageThreadStyles.messageFooter}>
-              <ThemedText style={[messageThreadStyles.expiryTime, { color: colors.textInvert }]}>
-                {formatTimeRemaining(message.expiresAt).replace("Expire dans ", "")}
-              </ThemedText>
-            </View>
-          </LinearGradient>
-        </View>
-      ) : (
+      {!isSentByMe ? (
         <View style={messageThreadStyles.receivedMessageContainer}>
           <View
             style={[messageThreadStyles.messageBubble, { backgroundColor: colors.card }]}
           >
-            <ThemedText style={{ color: colors.text }}>{message.content}</ThemedText>
+            <ThemedText style={{ color: "white" }}>{message.content}</ThemedText>
             <View style={messageThreadStyles.messageFooter}>
-              <ThemedText style={[messageThreadStyles.expiryTime, { color: colors.text }]}>
+              <ThemedText style={[messageThreadStyles.expiryTime, { color: "white" }]}>
                 {formatTimeRemaining(message.expiresAt).replace("Expire dans ", "")}
               </ThemedText>
             </View>
           </View>
           <View style={messageThreadStyles.spacer} />
+        </View>
+      ) : (
+        <View style={messageThreadStyles.sentMessageContainer}>
+          <View style={messageThreadStyles.spacer} />
+          <View
+            style={[messageThreadStyles.messageBubble, { backgroundColor: colors.accent }]}
+          >
+            <ThemedText style={{ color: "white" }}>{message.content}</ThemedText>
+            <View style={messageThreadStyles.messageFooter}>
+              <ThemedText style={[messageThreadStyles.expiryTime, { color: "white" }]}>
+                {formatTimeRemaining(message.expiresAt).replace("Expire dans ", "")}
+              </ThemedText>
+            </View>
+          </View>
         </View>
       )}
     </View>

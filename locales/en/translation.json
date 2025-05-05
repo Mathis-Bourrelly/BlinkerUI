@@ -44,10 +44,21 @@
     "passwordForgotten": "Password forgotten",
     "wrongPassword": "Incorrect password"
   },
+  "search": {
+    "title": "Search Users",
+    "placeholder": "Search by name or @username",
+    "noResults": "No results found",
+    "error": "An error occurred",
+    "enterQuery": "Enter a search term"
+  },
   "profile": {
     "blink": "blink",
     "follow": "follow",
     "follower": "follower",
+    "followButton": "Follow",
+    "unfollow": "Unfollow",
+    "errorLoadingProfile": "Error loading profile",
+    "sendMessage": "Send Message",
     "logout": "Logout",
     "score": "User Score",
     "scoreDescriptionLow": "New user with basic content",

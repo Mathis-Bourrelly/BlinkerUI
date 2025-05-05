@@ -3,14 +3,13 @@ import { View, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingV
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { Icon } from "@/components/images/Icon";
-import { LinearGradient } from "expo-linear-gradient";
 import { messageThreadStyles } from "./MessageThreadStyles";
 
 type MessageInputProps = {
   newMessage: string;
   setNewMessage: (message: string) => void;
   handleSend: () => void;
-  isPending: boolean;
+  isPending: boolean | undefined;
 };
 
 export function MessageInput({ newMessage, setNewMessage, handleSend, isPending }: MessageInputProps) {
@@ -44,12 +43,11 @@ export function MessageInput({ newMessage, setNewMessage, handleSend, isPending 
         {isPending ? (
           <ActivityIndicator size="small" color={colors.textInvert} />
         ) : (
-          <LinearGradient
-            colors={colors.accentGradient}
-            style={messageThreadStyles.sendButtonGradient}
+          <View
+            style={[messageThreadStyles.sendButtonGradient, { backgroundColor: colors.accent }]}
           >
             <Icon name="send" size={24} color={colors.textInvert} />
-          </LinearGradient>
+          </View>
         )}
       </TouchableOpacity>
     </KeyboardAvoidingView>
