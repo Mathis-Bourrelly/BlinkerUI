@@ -1,33 +1,29 @@
 import {StyleSheet} from 'react-native';
-import {ThemedText} from "@/components/base/ThemedText";
 import {useTheme} from '@/context/ThemeContext';
-import {Redirect, Stack, useRouter} from "expo-router";
+import {Stack} from "expo-router";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
-import React from "react";
-import {useTranslation} from "react-i18next";
-import {Row} from "@/components/base/Row";
-import {LanguageDropdown} from "@/components/base/LanguageDropdown";
-import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
-import {ThemedButtonIcon} from "@/components/base/ThemedButtonIcon";
+import React, { useState } from "react";
 import TabBar from "@/components/feature/TabBar";
 import NavBar from "@/components/feature/NavBar";
 import {InnerContainer} from "@/components/base/InnerContainer";
-import {useUser} from "@/context/UserContext";
-
-import {useFetchQuery} from "@/hooks/repository/useFetchQuery";
 import {BlinkList} from "@/components/feature/BlinkList";
-import {useBlinksQuery} from "@/hooks/interfaces/useBlinkInterface"
-import { BlinkType } from '@/types/BlinksType';
-import { UseInfiniteQueryResult } from '@tanstack/react-query';
+import { FloatingActionButton } from "@/components/base/FloatingActionButton";
+import CreateBlinkModal from "@/components/feature/CreateBlinkModal";
 
 
 export default function Index() {
     const {colors} = useTheme();
-    const {user} = useUser();
-    const {t} = useTranslation();
-    const router = useRouter();
     const gradientColors = colors.gradient;
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const handleOpenModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+    };
 
     return (
         <>
@@ -40,6 +36,15 @@ export default function Index() {
                         {/* Les options de langue et de thème sont maintenant dans le menu d'options de la NavBar */}
                     </InnerContainer>
                 </LinearGradient>
+                <FloatingActionButton
+                    onPress={handleOpenModal}
+                    iconName="plus"
+                    size={60}
+                />
+                <CreateBlinkModal
+                    visible={isModalVisible}
+                    onClose={handleCloseModal}
+                />
                 <TabBar/>
             </SafeAreaView>
         </>
