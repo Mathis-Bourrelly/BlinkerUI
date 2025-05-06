@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, ScrollView, StyleSheet, Modal, Alert } from "react-native";
+import { View, TouchableOpacity, ScrollView, StyleSheet, Modal, Image, ActivityIndicator } from "react-native";
 import { ThemedText } from "../base/ThemedText";
 import { Icon } from "@/components/images/Icon";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemedTextInput } from "@/components/base/ThemedTextInput";
+import * as ImagePicker from 'expo-image-picker';
+import { useCreateBlinkMutation } from "@/hooks/interfaces/useBlinkInterface";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Définition du type pour un bloc de contenu
 type ContentBlock = {
@@ -11,6 +14,7 @@ type ContentBlock = {
     contentType: "text" | "image" | "video";
     content: string;
     position: number;
+    file?: ImagePicker.ImagePickerAsset; // Pour stocker le fichier sélectionné
 };
 
 interface CreateBlinkFormProps {
@@ -19,9 +23,82 @@ interface CreateBlinkFormProps {
 
 const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
     const { colors } = useTheme();
+    const queryClient = useQueryClient();
+    const createBlinkMutation = useCreateBlinkMutation();
 
     const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Fonction pour sélectionner une image depuis la galerie
+    const pickImage = async (contentID: string) => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (status !== 'granted') {
+            alert('Nous avons besoin de votre permission pour accéder à vos photos');
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: 'images',
+            allowsEditing: true,
+            quality: 1.0, // Qualité maximale car nous n'envoyons pas le fichier
+            base64: false, // Pas besoin de base64
+            exif: false, // Pas besoin des données EXIF
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            const asset = result.assets[0];
+
+            // Mettre à jour le bloc avec le fichier sélectionné
+            setContentBlocks(prevBlocks =>
+                prevBlocks.map(block =>
+                    block.contentID === contentID
+                        ? {
+                            ...block,
+                            content: asset.uri,
+                            file: asset
+                        }
+                        : block
+                )
+            );
+        }
+    };
+
+    // Fonction pour sélectionner une vidéo depuis la galerie
+    const pickVideo = async (contentID: string) => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (status !== 'granted') {
+            alert('Nous avons besoin de votre permission pour accéder à vos vidéos');
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: 'videos',
+            allowsEditing: true,
+            quality: 1.0, // Qualité maximale car nous n'envoyons pas le fichier
+            base64: false, // Pas besoin de base64
+            exif: false, // Pas besoin des données EXIF
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            const asset = result.assets[0];
+
+            // Mettre à jour le bloc avec le fichier sélectionné
+            setContentBlocks(prevBlocks =>
+                prevBlocks.map(block =>
+                    block.contentID === contentID
+                        ? {
+                            ...block,
+                            content: asset.uri,
+                            file: asset
+                        }
+                        : block
+                )
+            );
+        }
+    };
 
     // Fonction pour ajouter un nouveau bloc en fin de liste
     const addBlock = (type: "text" | "image" | "video") => {
@@ -32,6 +109,17 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
             position: contentBlocks.length + 1,
         };
         setContentBlocks([...contentBlocks, newBlock]);
+
+        // Si c'est une image ou une vidéo, ouvrir directement le sélecteur
+        if (type === "image" || type === "video") {
+            setTimeout(() => {
+                if (type === "image") {
+                    pickImage(newBlock.contentID);
+                } else if (type === "video") {
+                    pickVideo(newBlock.contentID);
+                }
+            }, 100);
+        }
     };
 
     // Mettre à jour le contenu d'un bloc
@@ -62,30 +150,94 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
     };
 
     // Soumettre le formulaire en créant un objet Blink
-    const handleSubmit = () => {
-        const blink = {
-            blinkID: Date.now().toString(),
-            userID: "userID-placeholder",
-            likeCount: 0,
-            dislikeCount: 0,
-            commentCount: 0,
-            shareCount: 0,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            contents: contentBlocks,
-            profile: {
-                display_name: "Nom de l'utilisateur",
-                username: "username",
-                avatar_url: `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`,
-            },
-        };
+    const handleSubmit = async () => {
+        if (contentBlocks.length === 0) {
+            alert('Veuillez ajouter au moins un contenu à votre Blink');
+            return;
+        }
 
-        console.log("Blink créé :", blink);
-        // Ici, vous pouvez envoyer "blink" à votre API
+        try {
+            setIsSubmitting(true);
+            console.log('Début de la soumission du formulaire avec', contentBlocks.length, 'blocs');
 
-        // Appeler le callback onSuccess si fourni
-        if (onSuccess) {
-            onSuccess();
+            // Filtrer les blocs pour ne garder que ceux qui ont du contenu
+            const validBlocks = contentBlocks.filter(block => {
+                if (block.contentType === 'text') {
+                    return block.content.trim() !== '';
+                } else {
+                    return block.file !== undefined;
+                }
+            });
+
+            if (validBlocks.length === 0) {
+                alert('Veuillez ajouter au moins un contenu valide à votre Blink');
+                setIsSubmitting(false);
+                return;
+            }
+
+            // Préparer les blocs de contenu pour l'API
+            const processedBlocks = validBlocks.map((block, index) => {
+                let content = block.content;
+                console.log(`Traitement du bloc ${index + 1}/${validBlocks.length} (${block.contentType})`);
+
+                // Pour les blocs de texte, utiliser le contenu tel quel
+                if (block.contentType === 'text') {
+                    // Rien à faire, le contenu est déjà du texte
+                }
+                // Pour les images et vidéos, utiliser une URL externe
+                else if ((block.contentType === 'image' || block.contentType === 'video') && block.file) {
+                    // Comme nous ne pouvons pas télécharger les fichiers pour le moment,
+                    // nous utilisons une URL externe pour les tests
+                    if (block.contentType === 'image') {
+                        // Utiliser une URL d'image de placeholder
+                        content = 'https://via.placeholder.com/800x600?text=Image';
+                    } else {
+                        // Utiliser une URL de vidéo de placeholder
+                        content = 'https://example.com/video.mp4';
+                    }
+                    console.log(`Utilisation d'un placeholder pour le bloc ${index + 1}: ${content}`);
+
+                    // Ajouter un avertissement pour l'utilisateur
+                    alert(`Note: Les ${block.contentType === 'image' ? 'images' : 'vidéos'} ne sont pas prises en charge pour le moment. Une URL de placeholder sera utilisée à la place.`);
+                }
+
+                return {
+                    contentType: block.contentType,
+                    content: content,
+                    position: index + 1,
+                };
+            });
+
+            console.log('Tous les blocs ont été traités, envoi au backend');
+
+            // Envoyer les données au backend
+            createBlinkMutation.mutate(
+                { body: { contents: processedBlocks } },
+                {
+                    onSuccess: (data) => {
+                        console.log("Blink créé avec succès:", data);
+
+                        // Invalider les requêtes pour forcer un rafraîchissement des données
+                        queryClient.invalidateQueries({ queryKey: ['blinks'] });
+
+                        // Appeler le callback onSuccess si fourni
+                        if (onSuccess) {
+                            onSuccess();
+                        }
+                    },
+                    onError: (error) => {
+                        console.error("Erreur lors de la création du Blink:", error);
+                        alert(`Erreur lors de la création du Blink: ${error.message}`);
+                    },
+                    onSettled: () => {
+                        setIsSubmitting(false);
+                    }
+                }
+            );
+        } catch (error) {
+            console.error("Erreur lors de la préparation des données:", error);
+            alert(`Erreur lors de la préparation des données: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+            setIsSubmitting(false);
         }
     };
 
@@ -203,20 +355,69 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                             </View>
                         </View>
 
-                        <ThemedTextInput
-                            placeholder={
-                                block.contentType === "text" ? "Écrivez votre texte ici..." :
-                                block.contentType === "image" ? "URL de l'image" : "URL de la vidéo"
-                            }
-                            value={block.content}
-                            onChangeText={(text) => updateBlockContent(block.contentID, text)}
-                            multiline={block.contentType === "text"}
-                            style={[
-                                styles.input,
-                                { borderColor: colors.border },
-                                block.contentType === "text" && styles.textArea,
-                            ]}
-                        />
+                        {block.contentType === "text" ? (
+                            <ThemedTextInput
+                                placeholder="Écrivez votre texte ici..."
+                                value={block.content}
+                                onChangeText={(text) => updateBlockContent(block.contentID, text)}
+                                multiline={true}
+                                style={[
+                                    styles.input,
+                                    {
+                                        borderColor: colors.border,
+                                        color: colors.text
+                                    },
+                                    styles.textArea,
+                                ]}
+                            />
+                        ) : block.contentType === "image" && block.file ? (
+                            <View style={styles.mediaPreviewContainer}>
+                                <Image
+                                    source={{ uri: block.content }}
+                                    style={styles.imagePreview}
+                                    resizeMode="contain"
+                                />
+                                <TouchableOpacity
+                                    style={[styles.changeMediaButton, { backgroundColor: colors.accent }]}
+                                    onPress={() => pickImage(block.contentID)}
+                                >
+                                    <ThemedText style={{ color: 'white', fontSize: 12 }}>
+                                        Changer l'image
+                                    </ThemedText>
+                                </TouchableOpacity>
+                            </View>
+                        ) : block.contentType === "video" && block.file ? (
+                            <View style={styles.mediaPreviewContainer}>
+                                <View style={styles.videoPreview}>
+                                    <ThemedText>Vidéo sélectionnée</ThemedText>
+                                    <ThemedText style={{ fontSize: 12, opacity: 0.7 }}>
+                                        {block.content.split('/').pop()}
+                                    </ThemedText>
+                                </View>
+                                <TouchableOpacity
+                                    style={[styles.changeMediaButton, { backgroundColor: colors.accent }]}
+                                    onPress={() => pickVideo(block.contentID)}
+                                >
+                                    <ThemedText style={{ color: 'white', fontSize: 12 }}>
+                                        Changer la vidéo
+                                    </ThemedText>
+                                </TouchableOpacity>
+                            </View>
+                        ) : (
+                            <TouchableOpacity
+                                style={[styles.mediaSelector, { borderColor: colors.border }]}
+                                onPress={() => block.contentType === "image" ? pickImage(block.contentID) : pickVideo(block.contentID)}
+                            >
+                                <Icon
+                                    name={block.contentType === "image" ? "image" : "video"}
+                                    size={32}
+                                    color={colors.text}
+                                />
+                                <ThemedText style={{ marginTop: 8 }}>
+                                    {block.contentType === "image" ? "Sélectionner une image" : "Sélectionner une vidéo"}
+                                </ThemedText>
+                            </TouchableOpacity>
+                        )}
                     </View>
                 ))
             )}
@@ -239,15 +440,19 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                         styles.submitButton,
                         {
                             backgroundColor: contentBlocks.length > 0 ? colors.accent : colors.textSecondary,
-                            opacity: contentBlocks.length > 0 ? 1 : 0.7
+                            opacity: contentBlocks.length > 0 && !isSubmitting ? 1 : 0.7
                         }
                     ]}
                     onPress={handleSubmit}
-                    disabled={contentBlocks.length === 0}
+                    disabled={contentBlocks.length === 0 || isSubmitting}
                 >
-                    <ThemedText style={styles.submitButtonText}>
-                        Publier
-                    </ThemedText>
+                    {isSubmitting ? (
+                        <ActivityIndicator color="white" size="small" />
+                    ) : (
+                        <ThemedText style={styles.submitButtonText}>
+                            Publier
+                        </ThemedText>
+                    )}
                 </TouchableOpacity>
             </View>
 
@@ -456,6 +661,42 @@ const styles = StyleSheet.create({
     },
     confirmButton: {
         marginLeft: 8,
+    },
+    // Styles pour les médias
+    mediaPreviewContainer: {
+        marginVertical: 8,
+        alignItems: 'center',
+    },
+    imagePreview: {
+        width: '100%',
+        height: 200,
+        borderRadius: 8,
+        marginBottom: 8,
+    },
+    videoPreview: {
+        width: '100%',
+        height: 100,
+        borderRadius: 8,
+        marginBottom: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        padding: 16,
+    },
+    changeMediaButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+    },
+    mediaSelector: {
+        width: '100%',
+        height: 150,
+        borderWidth: 1,
+        borderRadius: 8,
+        borderStyle: 'dashed',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 8,
     },
 });
 
