@@ -58,17 +58,11 @@ export default function MessagesScreen() {
   }, [conversationsData]); // Retirer unreadMessages de la dépendance pour éviter les boucles
 
   // WebSocket integration for real-time updates
-  const { isConnected, onNewMessage, onMessageNotification } = useWebSocket();
+  const { isConnected, onMessageNotification } = useWebSocket();
 
   // Listen for new messages via WebSocket
   useEffect(() => {
     if (!isConnected) return;
-
-    // Handler for new messages
-    const handleNewMessage = (message: any) => {
-      console.log('WebSocket: New message received in conversations list', message);
-      updateConversationWithNewMessage(message);
-    };
 
     // Handler for message notifications
     const handleMessageNotification = (data: any) => {
@@ -80,19 +74,29 @@ export default function MessagesScreen() {
 
     // Helper function to update conversations with a new message
     const updateConversationWithNewMessage = (message: any) => {
+      // Log the message to help with debugging
+      console.log('Updating conversation with message:', message);
+
       setConversations(prevConversations => {
         // Check if the conversation already exists
         const conversationIndex = prevConversations.findIndex(
           conv => conv.conversationID === message.conversationID
         );
 
+        console.log('Found conversation at index:', conversationIndex);
+
         if (conversationIndex >= 0) {
-          // Update existing conversation
+          // Create a copy of the conversations array
           const updatedConversations = [...prevConversations];
-          const conversation = updatedConversations[conversationIndex];
+
+          // Get the conversation that needs to be updated
+          const conversation = {...updatedConversations[conversationIndex]};
+
+          // Log current unread count to debug
+          console.log('Current unread count:', conversation.unreadCount);
 
           // Update the conversation with the new message
-          updatedConversations[conversationIndex] = {
+          const updatedConversation = {
             ...conversation,
             lastMessage: {
               content: message.content,
@@ -100,12 +104,18 @@ export default function MessagesScreen() {
               read: false,
               isFromUser: false // Assume it's from another user if received via WebSocket
             },
+            // Only increment by 1, regardless of how many times this is called
             unreadCount: conversation.unreadCount + 1
           };
 
-          // Move the updated conversation to the top
+          // Remove the conversation from its current position
           updatedConversations.splice(conversationIndex, 1);
-          updatedConversations.unshift(updatedConversations[conversationIndex]);
+
+          // Add the updated conversation to the beginning of the array
+          updatedConversations.unshift(updatedConversation);
+
+          // Log the new unread count
+          console.log('New unread count:', updatedConversation.unreadCount);
 
           return updatedConversations;
         }
@@ -118,15 +128,13 @@ export default function MessagesScreen() {
     };
 
     // Register event handlers
-    const unsubscribeNewMessage = onNewMessage(handleNewMessage);
     const unsubscribeMessageNotification = onMessageNotification(handleMessageNotification);
 
     // Cleanup function
     return () => {
-      unsubscribeNewMessage();
       unsubscribeMessageNotification();
     };
-  }, [isConnected, onNewMessage, onMessageNotification]);
+  }, [isConnected, onMessageNotification]);
 
   if (isLoading) {
     return <LoadingState />;

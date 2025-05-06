@@ -8,16 +8,23 @@ import {
   GetConversationMessagesEvent,
   NewMessageEvent,
   MessageNotificationEvent,
+  MessageSentEvent,
+  MarkAsReadConfirmationEvent,
   MessagesReadEvent,
   ConversationMessagesEvent,
   MessagesExpiredEvent,
-  ErrorEvent
+  ErrorEvent,
+  ErrorCode,
+  BaseClientEvent
 } from '@/types/WebSocketTypes';
+import { v4 as uuidv4 } from 'uuid';
 
 class WebSocketService {
   private socket: Socket | null = null;
   private isConnecting = false;
   private messageHandlers: Map<string, Set<(data: any) => void>> = new Map();
+  private processedEvents: Set<string> = new Set(); // Track processed events by eventId
+  private pendingRequests: Map<string, { resolve: Function, reject: Function }> = new Map(); // Track pending requests
 
   // Get the WebSocket URL from environment variables
   private getWebSocketUrl(): string {
@@ -103,38 +110,68 @@ class WebSocketService {
   private setupEventListeners(): void {
     if (!this.socket) return;
 
-    // Handle new messages
-    this.socket.on(ServerEvents.NEW_MESSAGE, (data: NewMessageEvent) => {
-      this.notifyHandlers(ServerEvents.NEW_MESSAGE, data);
-    });
-
     // Handle message notifications
     this.socket.on(ServerEvents.MESSAGE_NOTIFICATION, (data: MessageNotificationEvent) => {
-      this.notifyHandlers(ServerEvents.MESSAGE_NOTIFICATION, data);
+      this.handleServerEvent(ServerEvents.MESSAGE_NOTIFICATION, data);
+    });
+
+    // Handle message sent confirmations
+    this.socket.on(ServerEvents.MESSAGE_SENT, (data: MessageSentEvent) => {
+      this.handleServerEvent(ServerEvents.MESSAGE_SENT, data);
+
+      // Resolve pending request if requestId is present
+      if (data.requestId && this.pendingRequests.has(data.requestId)) {
+        const { resolve } = this.pendingRequests.get(data.requestId)!;
+        resolve(data);
+        this.pendingRequests.delete(data.requestId);
+      }
+    });
+
+    // Handle mark as read confirmations
+    this.socket.on(ServerEvents.MARK_AS_READ_CONFIRMATION, (data: MarkAsReadConfirmationEvent) => {
+      this.handleServerEvent(ServerEvents.MARK_AS_READ_CONFIRMATION, data);
+
+      // Resolve pending request if requestId is present
+      if (data.requestId && this.pendingRequests.has(data.requestId)) {
+        const { resolve } = this.pendingRequests.get(data.requestId)!;
+        resolve(data);
+        this.pendingRequests.delete(data.requestId);
+      }
     });
 
     // Handle messages read status updates
     this.socket.on(ServerEvents.MESSAGES_READ, (data: MessagesReadEvent) => {
-      this.notifyHandlers(ServerEvents.MESSAGES_READ, data);
+      this.handleServerEvent(ServerEvents.MESSAGES_READ, data);
     });
 
     // Handle conversation messages
     this.socket.on(ServerEvents.CONVERSATION_MESSAGES, (data: ConversationMessagesEvent) => {
-      this.notifyHandlers(ServerEvents.CONVERSATION_MESSAGES, data);
+      this.handleServerEvent(ServerEvents.CONVERSATION_MESSAGES, data);
+
+      // Resolve pending request if requestId is present
+      if (data.requestId && this.pendingRequests.has(data.requestId)) {
+        const { resolve } = this.pendingRequests.get(data.requestId)!;
+        resolve(data);
+        this.pendingRequests.delete(data.requestId);
+      }
     });
 
     // Handle message expiration
     this.socket.on(ServerEvents.MESSAGES_EXPIRED, (data: MessagesExpiredEvent) => {
-      this.notifyHandlers(ServerEvents.MESSAGES_EXPIRED, data);
+      this.handleServerEvent(ServerEvents.MESSAGES_EXPIRED, data);
     });
 
     // Handle errors
     this.socket.on(ServerEvents.ERROR, (data: ErrorEvent) => {
-      console.error('WebSocket error:', data.message);
-      this.notifyHandlers(ServerEvents.ERROR, data);
+      console.error(`WebSocket error: ${data.code} - ${data.message}`, data.details || '');
+      this.handleServerEvent(ServerEvents.ERROR, data);
 
-      // Don't disconnect on errors, let the socket's built-in reconnection handle it
-      // Just log the error and continue
+      // Reject pending request if requestId is present
+      if (data.requestId && this.pendingRequests.has(data.requestId)) {
+        const { reject } = this.pendingRequests.get(data.requestId)!;
+        reject(data);
+        this.pendingRequests.delete(data.requestId);
+      }
     });
 
     // Handle disconnection
@@ -143,11 +180,57 @@ class WebSocketService {
     });
   }
 
+  // Helper method to handle server events with deduplication
+  private handleServerEvent(event: string, data: any): void {
+    // Check if this event has already been processed (using eventId)
+    if (data.eventId && this.processedEvents.has(data.eventId)) {
+      console.log(`Skipping duplicate event ${event} with ID ${data.eventId}`);
+      return;
+    }
+
+    // Add this event to the processed events set
+    if (data.eventId) {
+      this.processedEvents.add(data.eventId);
+
+      // Limit the size of the processed events set to avoid memory leaks
+      // Keep only the last 1000 events
+      if (this.processedEvents.size > 1000) {
+        const iterator = this.processedEvents.values();
+        this.processedEvents.delete(<string>iterator.next().value);
+      }
+    }
+
+    // Notify handlers
+    this.notifyHandlers(event, data);
+  }
+
   // Send a message via WebSocket
-  async sendMessage(data: SendMessageEvent): Promise<void> {
+  async sendMessage(data: SendMessageEvent): Promise<MessageSentEvent> {
     try {
       const socket = await this.connect();
-      socket.emit(ClientEvents.SEND_MESSAGE, data);
+
+      // Add requestId if not provided
+      const requestId = data.requestId || uuidv4();
+      const requestData = { ...data, requestId };
+
+      // Create a promise that will be resolved when we get a response
+      const responsePromise = new Promise<MessageSentEvent>((resolve, reject) => {
+        this.pendingRequests.set(requestId, { resolve, reject });
+
+        // Set a timeout to reject the promise if no response is received
+        setTimeout(() => {
+          if (this.pendingRequests.has(requestId)) {
+            this.pendingRequests.delete(requestId);
+            reject(new Error('WebSocket request timed out'));
+          }
+        }, 10000); // 10 second timeout
+      });
+
+      // Send the message
+      socket.emit(ClientEvents.SEND_MESSAGE, requestData);
+
+      // Wait for the response
+      return await responsePromise;
     } catch (error) {
       console.error('Error sending message via WebSocket:', error);
       throw error;
@@ -155,10 +238,32 @@ class WebSocketService {
   }
 
   // Mark messages as read via WebSocket
-  async markAsRead(data: MarkAsReadEvent): Promise<void> {
+  async markAsRead(data: MarkAsReadEvent): Promise<MarkAsReadConfirmationEvent> {
     try {
       const socket = await this.connect();
-      socket.emit(ClientEvents.MARK_AS_READ, data);
+
+      // Add requestId if not provided
+      const requestId = data.requestId || uuidv4();
+      const requestData = { ...data, requestId };
+
+      // Create a promise that will be resolved when we get a response
+      const responsePromise = new Promise<MarkAsReadConfirmationEvent>((resolve, reject) => {
+        this.pendingRequests.set(requestId, { resolve, reject });
+
+        // Set a timeout to reject the promise if no response is received
+        setTimeout(() => {
+          if (this.pendingRequests.has(requestId)) {
+            this.pendingRequests.delete(requestId);
+            reject(new Error('WebSocket request timed out'));
+          }
+        }, 10000); // 10 second timeout
+      });
+
+      // Send the request
+      socket.emit(ClientEvents.MARK_AS_READ, requestData);
+
+      // Wait for the response
+      return await responsePromise;
     } catch (error) {
       console.error('Error marking messages as read via WebSocket:', error);
       throw error;
@@ -166,10 +271,32 @@ class WebSocketService {
   }
 
   // Get conversation messages via WebSocket
-  async getConversationMessages(data: GetConversationMessagesEvent): Promise<void> {
+  async getConversationMessages(data: GetConversationMessagesEvent): Promise<ConversationMessagesEvent> {
     try {
       const socket = await this.connect();
-      socket.emit(ClientEvents.GET_CONVERSATION_MESSAGES, data);
+
+      // Add requestId if not provided
+      const requestId = data.requestId || uuidv4();
+      const requestData = { ...data, requestId };
+
+      // Create a promise that will be resolved when we get a response
+      const responsePromise = new Promise<ConversationMessagesEvent>((resolve, reject) => {
+        this.pendingRequests.set(requestId, { resolve, reject });
+
+        // Set a timeout to reject the promise if no response is received
+        setTimeout(() => {
+          if (this.pendingRequests.has(requestId)) {
+            this.pendingRequests.delete(requestId);
+            reject(new Error('WebSocket request timed out'));
+          }
+        }, 10000); // 10 second timeout
+      });
+
+      // Send the request
+      socket.emit(ClientEvents.GET_CONVERSATION_MESSAGES, requestData);
+
+      // Wait for the response
+      return await responsePromise;
     } catch (error) {
       console.error('Error getting conversation messages via WebSocket:', error);
       throw error;
@@ -178,19 +305,42 @@ class WebSocketService {
 
   // Register a handler for a specific event
   on<T>(event: ServerEvents, handler: (data: T) => void): () => void {
+    // Log registration to help with debugging
+    console.log(`Registering handler for event: ${event}`);
+
     if (!this.messageHandlers.has(event)) {
       this.messageHandlers.set(event, new Set());
     }
 
-    this.messageHandlers.get(event)!.add(handler);
+    // Get the handlers set for this event
+    const handlers = this.messageHandlers.get(event)!;
+
+    // Check if the handler is already in the set by converting to string
+    // This is a simple way to detect duplicate function references
+    const handlerStr = handler.toString();
+    const existingHandler = Array.from(handlers).find(h => h.toString() === handlerStr);
+
+    if (existingHandler) {
+      console.log(`Handler already registered for event: ${event}`);
+      // Return a no-op cleanup function since we're not adding a new handler
+      return () => {};
+    }
+
+    // Add the handler to the set
+    handlers.add(handler);
+
+    console.log(`Current handlers for ${event}: ${handlers.size}`);
 
     // Return a function to unregister the handler
     return () => {
+      console.log(`Unregistering handler for event: ${event}`);
       const handlers = this.messageHandlers.get(event);
       if (handlers) {
         handlers.delete(handler);
+        console.log(`Handlers left for ${event}: ${handlers.size}`);
         if (handlers.size === 0) {
           this.messageHandlers.delete(event);
+          console.log(`Removed all handlers for ${event}`);
         }
       }
     };
@@ -200,13 +350,20 @@ class WebSocketService {
   private notifyHandlers(event: string, data: any): void {
     const handlers = this.messageHandlers.get(event);
     if (handlers) {
-      handlers.forEach(handler => {
+      console.log(`Notifying ${handlers.size} handlers for event: ${event}`);
+
+      // Create a copy of the handlers to avoid issues if handlers are added/removed during iteration
+      const handlersArray = Array.from(handlers);
+
+      handlersArray.forEach(handler => {
         try {
           handler(data);
         } catch (error) {
           console.error(`Error in handler for event ${event}:`, error);
         }
       });
+    } else {
+      console.log(`No handlers registered for event: ${event}`);
     }
   }
 }

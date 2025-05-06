@@ -9,8 +9,6 @@ import { messageThreadStyles } from "./MessageThreadStyles";
 type MessageInputProps = {
   newMessage: string;
   setNewMessage: (message: string) => void;
-  handleSend: () => void;
-  isPending: boolean | undefined;
   conversationID?: string;
   receiverID?: string;
   onMessageSent?: (message: any) => void;
@@ -19,8 +17,6 @@ type MessageInputProps = {
 export function MessageInput({
   newMessage,
   setNewMessage,
-  handleSend,
-  isPending,
   conversationID,
   receiverID,
   onMessageSent
@@ -55,7 +51,31 @@ export function MessageInput({
         onChangeText={setNewMessage}
         placeholder={t("messages.placeholder")}
         placeholderTextColor={colors.textSecondary}
-        onSubmitEditing={handleSend}
+        onSubmitEditing={() => {
+          const trimmedMessage = newMessage.trim();
+          if (!trimmedMessage || !isConnected) return;
+
+          // Clear the input field immediately for better UX
+          setNewMessage("");
+
+          // Send message via WebSocket
+          sendMessage(trimmedMessage, conversationID, receiverID)
+            .then(response => {
+              console.log('Message sent via WebSocket:', response);
+              if (onMessageSent) {
+                onMessageSent({
+                  content: trimmedMessage,
+                  conversationID: response.conversationID,
+                  messageID: response.messageID,
+                  receiverID
+                });
+              }
+            })
+            .catch(error => {
+              console.error('WebSocket send failed:', error);
+              alert('Failed to send message. Please try again.');
+            });
+        }}
         returnKeyType="send"
         blurOnSubmit={false}
         multiline={false}
@@ -63,33 +83,42 @@ export function MessageInput({
 
       <TouchableOpacity
         onPress={async () => {
-          // If WebSocket is connected, try to send via WebSocket first
-          if (isConnected && newMessage.trim()) {
+          const trimmedMessage = newMessage.trim();
+          if (!trimmedMessage) return;
+
+          // Clear the input field immediately for better UX
+          setNewMessage("");
+
+          // Send message via WebSocket
+          if (isConnected) {
             try {
-              await sendMessage(newMessage.trim(), conversationID, receiverID);
-              setNewMessage("");
+              // Send message via WebSocket and get the response
+              const response = await sendMessage(trimmedMessage, conversationID, receiverID);
+              console.log('Message sent via WebSocket:', response);
+
               // If there's a callback for message sent, call it
               if (onMessageSent) {
                 onMessageSent({
-                  content: newMessage.trim(),
-                  conversationID,
+                  content: trimmedMessage,
+                  conversationID: response.conversationID,
+                  messageID: response.messageID,
                   receiverID
                 });
               }
             } catch (error) {
-              console.error('WebSocket send failed, falling back to REST API:', error);
-              // Fall back to REST API
-              handleSend();
+              console.error('WebSocket send failed:', error);
+              // Show error to user
+              alert('Failed to send message. Please try again.');
             }
           } else {
-            // Use REST API if WebSocket is not connected
-            handleSend();
+            console.error('WebSocket not connected');
+            alert('Cannot send message: not connected to server. Please check your connection and try again.');
           }
         }}
-        disabled={!newMessage.trim() || isPending}
-        style={[messageThreadStyles.sendButton, { opacity: !newMessage.trim() || isPending ? 0.5 : 1 }]}
+        disabled={!newMessage.trim() || !isConnected}
+        style={[messageThreadStyles.sendButton, { opacity: !newMessage.trim() || !isConnected ? 0.5 : 1 }]}
       >
-        {isPending ? (
+        {!isConnected ? (
           <ActivityIndicator size="small" color={colors.textInvert} />
         ) : (
           <View

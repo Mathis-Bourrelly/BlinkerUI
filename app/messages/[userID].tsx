@@ -15,10 +15,7 @@ import { InnerContainer } from "@/components/base/InnerContainer";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   useMessagesBetweenQuery,
-  useSendMessageMutation,
-  useMarkAsReadMutation,
-  useConversationMessagesQuery,
-  useMarkConversationAsReadMutation
+  useMarkAsReadMutation
 } from "@/hooks/interfaces/useMessageInterface";
 import { useUserProfileQuery } from "@/hooks/interfaces/useProfileInterface";
 import { useQueryClient } from "@tanstack/react-query";
@@ -59,13 +56,7 @@ export default function MessageThreadScreen() {
     // jusqu'à ce qu'un autre composant les active explicitement
   }, [setEnableConversationsQuery, setEnableUnreadMessagesQuery]);
 
-  // Récupérer les messages selon le mode (conversation ou entre utilisateurs)
-  const {
-    data: conversationData,
-    isLoading: isLoadingConversation,
-    error: errorConversation
-  } = conversationID ? useConversationMessagesQuery(conversationID) : { data: null, isLoading: false, error: null };
-
+  // Récupérer les messages entre utilisateurs (uniquement si pas de conversationID)
   const {
     data: messagesData,
     isLoading: isLoadingMessages,
@@ -78,11 +69,13 @@ export default function MessageThreadScreen() {
     isLoading: isLoadingProfile
   } = (userID !== "unknown") ? useUserProfileQuery(userID as string) : { data: null, isLoading: false };
 
-  // Mutations pour envoyer et marquer comme lus
-  const sendMessageMutation = useSendMessageMutation();
+  // Mutation pour marquer les messages comme lus (uniquement pour la compatibilité avec l'ancien système)
   const markAsReadMutation = useMarkAsReadMutation();
-  const markConversationAsReadMutation = useMarkConversationAsReadMutation();
   const queryClient = useQueryClient();
+
+  // État pour suivre le chargement des messages via WebSocket
+  const [isLoadingConversation, setIsLoadingConversation] = useState(false);
+  const [errorConversation, setErrorConversation] = useState<Error | null>(null);
 
   // État local pour les messages
   const [messages, setMessages] = useState<MessageType[]>([]);
@@ -90,6 +83,19 @@ export default function MessageThreadScreen() {
   // Utiliser une référence pour suivre si les messages ont déjà été marqués comme lus
   // Une référence ne déclenche pas de rendu lorsqu'elle est mise à jour
   const messagesMarkedAsReadRef = useRef<{[key: string]: boolean}>({});
+
+  // WebSocket integration
+  const {
+    isConnected,
+    onMessageNotification,
+    onMessageSent,
+    onMarkAsReadConfirmation,
+    onMessagesRead,
+    onMessagesExpired,
+    onError,
+    markAsRead: wsMarkAsRead,
+    getConversationMessages
+  } = useWebSocket();
 
   // Fonction pour marquer les messages comme lus
   const markMessagesAsRead = useCallback(() => {
@@ -102,13 +108,19 @@ export default function MessageThreadScreen() {
 
     // Marquer les messages comme lus selon le mode (conversation ou entre utilisateurs)
     if (conversationID) {
-      markConversationAsReadMutation.mutate(conversationID, {
-        onSuccess: () => {
-          // Marquer comme déjà lu pour éviter les appels répétés
-          messagesMarkedAsReadRef.current[conversationID] = true;
-        }
-      });
+      // Utiliser WebSocket pour marquer les messages comme lus
+      if (isConnected) {
+        wsMarkAsRead(conversationID)
+          .then(() => {
+            // Marquer comme déjà lu pour éviter les appels répétés
+            messagesMarkedAsReadRef.current[conversationID] = true;
+          })
+          .catch(error => {
+            console.error('Failed to mark messages as read via WebSocket:', error);
+          });
+      }
     } else if (userID && userID !== "unknown") {
+      // Utiliser l'API REST pour la compatibilité avec l'ancien système
       markAsReadMutation.mutate(userID, {
         onSuccess: () => {
           // Marquer comme déjà lu pour éviter les appels répétés
@@ -116,7 +128,7 @@ export default function MessageThreadScreen() {
         }
       });
     }
-  }, [conversationID, userID, markConversationAsReadMutation, markAsReadMutation]);
+  }, [conversationID, userID, markAsReadMutation, wsMarkAsRead, isConnected]);
 
   // Informations de contact pour l'autre utilisateur
   const [contactInfo, setContactInfo] = useState({
@@ -139,13 +151,13 @@ export default function MessageThreadScreen() {
         avatar_url: profile.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`,
         score: profile.score || 86400, // Utiliser le score de l'utilisateur ou la valeur par défaut
       });
-    } else if (conversationData && conversationData.length > 0) {
-      // Sinon, essayer de trouver les informations dans les données de conversation
-      console.log('Conversation data:', conversationData);
+    } else if (messages.length > 0 && conversationID) {
+      // Sinon, essayer de trouver les informations dans les messages
+      console.log('Looking for contact info in messages');
 
       // Trouver un message d'un autre utilisateur
       const currentUserID = user?.userID;
-      const otherUserMessage = conversationData.find((msg) => msg.senderID !== currentUserID);
+      const otherUserMessage = messages.find((msg) => msg.senderID !== currentUserID);
 
       if (otherUserMessage && otherUserMessage.sender) {
         console.log('Found sender info in message:', otherUserMessage.sender);
@@ -157,18 +169,15 @@ export default function MessageThreadScreen() {
         });
       }
     }
-  }, [profileData, conversationData, user?.userID]);
+  }, [profileData, messages, conversationID, user?.userID]);
 
-  // Traiter les données de messages de l'API
+  // Traiter les données de messages de l'API (uniquement pour les messages entre utilisateurs)
   useEffect(() => {
-    if (conversationData) {
-      // Utiliser les données réelles de l'API pour les conversations
-      setMessages(conversationData);
-    } else if (messagesData) {
+    if (messagesData && !conversationID) {
       // Utiliser les données réelles de l'API pour les messages entre utilisateurs
       setMessages(messagesData);
     }
-  }, [conversationData, messagesData]);
+  }, [messagesData, conversationID]);
 
   // Appeler markMessagesAsRead lorsque les données sont chargées
   useEffect(() => {
@@ -180,32 +189,43 @@ export default function MessageThreadScreen() {
     return () => clearTimeout(timer);
   }, [conversationID, userID, markMessagesAsRead]);
 
-  // WebSocket integration
-  const {
-    isConnected,
-    onNewMessage,
-    onMessageNotification,
-    onMessagesRead,
-    onMessagesExpired,
-    markAsRead: wsMarkAsRead
-  } = useWebSocket();
+
 
   // Listen for new messages via WebSocket
   useEffect(() => {
     if (!isConnected) return;
 
-    // Handler for new messages
-    const handleNewMessage = (message: any) => {
-      console.log('WebSocket: New message received', message);
+    // Handler for message notifications
+    const handleMessageNotification = (data: any) => {
+      console.log('WebSocket: Message notification received', data);
       // Only add the message if it's for the current conversation
-      if (conversationID && message.conversationID === conversationID) {
-        setMessages(prevMessages => [...prevMessages, message]);
+      if (conversationID && data.conversationID === conversationID && data.message) {
+        // Check if the message already exists in our state to avoid duplicates
+        setMessages(prevMessages => {
+          // Check if we already have this message
+          const messageExists = prevMessages.some(msg => msg.messageID === data.message.messageID);
+          if (messageExists) {
+            // If the message already exists, don't add it again
+            return prevMessages;
+          }
+          // Otherwise add the new message
+          return [...prevMessages, data.message];
+        });
 
         // Mark the message as read
         setTimeout(() => {
           if (conversationID) {
             try {
-              wsMarkAsRead(conversationID).catch(error => {
+              wsMarkAsRead(conversationID).then(response => {
+                console.log('Messages marked as read via WebSocket:', response);
+                // Update UI to show messages as read
+                setMessages(prevMessages =>
+                  prevMessages.map(msg => ({
+                    ...msg,
+                    isRead: true
+                  }))
+                );
+              }).catch(error => {
                 console.error('Failed to mark message as read via WebSocket:', error);
                 // Fall back to REST API but don't throw if that fails too
                 markMessagesAsRead().catch(err => {
@@ -234,43 +254,24 @@ export default function MessageThreadScreen() {
       }
     };
 
-    // Handler for message notifications
-    const handleMessageNotification = (data: any) => {
-      console.log('WebSocket: Message notification received', data);
-      // Only add the message if it's for the current conversation
+    // Handler for message sent confirmations
+    const handleMessageSent = (data: any) => {
+      console.log('WebSocket: Message sent confirmation received', data);
+      // This is handled by the MessageInput component
+    };
+
+    // Handler for mark as read confirmations
+    const handleMarkAsReadConfirmation = (data: any) => {
+      console.log('WebSocket: Mark as read confirmation received', data);
+      // Update the UI to reflect that messages have been read
       if (conversationID && data.conversationID === conversationID) {
-        setMessages(prevMessages => [...prevMessages, data.message]);
-
-        // Mark the message as read
-        setTimeout(() => {
-          if (conversationID) {
-            try {
-              wsMarkAsRead(conversationID).catch(error => {
-                console.error('Failed to mark message as read via WebSocket:', error);
-                // Fall back to REST API but don't throw if that fails too
-                markMessagesAsRead().catch(err => {
-                  console.error('Failed to mark message as read via REST API:', err);
-                  // Just update the UI to show messages as read even if the API call failed
-                  setMessages(prevMessages =>
-                    prevMessages.map(msg => ({
-                      ...msg,
-                      isRead: true
-                    }))
-                  );
-                });
-              });
-            } catch (error) {
-              console.error('Error in markAsRead:', error);
-            }
-          }
-        }, 1000);
-
-        // Scroll to bottom
-        requestAnimationFrame(() => {
-          if (flatListRef.current) {
-            flatListRef.current.scrollToEnd({ animated: true });
-          }
-        });
+        // Update the messages to mark them as read
+        setMessages(prevMessages =>
+          prevMessages.map(msg => ({
+            ...msg,
+            isRead: true
+          }))
+        );
       }
     };
 
@@ -300,35 +301,58 @@ export default function MessageThreadScreen() {
       }
     };
 
+    // Handler for errors
+    const handleError = (data: any) => {
+      console.error(`WebSocket error: ${data.code} - ${data.message}`, data.details || '');
+    };
+
     // Register event handlers
-    const unsubscribeNewMessage = onNewMessage(handleNewMessage);
     const unsubscribeMessageNotification = onMessageNotification(handleMessageNotification);
+    const unsubscribeMessageSent = onMessageSent(handleMessageSent);
+    const unsubscribeMarkAsReadConfirmation = onMarkAsReadConfirmation(handleMarkAsReadConfirmation);
     const unsubscribeMessagesRead = onMessagesRead(handleMessagesRead);
     const unsubscribeMessagesExpired = onMessagesExpired(handleMessagesExpired);
+    const unsubscribeError = onError(handleError);
 
     // If we have a conversationID, get messages via WebSocket
     if (conversationID) {
       try {
+        // Set loading state
+        setIsLoadingConversation(true);
+        setErrorConversation(null);
+
         // This will trigger the conversationMessages event
-        webSocketService.getConversationMessages({ conversationID })
+        getConversationMessages(conversationID)
+          .then(response => {
+            console.log('Conversation messages received via WebSocket:', response);
+            // Update messages with the response
+            if (response.messages && response.messages.length > 0) {
+              setMessages(response.messages);
+            }
+            setIsLoadingConversation(false);
+          })
           .catch(error => {
             console.error('Failed to get conversation messages via WebSocket:', error);
-            // We already have messages from the REST API, so no need to do anything here
+            setErrorConversation(error as Error);
+            setIsLoadingConversation(false);
           });
       } catch (error) {
         console.error('Error in getConversationMessages:', error);
-        // We already have messages from the REST API, so no need to do anything here
+        setErrorConversation(error as Error);
+        setIsLoadingConversation(false);
       }
     }
 
     // Cleanup function
     return () => {
-      unsubscribeNewMessage();
       unsubscribeMessageNotification();
+      unsubscribeMessageSent();
+      unsubscribeMarkAsReadConfirmation();
       unsubscribeMessagesRead();
       unsubscribeMessagesExpired();
+      unsubscribeError();
     };
-  }, [isConnected, conversationID, wsMarkAsRead, markMessagesAsRead]);
+  }, [isConnected, conversationID]);
 
   // Défiler vers le bas lorsque de nouveaux messages sont ajoutés
   useEffect(() => {
@@ -345,63 +369,7 @@ export default function MessageThreadScreen() {
     }
   }, [messages.length]);
 
-  const handleSend = () => {
-    if (!newMessage.trim()) return;
-
-    // Préparer les données selon le mode (conversation ou entre utilisateurs)
-    let messageData;
-    if (conversationID) {
-      // Si nous avons un ID de conversation, l'utiliser
-      messageData = { conversationID, content: newMessage.trim() };
-    } else if (userID !== "unknown") {
-      // Si nous avons un ID utilisateur valide, l'utiliser
-      messageData = { receiverID: userID as string, content: newMessage.trim() };
-    } else {
-      // Cas d'erreur - ne devrait pas arriver
-      console.error("Cannot send message: no valid conversationID or userID");
-      return;
-    }
-
-    // Envoyer le message via la mutation
-    sendMessageMutation.mutate(messageData, {
-      onSuccess: (data) => {
-        // Si l'API renvoie le message créé, l'utiliser
-        if (data && data.data) {
-          setMessages([...messages, data.data]);
-
-          // Si nous avons reçu un conversationID et que nous n'en avions pas avant, mettre à jour l'URL
-          if (data.data.conversationID && !conversationID) {
-            router.setParams({
-              conversationID: data.data.conversationID
-            });
-          }
-
-          // Réinitialiser le marquage pour permettre de marquer les nouveaux messages comme lus
-          const key = data.data.conversationID || userID;
-          if (key) {
-            messagesMarkedAsReadRef.current[key] = false;
-
-            // Attendre un court instant puis marquer les messages comme lus
-            setTimeout(() => {
-              markMessagesAsRead();
-            }, 1000);
-          }
-        }
-
-        setNewMessage("");
-
-        // Défiler vers le bas en utilisant requestAnimationFrame au lieu de setTimeout
-        requestAnimationFrame(() => {
-          if (flatListRef.current) {
-            flatListRef.current.scrollToEnd({ animated: true });
-          }
-        });
-      },
-      onError: (error) => {
-        console.error("Failed to send message:", error);
-      },
-    });
-  };
+  // Cette fonction n'est plus nécessaire car nous utilisons uniquement WebSocket pour envoyer des messages
 
   // Déterminer l'état de chargement et d'erreur global
   const isLoading = isLoadingConversation || isLoadingMessages || isLoadingProfile;
@@ -436,8 +404,6 @@ export default function MessageThreadScreen() {
             <MessageInput
               newMessage={newMessage}
               setNewMessage={setNewMessage}
-              handleSend={handleSend}
-              isPending={sendMessageMutation.isPending}
               conversationID={conversationID}
               receiverID={userID !== "unknown" ? userID : undefined}
               onMessageSent={(message) => {

@@ -83,11 +83,24 @@ export const MessageList = forwardRef<FlatList, MessageListProps>(
 
       const data: (MessageType | { type: 'date'; date: string; id: string })[] = [];
 
+      // Create a Set to track message IDs we've already added
+      const addedMessageIds = new Set<string>();
+
       groupedMessages.forEach(group => {
         // Ajoute le séparateur de date
-        data.push({ type: 'date', date: group.date, id: `date-${group.date}` });
-        // Ajoute les messages
-        data.push(...group.messages);
+        data.push({ type: 'date', date: group.date, id: `date-${group.date}-${Date.now()}` });
+
+        // Ajoute les messages en évitant les doublons
+        group.messages.forEach(message => {
+          // Skip messages we've already added
+          if (addedMessageIds.has(message.messageID)) {
+            return;
+          }
+
+          // Add the message and track its ID
+          data.push(message);
+          addedMessageIds.add(message.messageID);
+        });
       });
 
       return data;
@@ -103,7 +116,14 @@ export const MessageList = forwardRef<FlatList, MessageListProps>(
       <FlatList
         ref={ref}
         data={flatListData}
-        keyExtractor={(item) => 'messageID' in item ? item.messageID : item.id}
+        keyExtractor={(item) => {
+          // Ensure we have a unique key for each item
+          if ('messageID' in item) {
+            return `msg-${item.messageID}`;
+          } else {
+            return `date-${item.id}`;
+          }
+        }}
         showsVerticalScrollIndicator={true}
         contentContainerStyle={messageThreadStyles.messagesContainer}
         renderItem={({ item }) => {

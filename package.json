@@ -57,7 +57,8 @@
     "react-native-screens": "~4.4.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.9",
@@ -65,6 +66,7 @@
     "@types/react": "^18.2.6",
     "@types/react-native-dotenv": "^0.2.2",
     "@types/react-test-renderer": "18.3.1",
+    "@types/uuid": "^10.0.0",
     "jest": "^29.7.0",
     "jest-expo": "~52.0.4",
     "react-test-renderer": "18.3.1",

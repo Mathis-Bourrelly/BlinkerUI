@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { Socket } from 'socket.io-client';
 import webSocketService from '@/services/WebSocketService';
 import { useUser } from './UserContext';
@@ -7,21 +7,27 @@ import {
   ServerEvents,
   NewMessageEvent,
   MessageNotificationEvent,
+  MessageSentEvent,
+  MarkAsReadConfirmationEvent,
   MessagesReadEvent,
   ConversationMessagesEvent,
-  MessagesExpiredEvent
+  MessagesExpiredEvent,
+  ErrorEvent,
+  ErrorCode
 } from '@/types/WebSocketTypes';
 
 interface WebSocketContextType {
   isConnected: boolean;
-  sendMessage: (content: string, conversationID?: string, receiverID?: string) => Promise<void>;
-  markAsRead: (conversationID: string) => Promise<void>;
-  getConversationMessages: (conversationID: string) => Promise<void>;
-  onNewMessage: (handler: (message: NewMessageEvent) => void) => () => void;
+  sendMessage: (content: string, conversationID?: string, receiverID?: string) => Promise<MessageSentEvent>;
+  markAsRead: (conversationID: string) => Promise<MarkAsReadConfirmationEvent>;
+  getConversationMessages: (conversationID: string) => Promise<ConversationMessagesEvent>;
   onMessageNotification: (handler: (data: MessageNotificationEvent) => void) => () => void;
+  onMessageSent: (handler: (data: MessageSentEvent) => void) => () => void;
+  onMarkAsReadConfirmation: (handler: (data: MarkAsReadConfirmationEvent) => void) => () => void;
   onMessagesRead: (handler: (data: MessagesReadEvent) => void) => () => void;
   onConversationMessages: (handler: (data: ConversationMessagesEvent) => void) => () => void;
   onMessagesExpired: (handler: (data: MessagesExpiredEvent) => void) => () => void;
+  onError: (handler: (data: ErrorEvent) => void) => () => void;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
@@ -60,19 +66,18 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isConnected) return;
 
-    const handleNewMessage = () => {
+    // Use a single handler for both event types to avoid double counting
+    const handleMessageEvent = () => {
+      console.log('WebSocketContext: Received message event, updating unread count');
+      // Set the flag for unread messages
       setHasUnreadMessages(true);
-      setUnreadCount(prev => prev + 1);
-    };
-
-    const handleMessageNotification = () => {
-      setHasUnreadMessages(true);
+      // Only increment by 1 each time
       setUnreadCount(prev => prev + 1);
     };
 
     // Register event handlers
-    const unsubscribeNewMessage = webSocketService.on(ServerEvents.NEW_MESSAGE, handleNewMessage);
-    const unsubscribeMessageNotification = webSocketService.on(ServerEvents.MESSAGE_NOTIFICATION, handleMessageNotification);
+    const unsubscribeNewMessage = webSocketService.on(ServerEvents.NEW_MESSAGE, handleMessageEvent);
+    const unsubscribeMessageNotification = webSocketService.on(ServerEvents.MESSAGE_NOTIFICATION, handleMessageEvent);
 
     // Cleanup function
     return () => {
@@ -82,11 +87,11 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
   }, [isConnected, setHasUnreadMessages, setUnreadCount]);
 
   // Send a message via WebSocket
-  const sendMessage = async (content: string, conversationID?: string, receiverID?: string) => {
-    if (!content.trim()) return;
+  const sendMessage = useCallback(async (content: string, conversationID?: string, receiverID?: string) => {
+    if (!content.trim()) return Promise.reject(new Error('Message content cannot be empty'));
 
     try {
-      await webSocketService.sendMessage({
+      return await webSocketService.sendMessage({
         content,
         conversationID,
         receiverID,
@@ -95,48 +100,56 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       console.error('Error sending message via WebSocket:', error);
       throw error;
     }
-  };
+  }, []);
 
   // Mark messages as read via WebSocket
-  const markAsRead = async (conversationID: string) => {
+  const markAsRead = useCallback(async (conversationID: string) => {
     try {
-      await webSocketService.markAsRead({ conversationID });
+      return await webSocketService.markAsRead({ conversationID });
     } catch (error) {
       console.error('Error marking messages as read via WebSocket:', error);
       throw error;
     }
-  };
+  }, []);
 
   // Get conversation messages via WebSocket
-  const getConversationMessages = async (conversationID: string) => {
+  const getConversationMessages = useCallback(async (conversationID: string) => {
     try {
-      await webSocketService.getConversationMessages({ conversationID });
+      return await webSocketService.getConversationMessages({ conversationID });
     } catch (error) {
       console.error('Error getting conversation messages via WebSocket:', error);
       throw error;
     }
-  };
+  }, []);
 
-  // Register handlers for WebSocket events
-  const onNewMessage = (handler: (message: NewMessageEvent) => void) => {
-    return webSocketService.on<NewMessageEvent>(ServerEvents.NEW_MESSAGE, handler);
-  };
-
-  const onMessageNotification = (handler: (data: MessageNotificationEvent) => void) => {
+  // Register handlers for WebSocket events - using useCallback to memoize the functions
+  const onMessageNotification = useCallback((handler: (data: MessageNotificationEvent) => void) => {
     return webSocketService.on<MessageNotificationEvent>(ServerEvents.MESSAGE_NOTIFICATION, handler);
-  };
+  }, []);
 
-  const onMessagesRead = (handler: (data: MessagesReadEvent) => void) => {
+  const onMessageSent = useCallback((handler: (data: MessageSentEvent) => void) => {
+    return webSocketService.on<MessageSentEvent>(ServerEvents.MESSAGE_SENT, handler);
+  }, []);
+
+  const onMarkAsReadConfirmation = useCallback((handler: (data: MarkAsReadConfirmationEvent) => void) => {
+    return webSocketService.on<MarkAsReadConfirmationEvent>(ServerEvents.MARK_AS_READ_CONFIRMATION, handler);
+  }, []);
+
+  const onMessagesRead = useCallback((handler: (data: MessagesReadEvent) => void) => {
     return webSocketService.on<MessagesReadEvent>(ServerEvents.MESSAGES_READ, handler);
-  };
+  }, []);
 
-  const onConversationMessages = (handler: (data: ConversationMessagesEvent) => void) => {
+  const onConversationMessages = useCallback((handler: (data: ConversationMessagesEvent) => void) => {
     return webSocketService.on<ConversationMessagesEvent>(ServerEvents.CONVERSATION_MESSAGES, handler);
-  };
+  }, []);
 
-  const onMessagesExpired = (handler: (data: MessagesExpiredEvent) => void) => {
+  const onMessagesExpired = useCallback((handler: (data: MessagesExpiredEvent) => void) => {
     return webSocketService.on<MessagesExpiredEvent>(ServerEvents.MESSAGES_EXPIRED, handler);
-  };
+  }, []);
+
+  const onError = useCallback((handler: (data: ErrorEvent) => void) => {
+    return webSocketService.on<ErrorEvent>(ServerEvents.ERROR, handler);
+  }, []);
 
   return (
     <WebSocketContext.Provider
@@ -145,11 +158,13 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
         sendMessage,
         markAsRead,
         getConversationMessages,
-        onNewMessage,
         onMessageNotification,
+        onMessageSent,
+        onMarkAsReadConfirmation,
         onMessagesRead,
         onConversationMessages,
         onMessagesExpired,
+        onError
       }}
     >
       {children}
