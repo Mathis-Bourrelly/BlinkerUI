@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { FlatList } from "react-native";
+import { FlatList, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useLocalSearchParams, useRouter, usePathname } from "expo-router";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useUser } from "@/context/UserContext";
 import { useMessageContext } from "@/context/MessageContext";
+import { useWebSocket } from "@/context/WebSocketContext";
+import webSocketService from "@/services/WebSocketService";
+import { ServerEvents } from "@/types/WebSocketTypes";
 import NavBar from "@/components/feature/NavBar";
 import TabBar from "@/components/feature/TabBar";
 import { InnerContainer } from "@/components/base/InnerContainer";
@@ -36,6 +39,7 @@ export default function MessageThreadScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
+  const { width } = useWindowDimensions();
   const { user } = useUser();
   const { setEnableConversationsQuery, setEnableUnreadMessagesQuery } = useMessageContext();
   const params = useLocalSearchParams<{ userID: string; conversationID?: string }>();
@@ -119,7 +123,6 @@ export default function MessageThreadScreen() {
     display_name: userID === "unknown" ? "Conversation" : "",
     username: userID === "unknown" ? "conversation" : "",
     avatar_url: `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`,
-    isOnline: false,
     score: 86400, // Valeur par défaut (24 heures)
   });
 
@@ -134,7 +137,6 @@ export default function MessageThreadScreen() {
         display_name: profile.display_name || profile.username || "Utilisateur",
         username: profile.username || "",
         avatar_url: profile.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`,
-        isOnline: false, // L'API ne fournit pas cette information pour l'instant
         score: profile.score || 86400, // Utiliser le score de l'utilisateur ou la valeur par défaut
       });
     } else if (conversationData && conversationData.length > 0) {
@@ -151,7 +153,6 @@ export default function MessageThreadScreen() {
           display_name: otherUserMessage.sender.display_name || "Utilisateur",
           username: otherUserMessage.sender.username || "",
           avatar_url: otherUserMessage.sender.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`,
-          isOnline: false, // L'API ne fournit pas cette information pour l'instant
           score: otherUserMessage.sender.score || 86400, // Utiliser le score de l'utilisateur ou la valeur par défaut
         });
       }
@@ -178,6 +179,156 @@ export default function MessageThreadScreen() {
 
     return () => clearTimeout(timer);
   }, [conversationID, userID, markMessagesAsRead]);
+
+  // WebSocket integration
+  const {
+    isConnected,
+    onNewMessage,
+    onMessageNotification,
+    onMessagesRead,
+    onMessagesExpired,
+    markAsRead: wsMarkAsRead
+  } = useWebSocket();
+
+  // Listen for new messages via WebSocket
+  useEffect(() => {
+    if (!isConnected) return;
+
+    // Handler for new messages
+    const handleNewMessage = (message: any) => {
+      console.log('WebSocket: New message received', message);
+      // Only add the message if it's for the current conversation
+      if (conversationID && message.conversationID === conversationID) {
+        setMessages(prevMessages => [...prevMessages, message]);
+
+        // Mark the message as read
+        setTimeout(() => {
+          if (conversationID) {
+            try {
+              wsMarkAsRead(conversationID).catch(error => {
+                console.error('Failed to mark message as read via WebSocket:', error);
+                // Fall back to REST API but don't throw if that fails too
+                markMessagesAsRead().catch(err => {
+                  console.error('Failed to mark message as read via REST API:', err);
+                  // Just update the UI to show messages as read even if the API call failed
+                  setMessages(prevMessages =>
+                    prevMessages.map(msg => ({
+                      ...msg,
+                      isRead: true
+                    }))
+                  );
+                });
+              });
+            } catch (error) {
+              console.error('Error in markAsRead:', error);
+            }
+          }
+        }, 1000);
+
+        // Scroll to bottom
+        requestAnimationFrame(() => {
+          if (flatListRef.current) {
+            flatListRef.current.scrollToEnd({ animated: true });
+          }
+        });
+      }
+    };
+
+    // Handler for message notifications
+    const handleMessageNotification = (data: any) => {
+      console.log('WebSocket: Message notification received', data);
+      // Only add the message if it's for the current conversation
+      if (conversationID && data.conversationID === conversationID) {
+        setMessages(prevMessages => [...prevMessages, data.message]);
+
+        // Mark the message as read
+        setTimeout(() => {
+          if (conversationID) {
+            try {
+              wsMarkAsRead(conversationID).catch(error => {
+                console.error('Failed to mark message as read via WebSocket:', error);
+                // Fall back to REST API but don't throw if that fails too
+                markMessagesAsRead().catch(err => {
+                  console.error('Failed to mark message as read via REST API:', err);
+                  // Just update the UI to show messages as read even if the API call failed
+                  setMessages(prevMessages =>
+                    prevMessages.map(msg => ({
+                      ...msg,
+                      isRead: true
+                    }))
+                  );
+                });
+              });
+            } catch (error) {
+              console.error('Error in markAsRead:', error);
+            }
+          }
+        }, 1000);
+
+        // Scroll to bottom
+        requestAnimationFrame(() => {
+          if (flatListRef.current) {
+            flatListRef.current.scrollToEnd({ animated: true });
+          }
+        });
+      }
+    };
+
+    // Handler for messages read status updates
+    const handleMessagesRead = (data: any) => {
+      console.log('WebSocket: Messages read notification received', data);
+      // Update the UI to reflect that messages have been read
+      if (conversationID && data.conversationID === conversationID) {
+        // Update the messages to mark them as read
+        setMessages(prevMessages =>
+          prevMessages.map(msg => ({
+            ...msg,
+            isRead: true
+          }))
+        );
+      }
+    };
+
+    // Handler for message expiration
+    const handleMessagesExpired = (data: any) => {
+      console.log('WebSocket: Messages expired notification received', data);
+      if (conversationID && data.conversationID === conversationID && data.messageIDs?.length > 0) {
+        // Remove expired messages from the UI
+        setMessages(prevMessages =>
+          prevMessages.filter(msg => !data.messageIDs.includes(msg.messageID))
+        );
+      }
+    };
+
+    // Register event handlers
+    const unsubscribeNewMessage = onNewMessage(handleNewMessage);
+    const unsubscribeMessageNotification = onMessageNotification(handleMessageNotification);
+    const unsubscribeMessagesRead = onMessagesRead(handleMessagesRead);
+    const unsubscribeMessagesExpired = onMessagesExpired(handleMessagesExpired);
+
+    // If we have a conversationID, get messages via WebSocket
+    if (conversationID) {
+      try {
+        // This will trigger the conversationMessages event
+        webSocketService.getConversationMessages({ conversationID })
+          .catch(error => {
+            console.error('Failed to get conversation messages via WebSocket:', error);
+            // We already have messages from the REST API, so no need to do anything here
+          });
+      } catch (error) {
+        console.error('Error in getConversationMessages:', error);
+        // We already have messages from the REST API, so no need to do anything here
+      }
+    }
+
+    // Cleanup function
+    return () => {
+      unsubscribeNewMessage();
+      unsubscribeMessageNotification();
+      unsubscribeMessagesRead();
+      unsubscribeMessagesExpired();
+    };
+  }, [isConnected, conversationID, wsMarkAsRead, markMessagesAsRead]);
 
   // Défiler vers le bas lorsque de nouveaux messages sont ajoutés
   useEffect(() => {
@@ -268,7 +419,7 @@ export default function MessageThreadScreen() {
   return (
     <>
       <Stack.Screen />
-      <SafeAreaView style={messageThreadStyles.container}>
+      <SafeAreaView style={[messageThreadStyles.container, { paddingBottom: width > 768 ? 0 : 40 }]}>
         <LinearGradient colors={gradientColors} style={messageThreadStyles.background}>
           <InnerContainer>
             <NavBar />
@@ -287,6 +438,35 @@ export default function MessageThreadScreen() {
               setNewMessage={setNewMessage}
               handleSend={handleSend}
               isPending={sendMessageMutation.isPending}
+              conversationID={conversationID}
+              receiverID={userID !== "unknown" ? userID : undefined}
+              onMessageSent={(message) => {
+                // Add the sent message to the local state
+                const sentMessage = {
+                  messageID: `temp-${Date.now()}`,
+                  conversationID: conversationID || '',
+                  content: message.content,
+                  expiresAt: new Date(Date.now() + 86400000).toISOString(), // Default 24h expiration
+                  isRead: false,
+                  senderID: user?.userID || '',
+                  createdAt: new Date().toISOString(),
+                };
+                setMessages([...messages, sentMessage]);
+
+                // If we received a conversationID and didn't have one before, update the URL
+                if (message.conversationID && !conversationID) {
+                  router.setParams({
+                    conversationID: message.conversationID
+                  });
+                }
+
+                // Scroll to bottom
+                requestAnimationFrame(() => {
+                  if (flatListRef.current) {
+                    flatListRef.current.scrollToEnd({ animated: true });
+                  }
+                });
+              }}
             />
 
             <MessageThreadFooter />

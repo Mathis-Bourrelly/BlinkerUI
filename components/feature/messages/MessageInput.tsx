@@ -1,7 +1,8 @@
 import React from "react";
-import { View, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
+import { View, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, useWindowDimensions } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
+import { useWebSocket } from "@/context/WebSocketContext";
 import { Icon } from "@/components/images/Icon";
 import { messageThreadStyles } from "./MessageThreadStyles";
 
@@ -10,17 +11,39 @@ type MessageInputProps = {
   setNewMessage: (message: string) => void;
   handleSend: () => void;
   isPending: boolean | undefined;
+  conversationID?: string;
+  receiverID?: string;
+  onMessageSent?: (message: any) => void;
 };
 
-export function MessageInput({ newMessage, setNewMessage, handleSend, isPending }: MessageInputProps) {
+export function MessageInput({
+  newMessage,
+  setNewMessage,
+  handleSend,
+  isPending,
+  conversationID,
+  receiverID,
+  onMessageSent
+}: MessageInputProps) {
+  const { isConnected, sendMessage } = useWebSocket();
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const { width } = useWindowDimensions();
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={64}
-      style={[messageThreadStyles.inputContainer, { borderTopColor: colors.border, backgroundColor: colors.card }]}
+      style={[
+        messageThreadStyles.inputContainer,
+        {
+          borderTopColor: colors.border,
+          backgroundColor: colors.card,
+          // Assurer que le champ de saisie reste au-dessus de la TabBar en mode mobile
+          zIndex: 1,
+          marginBottom: width > 768 ? 20 : 40 // Ajustement selon le mode desktop ou mobile
+        }
+      ]}
     >
       <TouchableOpacity style={messageThreadStyles.attachButton}>
         <Icon name="attachment" size={24} color={colors.accent} />
@@ -36,7 +59,30 @@ export function MessageInput({ newMessage, setNewMessage, handleSend, isPending 
       />
 
       <TouchableOpacity
-        onPress={handleSend}
+        onPress={async () => {
+          // If WebSocket is connected, try to send via WebSocket first
+          if (isConnected && newMessage.trim()) {
+            try {
+              await sendMessage(newMessage.trim(), conversationID, receiverID);
+              setNewMessage("");
+              // If there's a callback for message sent, call it
+              if (onMessageSent) {
+                onMessageSent({
+                  content: newMessage.trim(),
+                  conversationID,
+                  receiverID
+                });
+              }
+            } catch (error) {
+              console.error('WebSocket send failed, falling back to REST API:', error);
+              // Fall back to REST API
+              handleSend();
+            }
+          } else {
+            // Use REST API if WebSocket is not connected
+            handleSend();
+          }
+        }}
         disabled={!newMessage.trim() || isPending}
         style={[messageThreadStyles.sendButton, { opacity: !newMessage.trim() || isPending ? 0.5 : 1 }]}
       >

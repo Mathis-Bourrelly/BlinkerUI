@@ -11,6 +11,16 @@ export default function TabBar() {
     const { user } = useUser();
     const pathname = usePathname();
 
+    // Utiliser useCallback pour éviter les rendus inutiles
+    // Doit être défini avant toute condition de retour
+    const handleNavigation = useCallback((path: string, condition: boolean) => {
+        if (condition) {
+            console.log(`TabBar - Navigating to ${path}`);
+            // @ts-ignore
+            router.push(path);
+        }
+    }, []);
+
     // Don't render on desktop
     if (width > 768) return null;
     const dynamicColor = {
@@ -18,14 +28,6 @@ export default function TabBar() {
         borderColor: colors.border,
         backgroundColor: colors.background,
     };
-
-    // Utiliser useCallback pour éviter les rendus inutiles
-    const handleNavigation = useCallback((path: string, condition: boolean) => {
-        if (condition) {
-            console.log(`TabBar - Navigating to ${path}`);
-            router.push(path);
-        }
-    }, []);
 
     return (
         <View style={[styles.tabBar, dynamicColor]}>
@@ -74,6 +76,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
         alignItems: "center",
         borderTopWidth: 1,
+        zIndex: 2, // S'assurer que la TabBar est au-dessus des autres éléments
     },
     avatar: {
         width: 32,

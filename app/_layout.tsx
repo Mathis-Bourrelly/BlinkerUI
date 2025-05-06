@@ -8,6 +8,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {Slot} from 'expo-router';
 import {UserProvider} from "@/context/UserContext"; // This renders the current route/page content
 import {MessageProvider} from "@/context/MessageContext"; // Provider pour les messages
+import {WebSocketProvider} from "@/context/WebSocketContext"; // Provider pour les WebSockets
 import WebStyles from './web-styles'; // Import web-specific styles
 
 // Configuration globale de React Query
@@ -49,8 +50,10 @@ export default function RootLayout() {
             <ThemeProvider>
                 <UserProvider>
                     <MessageProvider>
-                        <WebStyles />
-                        <Slot/>
+                        <WebSocketProvider>
+                            <WebStyles />
+                            <Slot/>
+                        </WebSocketProvider>
                     </MessageProvider>
                 </UserProvider>
             </ThemeProvider>

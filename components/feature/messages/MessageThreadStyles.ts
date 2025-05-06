@@ -86,7 +86,7 @@ export const messageThreadStyles = StyleSheet.create({
   messagesContainer: {
     paddingVertical: 16,
     paddingHorizontal: 12,
-    paddingBottom: 80,
+    paddingBottom: 80, // Espace pour éviter la superposition avec le champ de saisie
   },
   messageWrapper: {
     marginBottom: 8,

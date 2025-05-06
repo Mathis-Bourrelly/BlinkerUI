@@ -11,7 +11,6 @@ type ContactInfo = {
   display_name: string;
   username: string;
   avatar_url: string;
-  isOnline: boolean;
   score: number;
 };
 
@@ -58,20 +57,7 @@ export function ContactHeader({ contactInfo, userID }: ContactHeaderProps) {
             <ScoreDot score={contactInfo.score} size={8} />
           </View>
         </View>
-        <View style={messageThreadStyles.statusContainer}>
-          {contactInfo.isOnline ? (
-            <>
-              <View style={[messageThreadStyles.statusDot, { backgroundColor: colors.valide }]} />
-              <ThemedText style={[messageThreadStyles.statusText, { color: colors.textSecondary }]}>
-                {t("messages.online")}
-              </ThemedText>
-            </>
-          ) : (
-            <ThemedText style={[messageThreadStyles.statusText, { color: colors.textSecondary }]}>
-              {t("messages.offline")}
-            </ThemedText>
-          )}
-        </View>
+        {/* Statut de connexion supprimé car il n'y a pas de système de connexion actuellement */}
       </View>
     </View>
   );

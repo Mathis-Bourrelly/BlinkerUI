@@ -21,8 +21,7 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
     const [isLiking, setIsLiking] = useState(false);
     const [isDisliking, setIsDisliking] = useState(false);
     const [hasLiked, setHasLiked] = useState(blink.isLiked || false); // L'utilisateur a-t-il liké ce post
-    const [hasDisliked, setHasDisliked] = useState(false); // L'utilisateur a-t-il disliké ce post
-
+    const [hasDisliked, setHasDisliked] = useState(blink.isDisliked || false); // L'utilisateur a-t-il disliké ce post
     // Mettre à jour les états locaux quand les props changent
     useEffect(() => {
         setLocalLikeCount(blink.likeCount);
@@ -279,13 +278,13 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
                     disabled={isLiking}
                 >
                     {isLiking ? (
-                        <ActivityIndicator size="small" color={colors.accent} />
+                        <ActivityIndicator size="small" color={colors.danger} />
                     ) : (
                         <View style={styles.interactionContent}>
                             <Icon
                                 name={hasLiked ? "filled-like" : "like"}
                                 size={24}
-                                color={hasLiked ? colors.accent : colors.text}
+                                color={hasLiked ? colors.danger : colors.text}
                             />
                             <Text style={[styles.interactionText, { color: colors.text }]}>{localLikeCount}</Text>
                         </View>
@@ -298,13 +297,13 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
                     disabled={isDisliking}
                 >
                     {isDisliking ? (
-                        <ActivityIndicator size="small" color={colors.danger} />
+                        <ActivityIndicator size="small" color={colors.accent} />
                     ) : (
                         <View style={styles.interactionContent}>
                             <Icon
                                 name={"dislike"}
                                 size={24}
-                                color={hasDisliked ? colors.danger : colors.text}
+                                color={hasDisliked ? colors.accent : colors.text}
                             />
                             <Text style={[styles.interactionText, { color: colors.text }]}>{localDislikeCount}</Text>
                         </View>

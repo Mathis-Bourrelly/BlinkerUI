@@ -9,6 +9,8 @@ import { useConversationsQuery, useUnreadMessagesQuery } from "@/hooks/interface
 import { ConversationPreviewType } from "@/types/MessagesType";
 import { LinearGradient } from "expo-linear-gradient";
 import { useMessageContext } from "@/context/MessageContext";
+import { useWebSocket } from "@/context/WebSocketContext";
+import { ServerEvents } from "@/types/WebSocketTypes";
 
 // Composants de messages
 import { LoadingState } from "@/components/feature/messages/LoadingState";
@@ -54,6 +56,77 @@ export default function MessagesScreen() {
       // console.log('Conversations:', conversationsData);
     }
   }, [conversationsData]); // Retirer unreadMessages de la dépendance pour éviter les boucles
+
+  // WebSocket integration for real-time updates
+  const { isConnected, onNewMessage, onMessageNotification } = useWebSocket();
+
+  // Listen for new messages via WebSocket
+  useEffect(() => {
+    if (!isConnected) return;
+
+    // Handler for new messages
+    const handleNewMessage = (message: any) => {
+      console.log('WebSocket: New message received in conversations list', message);
+      updateConversationWithNewMessage(message);
+    };
+
+    // Handler for message notifications
+    const handleMessageNotification = (data: any) => {
+      console.log('WebSocket: Message notification received in conversations list', data);
+      if (data.message) {
+        updateConversationWithNewMessage(data.message);
+      }
+    };
+
+    // Helper function to update conversations with a new message
+    const updateConversationWithNewMessage = (message: any) => {
+      setConversations(prevConversations => {
+        // Check if the conversation already exists
+        const conversationIndex = prevConversations.findIndex(
+          conv => conv.conversationID === message.conversationID
+        );
+
+        if (conversationIndex >= 0) {
+          // Update existing conversation
+          const updatedConversations = [...prevConversations];
+          const conversation = updatedConversations[conversationIndex];
+
+          // Update the conversation with the new message
+          updatedConversations[conversationIndex] = {
+            ...conversation,
+            lastMessage: {
+              content: message.content,
+              createdAt: message.createdAt,
+              read: false,
+              isFromUser: false // Assume it's from another user if received via WebSocket
+            },
+            unreadCount: conversation.unreadCount + 1
+          };
+
+          // Move the updated conversation to the top
+          updatedConversations.splice(conversationIndex, 1);
+          updatedConversations.unshift(updatedConversations[conversationIndex]);
+
+          return updatedConversations;
+        }
+
+        // If the conversation doesn't exist, we might need to fetch it
+        // This would typically happen when receiving a message from a new conversation
+        // For now, we'll just return the current state and let the next API poll update it
+        return prevConversations;
+      });
+    };
+
+    // Register event handlers
+    const unsubscribeNewMessage = onNewMessage(handleNewMessage);
+    const unsubscribeMessageNotification = onMessageNotification(handleMessageNotification);
+
+    // Cleanup function
+    return () => {
+      unsubscribeNewMessage();
+      unsubscribeMessageNotification();
+    };
+  }, [isConnected, onNewMessage, onMessageNotification]);
 
   if (isLoading) {
     return <LoadingState />;

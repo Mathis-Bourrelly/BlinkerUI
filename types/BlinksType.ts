@@ -16,4 +16,5 @@ export type BlinkType = {
         userID: string;
     };
     isLiked: boolean; // Maintenant non-optionnel car toujours fourni par l'API
+    isDisliked: boolean; // Indique si l'utilisateur courant a disliké ce blink
 };
