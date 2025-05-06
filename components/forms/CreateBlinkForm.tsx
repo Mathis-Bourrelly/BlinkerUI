@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import { View, TouchableOpacity, ScrollView, StyleSheet, Modal, Alert } from "react-native";
 import { ThemedText } from "../base/ThemedText";
 import { Icon } from "@/components/images/Icon";
 import { useTheme } from "@/context/ThemeContext";
@@ -21,6 +21,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
     const { colors } = useTheme();
 
     const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([]);
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     // Fonction pour ajouter un nouveau bloc en fin de liste
     const addBlock = (type: "text" | "image" | "video") => {
@@ -86,6 +87,32 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
         if (onSuccess) {
             onSuccess();
         }
+    };
+
+    // Gérer l'annulation de la création
+    const handleCancel = () => {
+        // Si des blocs ont été ajoutés, afficher la confirmation
+        if (contentBlocks.length > 0) {
+            setShowConfirmation(true);
+        } else {
+            // Sinon, fermer directement la modal
+            if (onSuccess) {
+                onSuccess();
+            }
+        }
+    };
+
+    // Confirmer l'annulation
+    const confirmCancel = () => {
+        setShowConfirmation(false);
+        if (onSuccess) {
+            onSuccess();
+        }
+    };
+
+    // Annuler l'annulation (continuer l'édition)
+    const cancelConfirmation = () => {
+        setShowConfirmation(false);
     };
 
     return (
@@ -194,21 +221,74 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                 ))
             )}
 
-            <TouchableOpacity
-                style={[
-                    styles.submitButton,
-                    {
-                        backgroundColor: contentBlocks.length > 0 ? colors.accent : colors.textSecondary,
-                        opacity: contentBlocks.length > 0 ? 1 : 0.7
-                    }
-                ]}
-                onPress={handleSubmit}
-                disabled={contentBlocks.length === 0}
+            <View style={styles.buttonsContainer}>
+                <TouchableOpacity
+                    style={[
+                        styles.cancelButton,
+                        { borderColor: colors.border }
+                    ]}
+                    onPress={handleCancel}
+                >
+                    <ThemedText style={styles.cancelButtonText}>
+                        Annuler
+                    </ThemedText>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[
+                        styles.submitButton,
+                        {
+                            backgroundColor: contentBlocks.length > 0 ? colors.accent : colors.textSecondary,
+                            opacity: contentBlocks.length > 0 ? 1 : 0.7
+                        }
+                    ]}
+                    onPress={handleSubmit}
+                    disabled={contentBlocks.length === 0}
+                >
+                    <ThemedText style={styles.submitButtonText}>
+                        Publier
+                    </ThemedText>
+                </TouchableOpacity>
+            </View>
+
+            {/* Modal de confirmation pour l'annulation */}
+            <Modal
+                visible={showConfirmation}
+                transparent={true}
+                animationType="fade"
             >
-                <ThemedText style={styles.submitButtonText}>
-                    Publier
-                </ThemedText>
-            </TouchableOpacity>
+                <View style={styles.confirmationOverlay}>
+                    <View style={[styles.confirmationContainer, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                        <ThemedText variant="SubTitle" style={styles.confirmationTitle}>
+                            Abandonner la création ?
+                        </ThemedText>
+
+                        <ThemedText style={styles.confirmationText}>
+                            Êtes-vous sûr de vouloir quitter la création du Blink ? Tous vos changements seront perdus.
+                        </ThemedText>
+
+                        <View style={styles.confirmationButtons}>
+                            <TouchableOpacity
+                                style={[styles.confirmationButton, styles.cancelConfirmButton, { borderColor: colors.border }]}
+                                onPress={cancelConfirmation}
+                            >
+                                <ThemedText>
+                                    Continuer l'édition
+                                </ThemedText>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[styles.confirmationButton, styles.confirmButton, { backgroundColor: colors.danger }]}
+                                onPress={confirmCancel}
+                            >
+                                <ThemedText style={{ color: 'white' }}>
+                                    Abandonner
+                                </ThemedText>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </ScrollView>
     );
 };
@@ -300,17 +380,82 @@ const styles = StyleSheet.create({
         padding: 6,
         marginLeft: 4,
     },
+    buttonsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 16,
+        marginBottom: 24,
+    },
+    cancelButton: {
+        padding: 16,
+        borderRadius: 30,
+        alignItems: "center",
+        borderWidth: 1,
+        flex: 1,
+        marginRight: 8,
+    },
+    cancelButtonText: {
+        fontWeight: '500',
+    },
     submitButton: {
         padding: 16,
         borderRadius: 30,
         alignItems: "center",
-        marginTop: 16,
-        marginBottom: 24,
+        flex: 1,
+        marginLeft: 8,
     },
     submitButtonText: {
         color: 'white',
         fontWeight: 'bold',
         fontSize: 16,
+    },
+    // Styles pour la modal de confirmation
+    confirmationOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    confirmationContainer: {
+        width: '100%',
+        maxWidth: 400,
+        borderRadius: 16,
+        padding: 24,
+        borderWidth: 1,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 10,
+    },
+    confirmationTitle: {
+        textAlign: 'center',
+        marginBottom: 16,
+    },
+    confirmationText: {
+        textAlign: 'center',
+        marginBottom: 24,
+    },
+    confirmationButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    confirmationButton: {
+        padding: 14,
+        borderRadius: 8,
+        alignItems: 'center',
+        flex: 1,
+    },
+    cancelConfirmButton: {
+        borderWidth: 1,
+        marginRight: 8,
+    },
+    confirmButton: {
+        marginLeft: 8,
     },
 });
 
