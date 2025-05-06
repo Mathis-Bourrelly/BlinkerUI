@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { FlatList, useWindowDimensions } from "react-native";
+import { FlatList, useWindowDimensions, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useLocalSearchParams, useRouter, usePathname } from "expo-router";
 import { useTheme } from "@/context/ThemeContext";
@@ -7,8 +7,8 @@ import { useTranslation } from "react-i18next";
 import { useUser } from "@/context/UserContext";
 import { useMessageContext } from "@/context/MessageContext";
 import { useWebSocket } from "@/context/WebSocketContext";
-import webSocketService from "@/services/WebSocketService";
 import { ServerEvents } from "@/types/WebSocketTypes";
+import { Icon } from "@/components/images/Icon";
 import NavBar from "@/components/feature/NavBar";
 import TabBar from "@/components/feature/TabBar";
 import { InnerContainer } from "@/components/base/InnerContainer";
@@ -109,15 +109,19 @@ export default function MessageThreadScreen() {
     // Marquer les messages comme lus selon le mode (conversation ou entre utilisateurs)
     if (conversationID) {
       // Utiliser WebSocket pour marquer les messages comme lus
-      if (isConnected) {
-        wsMarkAsRead(conversationID)
-          .then(() => {
-            // Marquer comme déjà lu pour éviter les appels répétés
-            messagesMarkedAsReadRef.current[conversationID] = true;
-          })
-          .catch(error => {
-            console.error('Failed to mark messages as read via WebSocket:', error);
-          });
+      if (isConnected && wsMarkAsRead) {
+        try {
+          wsMarkAsRead(conversationID)
+            .then(() => {
+              // Marquer comme déjà lu pour éviter les appels répétés
+              messagesMarkedAsReadRef.current[conversationID] = true;
+            })
+            .catch(error => {
+              console.error('Failed to mark messages as read via WebSocket:', error);
+            });
+        } catch (error) {
+          console.error('Error calling wsMarkAsRead:', error);
+        }
       }
     } else if (userID && userID !== "unknown") {
       // Utiliser l'API REST pour la compatibilité avec l'ancien système
@@ -214,7 +218,7 @@ export default function MessageThreadScreen() {
 
         // Mark the message as read
         setTimeout(() => {
-          if (conversationID) {
+          if (conversationID && wsMarkAsRead) {
             try {
               wsMarkAsRead(conversationID).then(response => {
                 console.log('Messages marked as read via WebSocket:', response);
@@ -227,20 +231,23 @@ export default function MessageThreadScreen() {
                 );
               }).catch(error => {
                 console.error('Failed to mark message as read via WebSocket:', error);
-                // Fall back to REST API but don't throw if that fails too
-                markMessagesAsRead().catch(err => {
-                  console.error('Failed to mark message as read via REST API:', err);
-                  // Just update the UI to show messages as read even if the API call failed
-                  setMessages(prevMessages =>
-                    prevMessages.map(msg => ({
-                      ...msg,
-                      isRead: true
-                    }))
-                  );
-                });
+                // Just update the UI to show messages as read even if the API call failed
+                setMessages(prevMessages =>
+                  prevMessages.map(msg => ({
+                    ...msg,
+                    isRead: true
+                  }))
+                );
               });
             } catch (error) {
               console.error('Error in markAsRead:', error);
+              // Just update the UI to show messages as read even if the API call failed
+              setMessages(prevMessages =>
+                prevMessages.map(msg => ({
+                  ...msg,
+                  isRead: true
+                }))
+              );
             }
           }
         }, 1000);

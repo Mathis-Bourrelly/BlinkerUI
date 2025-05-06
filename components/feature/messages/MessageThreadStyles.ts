@@ -119,12 +119,21 @@ export const messageThreadStyles = StyleSheet.create({
     marginTop: 4,
     opacity: 0.7,
   },
+  messageFooterContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  readIndicatorContainer: {
+    marginLeft: 4,
+  },
+  readIndicator: {
+    opacity: 0.9,
+  },
   messageTime: {
     fontSize: 10,
   },
   expiryTime: {
     fontSize: 10,
-    marginLeft: 8,
   },
   senderName: {
     fontSize: 12,

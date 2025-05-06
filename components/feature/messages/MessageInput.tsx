@@ -42,7 +42,7 @@ export function MessageInput({
       ]}
     >
       <TouchableOpacity style={messageThreadStyles.attachButton}>
-        <Icon name="attachment" size={24} color={colors.accent} />
+        <Icon name="attach" size={24} color={colors.accent} />
       </TouchableOpacity>
 
       <TextInput
