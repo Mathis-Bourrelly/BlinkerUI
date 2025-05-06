@@ -11,8 +11,8 @@ export function useFormatMessageDate() {
     
     // Vérifier si c'est aujourd'hui
     if (date.toDateString() === now.toDateString()) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
+      return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }    
     
     // Vérifier si c'est hier
     if (date.toDateString() === yesterday.toDateString()) {

@@ -32,7 +32,10 @@ export function MessageInput({ newMessage, setNewMessage, handleSend, isPending 
         onChangeText={setNewMessage}
         placeholder={t("messages.placeholder")}
         placeholderTextColor={colors.textSecondary}
-        multiline
+        onSubmitEditing={handleSend}
+        returnKeyType="send"
+        blurOnSubmit={false}
+        multiline={false}
       />
 
       <TouchableOpacity
