@@ -55,10 +55,10 @@ const CreateBlinkModal: React.FC<CreateBlinkModalProps> = ({ visible, onClose })
             animationType="none"
         >
             <TouchableWithoutFeedback onPress={onClose}>
-                <Animated.View 
+                <Animated.View
                     style={[
-                        styles.modalContainer, 
-                        { 
+                        styles.modalContainer,
+                        {
                             backgroundColor: fadeAnim.interpolate({
                                 inputRange: [0, 1],
                                 outputRange: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.5)']
@@ -67,10 +67,10 @@ const CreateBlinkModal: React.FC<CreateBlinkModalProps> = ({ visible, onClose })
                     ]}
                 >
                     <TouchableWithoutFeedback>
-                        <Animated.View 
+                        <Animated.View
                             style={[
-                                styles.modalContent, 
-                                { 
+                                styles.modalContent,
+                                {
                                     backgroundColor: colors.background,
                                     transform: [{ translateY: slideAnim }],
                                     opacity: fadeAnim
@@ -79,8 +79,8 @@ const CreateBlinkModal: React.FC<CreateBlinkModalProps> = ({ visible, onClose })
                         >
                             <View style={styles.modalHeader}>
                                 <ThemedText variant="Title">Créer un Blink</ThemedText>
-                                <TouchableOpacity 
-                                    onPress={onClose} 
+                                <TouchableOpacity
+                                    onPress={onClose}
                                     style={styles.closeButton}
                                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                                 >
@@ -104,21 +104,33 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         width: '90%',
-        maxHeight: '80%',
-        borderRadius: 12,
-        padding: 20,
+        maxWidth: 500, // Limiter la largeur maximale sur les grands écrans
+        maxHeight: '85%',
+        borderRadius: 16,
+        padding: 24,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 10,
     },
     modalHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 24,
+        paddingBottom: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(0, 0, 0, 0.1)',
     },
     closeButton: {
         padding: 8,
         borderRadius: 20,
-        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+        backgroundColor: 'rgba(0, 0, 0, 0.08)',
     },
 });
 
-export default CreateBlinkModal; 
+export default CreateBlinkModal;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {View, TouchableOpacity, Image, StyleSheet, useWindowDimensions} from "react-native";
+import {View, TouchableOpacity, Image, StyleSheet, useWindowDimensions, Platform} from "react-native";
 import {Icon} from "@/components/images/Icon";
 import {useTheme} from "@/context/ThemeContext";
 import {router} from "expo-router";
@@ -19,8 +19,8 @@ export default function NavBar() {
 
     // Suppression du log de débogage qui cause des rendus excessifs
 
-    const optionsRef = useRef<View>(null);
-    const buttonRef = useRef<TouchableOpacity>(null);
+    const optionsRef = useRef<any>(null);
+    const buttonRef = useRef<any>(null);
 
     const toggleOptions = () => {
         setShowOptions(!showOptions);
@@ -30,11 +30,15 @@ export default function NavBar() {
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (showOptions && optionsRef.current && buttonRef.current) {
-                // @ts-ignore - L'API React Native Web expose _nativeTag
+                // @ts-ignore - L'API React Native Web expose _nativeTag et contains
                 const isClickInside = event.target && (
+                    // @ts-ignore
                     optionsRef.current._nativeTag === (event.target as any)._nativeTag ||
+                    // @ts-ignore
                     optionsRef.current.contains?.(event.target as Node) ||
+                    // @ts-ignore
                     buttonRef.current._nativeTag === (event.target as any)._nativeTag ||
+                    // @ts-ignore
                     buttonRef.current.contains?.(event.target as Node)
                 );
 
@@ -75,10 +79,7 @@ export default function NavBar() {
                         <ThemedText>Leaderboard</ThemedText>
                     </TouchableOpacity>
                     <ThemedVerticalSeparator barColor={colors.border} height={20}/>
-                    <TouchableOpacity onPress={() => router.push("/")}>
-                        <ThemedText>Poster</ThemedText>
-                    </TouchableOpacity>
-                    <ThemedVerticalSeparator barColor={colors.border} height={20} />
+
                     <TouchableOpacity onPress={() => router.push("/messages")}>
                     <ThemedText>Messagerie</ThemedText>
                     </TouchableOpacity>
@@ -117,10 +118,13 @@ export default function NavBar() {
                         {
                             backgroundColor: colors.card,
                             borderColor: colors.border,
-                            position: "fixed", // Utiliser fixed au lieu de absolute pour être au-dessus de tout
-                            top: "60px", // Position sous la navbar
-                            right: "20px" // Décalage depuis la droite
-                        }
+                        },
+                        // @ts-ignore - Utiliser des styles spécifiques à la plateforme web
+                        Platform.OS === 'web' ? {
+                            position: "fixed",
+                            top: "60px",
+                            right: "20px"
+                        } : {}
                     ]}
                 >
                     <View style={styles.optionItem}>

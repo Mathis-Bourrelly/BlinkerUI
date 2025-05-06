@@ -55,7 +55,10 @@ export function MessageInput({
         onChangeText={setNewMessage}
         placeholder={t("messages.placeholder")}
         placeholderTextColor={colors.textSecondary}
-        multiline
+        onSubmitEditing={handleSend}
+        returnKeyType="send"
+        blurOnSubmit={false}
+        multiline={false}
       />
 
       <TouchableOpacity
