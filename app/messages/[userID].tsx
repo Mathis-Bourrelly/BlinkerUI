@@ -1,14 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { FlatList, useWindowDimensions, TouchableOpacity, View } from "react-native";
+import { FlatList, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Stack, useLocalSearchParams, useRouter, usePathname } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useTheme } from "@/context/ThemeContext";
-import { useTranslation } from "react-i18next";
 import { useUser } from "@/context/UserContext";
 import { useMessageContext } from "@/context/MessageContext";
 import { useWebSocket } from "@/context/WebSocketContext";
-import { ServerEvents } from "@/types/WebSocketTypes";
-import { Icon } from "@/components/images/Icon";
 import NavBar from "@/components/feature/NavBar";
 import TabBar from "@/components/feature/TabBar";
 import { InnerContainer } from "@/components/base/InnerContainer";
@@ -18,7 +15,6 @@ import {
   useMarkAsReadMutation
 } from "@/hooks/interfaces/useMessageInterface";
 import { useUserProfileQuery } from "@/hooks/interfaces/useProfileInterface";
-import { useQueryClient } from "@tanstack/react-query";
 import { MessageType } from "@/types/MessagesType";
 import { useFormatMessageDate } from "@/utils/dateUtils";
 
@@ -33,9 +29,7 @@ import { messageThreadStyles } from "@/components/feature/messages/MessageThread
 
 export default function MessageThreadScreen() {
   const { colors } = useTheme();
-  const { t } = useTranslation();
   const router = useRouter();
-  const pathname = usePathname();
   const { width } = useWindowDimensions();
   const { user } = useUser();
   const { setEnableConversationsQuery, setEnableUnreadMessagesQuery } = useMessageContext();
@@ -71,7 +65,6 @@ export default function MessageThreadScreen() {
 
   // Mutation pour marquer les messages comme lus (uniquement pour la compatibilité avec l'ancien système)
   const markAsReadMutation = useMarkAsReadMutation();
-  const queryClient = useQueryClient();
 
   // État pour suivre le chargement des messages via WebSocket
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
@@ -98,40 +91,49 @@ export default function MessageThreadScreen() {
   } = useWebSocket();
 
   // Fonction pour marquer les messages comme lus
-  const markMessagesAsRead = useCallback(() => {
-    const key = conversationID || userID;
+  const markMessagesAsRead = useCallback((): Promise<void> => {
+    return new Promise<void>((resolve, reject) => {
+      const key = conversationID || userID;
 
-    // Ne rien faire si les messages ont déjà été marqués comme lus
-    if (key && messagesMarkedAsReadRef.current[key]) {
-      return;
-    }
+      // Ne rien faire si les messages ont déjà été marqués comme lus
+      if (key && messagesMarkedAsReadRef.current[key]) {
+        resolve();
+        return;
+      }
 
-    // Marquer les messages comme lus selon le mode (conversation ou entre utilisateurs)
-    if (conversationID) {
-      // Utiliser WebSocket pour marquer les messages comme lus
-      if (isConnected && wsMarkAsRead) {
-        try {
+      // Marquer les messages comme lus selon le mode (conversation ou entre utilisateurs)
+      if (conversationID) {
+        // Utiliser WebSocket pour marquer les messages comme lus
+        if (isConnected) {
           wsMarkAsRead(conversationID)
             .then(() => {
               // Marquer comme déjà lu pour éviter les appels répétés
               messagesMarkedAsReadRef.current[conversationID] = true;
+              resolve();
             })
             .catch(error => {
               console.error('Failed to mark messages as read via WebSocket:', error);
+              reject(error);
             });
-        } catch (error) {
-          console.error('Error calling wsMarkAsRead:', error);
+        } else {
+          resolve(); // Résoudre si pas connecté au WebSocket
         }
+      } else if (userID && userID !== "unknown") {
+        // Utiliser l'API REST pour la compatibilité avec l'ancien système
+        markAsReadMutation.mutate(userID, {
+          onSuccess: () => {
+            // Marquer comme déjà lu pour éviter les appels répétés
+            messagesMarkedAsReadRef.current[userID] = true;
+            resolve();
+          },
+          onError: (error) => {
+            reject(error);
+          }
+        });
+      } else {
+        resolve(); // Résoudre si aucune action n'est nécessaire
       }
-    } else if (userID && userID !== "unknown") {
-      // Utiliser l'API REST pour la compatibilité avec l'ancien système
-      markAsReadMutation.mutate(userID, {
-        onSuccess: () => {
-          // Marquer comme déjà lu pour éviter les appels répétés
-          messagesMarkedAsReadRef.current[userID] = true;
-        }
-      });
-    }
+    });
   }, [conversationID, userID, markAsReadMutation, wsMarkAsRead, isConnected]);
 
   // Informations de contact pour l'autre utilisateur
@@ -218,7 +220,7 @@ export default function MessageThreadScreen() {
 
         // Mark the message as read
         setTimeout(() => {
-          if (conversationID && wsMarkAsRead) {
+          if (conversationID) {
             try {
               wsMarkAsRead(conversationID).then(response => {
                 console.log('Messages marked as read via WebSocket:', response);
@@ -231,23 +233,20 @@ export default function MessageThreadScreen() {
                 );
               }).catch(error => {
                 console.error('Failed to mark message as read via WebSocket:', error);
-                // Just update the UI to show messages as read even if the API call failed
-                setMessages(prevMessages =>
-                  prevMessages.map(msg => ({
-                    ...msg,
-                    isRead: true
-                  }))
-                );
+                // Fall back to REST API but don't throw if that fails too
+                markMessagesAsRead().catch((err: Error) => {
+                  console.error('Failed to mark message as read via REST API:', err);
+                  // Just update the UI to show messages as read even if the API call failed
+                  setMessages(prevMessages =>
+                    prevMessages.map(msg => ({
+                      ...msg,
+                      isRead: true
+                    }))
+                  );
+                });
               });
             } catch (error) {
               console.error('Error in markAsRead:', error);
-              // Just update the UI to show messages as read even if the API call failed
-              setMessages(prevMessages =>
-                prevMessages.map(msg => ({
-                  ...msg,
-                  isRead: true
-                }))
-              );
             }
           }
         }, 1000);
