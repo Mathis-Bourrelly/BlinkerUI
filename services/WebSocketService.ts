@@ -26,9 +26,25 @@ class WebSocketService {
   private processedEvents: Set<string> = new Set(); // Track processed events by eventId
   private pendingRequests: Map<string, { resolve: Function, reject: Function }> = new Map(); // Track pending requests
 
-  // Get the WebSocket URL from environment variables
-  private getWebSocketUrl(): string {
-    // Use secure WebSocket in production, non-secure in development
+  // Get the WebSocket URL based on current window location
+  public getWebSocketUrl(): string {
+    // Check if we're in a browser environment
+    if (typeof window !== 'undefined') {
+      // Get the current hostname
+      const hostname = window.location.hostname;
+
+      // If we're on the production domain, use the backend domain
+      if (hostname === 'app.dev.blinker.eterny.fr') {
+        return 'wss://dev.blinker.eterny.fr';
+      }
+
+      // If we're on localhost in the browser
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'ws://localhost:3011';
+      }
+    }
+
+    // Fallback to environment-based URL
     return process.env.NODE_ENV === 'production'
       ? 'wss://dev.blinker.eterny.fr'
       : 'ws://localhost:3011';
@@ -404,6 +420,42 @@ class WebSocketService {
       return {
         success: false,
         message: `Failed to connect to ${this.getWebSocketUrl()}: ${error instanceof Error ? error.message : String(error)}`
+      };
+    }
+  }
+
+  // Test HTTP connectivity to the WebSocket server
+  async testHttpConnectivity(): Promise<{ success: boolean, message: string }> {
+    try {
+      // Get the WebSocket URL and convert it to HTTP/HTTPS
+      const wsUrl = this.getWebSocketUrl();
+      const httpUrl = wsUrl.replace('ws://', 'http://').replace('wss://', 'https://');
+
+      // Try to fetch the server info
+      const response = await fetch(`${httpUrl}/socket.io/`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        mode: 'cors',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          message: `HTTP connectivity to ${httpUrl} successful: ${response.status} ${response.statusText}`
+        };
+      } else {
+        return {
+          success: false,
+          message: `HTTP connectivity to ${httpUrl} failed: ${response.status} ${response.statusText}`
+        };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: `HTTP connectivity test failed: ${error instanceof Error ? error.message : String(error)}`
       };
     }
   }

@@ -38,6 +38,25 @@ export default function WebSocketTestScreen() {
     }
   };
 
+  // Function to test HTTP connectivity to the WebSocket server
+  const testHttpConnectivity = async () => {
+    setIsLoading(true);
+    addLog('Testing HTTP connectivity to WebSocket server...');
+
+    try {
+      const result = await webSocketService.testHttpConnectivity();
+      addLog(result.message);
+      if (!result.success) {
+        addLog('This suggests a network connectivity or CORS issue');
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      addLog(`Error: ${errorMessage}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Function to clear logs
   const clearLogs = () => {
     setLogs([]);
@@ -46,23 +65,27 @@ export default function WebSocketTestScreen() {
 
   // Function to get WebSocket URL and browser support info
   const getWebSocketInfo = () => {
-    const url = process.env.NODE_ENV === 'production'
-      ? 'wss://dev.blinker.eterny.fr'
-      : 'ws://localhost:3011';
+    // Get the actual URL that will be used by the service
+    const serviceUrl = webSocketService.getWebSocketUrl ?
+      webSocketService.getWebSocketUrl() :
+      (process.env.NODE_ENV === 'production' ? 'wss://dev.blinker.eterny.fr' : 'ws://localhost:3011');
 
     const isSupported = webSocketService.isWebSocketSupported();
 
-    addLog(`WebSocket URL: ${url}`);
+    addLog(`WebSocket URL from service: ${serviceUrl}`);
     addLog(`NODE_ENV: ${process.env.NODE_ENV}`);
     addLog(`WebSocket supported by browser: ${isSupported ? 'Yes' : 'No'}`);
 
-    // Check if we're in a secure context (needed for wss:// in some browsers)
+    // Check browser environment details
     if (typeof window !== 'undefined') {
       const isSecureContext = window.isSecureContext;
       addLog(`Secure context: ${isSecureContext ? 'Yes' : 'No'}`);
+      addLog(`Current hostname: ${window.location.hostname}`);
+      addLog(`Current origin: ${window.location.origin}`);
+      addLog(`Current protocol: ${window.location.protocol}`);
     }
 
-    return url;
+    return serviceUrl;
   };
 
   return (
@@ -83,7 +106,17 @@ export default function WebSocketTestScreen() {
                   disabled={isLoading}
                 >
                   <ThemedText style={styles.buttonText}>
-                    {isLoading ? 'Testing...' : 'Test Connection'}
+                    {isLoading ? 'Testing...' : 'Test WebSocket'}
+                  </ThemedText>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.button, { backgroundColor: colors.primary }]}
+                  onPress={testHttpConnectivity}
+                  disabled={isLoading}
+                >
+                  <ThemedText style={styles.buttonText}>
+                    {isLoading ? 'Testing...' : 'Test HTTP'}
                   </ThemedText>
                 </TouchableOpacity>
 
