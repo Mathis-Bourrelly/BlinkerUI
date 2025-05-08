@@ -34,6 +34,11 @@ class WebSocketService {
       : 'ws://localhost:3011';
   }
 
+  // Check if WebSocket is supported by the browser
+  public isWebSocketSupported(): boolean {
+    return typeof WebSocket !== 'undefined';
+  }
+
   // Connect to the WebSocket server
   async connect(): Promise<Socket> {
     if (this.socket?.connected) {
@@ -66,6 +71,9 @@ class WebSocketService {
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
+        withCredentials: true,
+        forceNew: true,
+        timeout: 10000
       });
 
       // Set up event listeners
@@ -86,8 +94,21 @@ class WebSocketService {
 
         this.socket.on('connect_error', (error) => {
           console.error('WebSocket connection error:', error);
+          console.error('WebSocket URL:', this.getWebSocketUrl());
+          console.error('Error details:', error.message);
           this.isConnecting = false;
           reject(error);
+        });
+
+        // Add more detailed error handling
+        this.socket.on('error', (error) => {
+          console.error('Socket general error:', error);
+          // Don't reject here as connect_error will handle that
+        });
+
+        this.socket.io.on('error', (error) => {
+          console.error('Transport error:', error);
+          // Don't reject here as connect_error will handle that
         });
       });
     } catch (error) {
@@ -364,6 +385,26 @@ class WebSocketService {
       });
     } else {
       console.log(`No handlers registered for event: ${event}`);
+    }
+  }
+
+  // Test connection method for debugging
+  async testConnection(): Promise<{ success: boolean, message: string }> {
+    try {
+      // Try to connect
+      const socket = await this.connect();
+
+      // If we get here, connection was successful
+      return {
+        success: true,
+        message: `Successfully connected to ${this.getWebSocketUrl()}`
+      };
+    } catch (error) {
+      // Connection failed
+      return {
+        success: false,
+        message: `Failed to connect to ${this.getWebSocketUrl()}: ${error instanceof Error ? error.message : String(error)}`
+      };
     }
   }
 }
