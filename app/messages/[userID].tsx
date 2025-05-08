@@ -218,35 +218,30 @@ export default function MessageThreadScreen() {
           return [...prevMessages, data.message];
         });
 
-        // Mark the message as read
+        // Mark the message as read, but only if it's from another user
+        // This prevents marking our own messages as read automatically
         setTimeout(() => {
           if (conversationID) {
-            try {
-              wsMarkAsRead(conversationID).then(response => {
-                console.log('Messages marked as read via WebSocket:', response);
-                // Update UI to show messages as read
-                setMessages(prevMessages =>
-                  prevMessages.map(msg => ({
-                    ...msg,
-                    isRead: true
-                  }))
-                );
-              }).catch(error => {
-                console.error('Failed to mark message as read via WebSocket:', error);
-                // Fall back to REST API but don't throw if that fails too
-                markMessagesAsRead().catch((err: Error) => {
-                  console.error('Failed to mark message as read via REST API:', err);
-                  // Just update the UI to show messages as read even if the API call failed
-                  setMessages(prevMessages =>
-                    prevMessages.map(msg => ({
-                      ...msg,
-                      isRead: true
-                    }))
-                  );
+            const currentUserID = user?.userID;
+            const isFromOtherUser = data.message.senderID !== currentUserID;
+
+            // Only mark as read if the message is from another user
+            if (isFromOtherUser) {
+              try {
+                wsMarkAsRead(conversationID).then(response => {
+                  console.log('Messages marked as read via WebSocket:', response);
+                  // We don't need to update UI here as the server will send a messagesRead event
+                  // which will be handled by handleMessagesRead
+                }).catch(error => {
+                  console.error('Failed to mark message as read via WebSocket:', error);
+                  // Fall back to REST API but don't throw if that fails too
+                  markMessagesAsRead().catch((err: Error) => {
+                    console.error('Failed to mark message as read via REST API:', err);
+                  });
                 });
-              });
-            } catch (error) {
-              console.error('Error in markAsRead:', error);
+              } catch (error) {
+                console.error('Error in markAsRead:', error);
+              }
             }
           }
         }, 1000);
@@ -271,11 +266,14 @@ export default function MessageThreadScreen() {
       console.log('WebSocket: Mark as read confirmation received', data);
       // Update the UI to reflect that messages have been read
       if (conversationID && data.conversationID === conversationID) {
-        // Update the messages to mark them as read
+        // Only mark messages as read if they were sent by the current user
+        // This ensures only messages that the other user has actually read are marked as read
+        const currentUserID = user?.userID;
         setMessages(prevMessages =>
           prevMessages.map(msg => ({
             ...msg,
-            isRead: true
+            // Only update isRead for messages sent by the current user
+            isRead: msg.senderID === currentUserID ? true : msg.isRead
           }))
         );
       }
@@ -286,13 +284,18 @@ export default function MessageThreadScreen() {
       console.log('WebSocket: Messages read notification received', data);
       // Update the UI to reflect that messages have been read
       if (conversationID && data.conversationID === conversationID) {
-        // Update the messages to mark them as read
-        setMessages(prevMessages =>
-          prevMessages.map(msg => ({
-            ...msg,
-            isRead: true
-          }))
-        );
+        // Only mark messages as read if they were sent by the current user
+        // and the read notification is from the other user
+        const currentUserID = user?.userID;
+        if (data.userID && data.userID !== currentUserID) {
+          setMessages(prevMessages =>
+            prevMessages.map(msg => ({
+              ...msg,
+              // Only update isRead for messages sent by the current user
+              isRead: msg.senderID === currentUserID ? true : msg.isRead
+            }))
+          );
+        }
       }
     };
 
