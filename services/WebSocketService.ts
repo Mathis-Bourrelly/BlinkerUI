@@ -30,7 +30,7 @@ class WebSocketService {
   private getWebSocketUrl(): string {
     // Use secure WebSocket in production, non-secure in development
     return process.env.NODE_ENV === 'production'
-      ? 'wss://app.dev.blinker.eterny.fr'
+      ? 'wss://dev.blinker.eterny.fr'
       : 'ws://localhost:3011';
   }
 

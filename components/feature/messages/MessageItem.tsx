@@ -21,6 +21,7 @@ export function MessageItem({ message, formatMessageDate, formatTimeRemaining, c
   // Déterminer si le message est envoyé par l'utilisateur actuel en comparant les IDs
   const isSentByMe = currentUserID !== null && message.senderID === currentUserID;
 
+
   return (
     <View style={messageThreadStyles.messageWrapper}>
       {!isSentByMe ? (
