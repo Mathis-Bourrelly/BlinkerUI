@@ -64,15 +64,23 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
   // Listen for new messages via WebSocket to update unread status
   useEffect(() => {
-    if (!isConnected) return;
+    if (!isConnected || !user?.userID) return;
 
     // Use a single handler for both event types to avoid double counting
-    const handleMessageEvent = () => {
-      console.log('WebSocketContext: Received message event, updating unread count');
-      // Set the flag for unread messages
-      setHasUnreadMessages(true);
-      // Only increment by 1 each time
-      setUnreadCount(prev => prev + 1);
+    const handleMessageEvent = (data: any) => {
+      console.log('WebSocketContext: Received message event', data);
+      console.log('WebSocketContext: Current user ID:', user?.userID);
+
+      // Only update unread count if the message is not from the current user
+      if (data.message && data.message.senderID !== user?.userID) {
+        console.log('WebSocketContext: Message is from another user, updating unread count');
+        // Set the flag for unread messages
+        setHasUnreadMessages(true);
+        // Only increment by 1 each time
+        setUnreadCount(prev => prev + 1);
+      } else {
+        console.log('WebSocketContext: Message is from current user, not updating unread count');
+      }
     };
 
     // Register event handlers
@@ -84,7 +92,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       unsubscribeNewMessage();
       unsubscribeMessageNotification();
     };
-  }, [isConnected, setHasUnreadMessages, setUnreadCount]);
+  }, [isConnected, setHasUnreadMessages, setUnreadCount, user?.userID]);
 
   // Send a message via WebSocket
   const sendMessage = useCallback(async (content: string, conversationID?: string, receiverID?: string) => {

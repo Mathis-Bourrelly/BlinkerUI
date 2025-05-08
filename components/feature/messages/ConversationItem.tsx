@@ -8,6 +8,7 @@ import { ScoreDot } from "@/components/feature/ScoreDot";
 import { ConversationPreviewType } from "@/types/MessagesType";
 import { useFormatMessageDate } from "@/utils/dateUtils";
 import { messagesStyles } from "./MessagesStyles";
+import { useUser } from "@/context/UserContext";
 
 type ConversationItemProps = {
   conversation: ConversationPreviewType;
@@ -18,6 +19,15 @@ export function ConversationItem({ conversation }: ConversationItemProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const { formatMessageDate } = useFormatMessageDate();
+  const { user } = useUser();
+
+  // Determine if the last message is from the current user
+  const isLastMessageFromCurrentUser = conversation.lastMessage?.isFromUser || false;
+
+  // Debug logs
+  console.log('Conversation:', conversation.conversationID);
+  console.log('Last message from current user:', isLastMessageFromCurrentUser);
+  console.log('Unread count:', conversation.unreadCount);
 
   const handlePress = () => {
     // Navigate with both userID and conversationID
@@ -71,14 +81,19 @@ export function ConversationItem({ conversation }: ConversationItemProps) {
               style={[
                 messagesStyles.preview,
                 { color: colors.textSecondary },
-                conversation.lastMessage && !(conversation.lastMessage.read ?? conversation.lastMessage.isRead) && [messagesStyles.unreadText, { color: colors.text }]
+                // Only apply bold white text for unread messages that are not from the current user
+                conversation.lastMessage &&
+                !(conversation.lastMessage.read ?? conversation.lastMessage.isRead) &&
+                !isLastMessageFromCurrentUser &&
+                [messagesStyles.unreadText, { color: colors.text }]
               ]}
               numberOfLines={1}
             >
               {conversation.lastMessage?.isFromUser ? `${t("messages.you")}: ` : ""}{conversation.lastMessage?.content || t("messages.noMessages")}
             </ThemedText>
 
-            {conversation.unreadCount > 0 && (
+            {/* Only show badge if there are unread messages AND the last message is not from the current user */}
+            {conversation.unreadCount > 0 && !isLastMessageFromCurrentUser && (
               <View style={[messagesStyles.badge, { backgroundColor: colors.accent }]}>
                 <ThemedText style={messagesStyles.badgeText}>{conversation.unreadCount}</ThemedText>
               </View>

@@ -11,6 +11,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useMessageContext } from "@/context/MessageContext";
 import { useWebSocket } from "@/context/WebSocketContext";
 import { ServerEvents } from "@/types/WebSocketTypes";
+import { useUser } from "@/context/UserContext";
 
 // Composants de messages
 import { LoadingState } from "@/components/feature/messages/LoadingState";
@@ -57,7 +58,8 @@ export default function MessagesScreen() {
     }
   }, [conversationsData]); // Retirer unreadMessages de la dépendance pour éviter les boucles
 
-  // WebSocket integration for real-time updates
+  // Get user context and WebSocket integration for real-time updates
+  const { user } = useUser();
   const { isConnected, onMessageNotification } = useWebSocket();
 
   // Listen for new messages via WebSocket
@@ -68,14 +70,33 @@ export default function MessagesScreen() {
     const handleMessageNotification = (data: any) => {
       console.log('WebSocket: Message notification received in conversations list', data);
       if (data.message) {
-        updateConversationWithNewMessage(data.message);
+        // Get the current user ID from user context
+        const currentUserID = user?.userID;
+
+        console.log('Current user ID:', currentUserID);
+        console.log('Message sender ID:', data.message.senderID);
+        console.log('Message content:', data.message.content);
+        console.log('Is same user?', data.message.senderID === currentUserID);
+
+        // Only update the conversation if the message is not from the current user
+        // This prevents showing badges for messages you sent yourself
+        if (data.message.senderID !== currentUserID) {
+          console.log('Message is from another user, updating with unread badge');
+          updateConversationWithNewMessage(data.message);
+        } else {
+          console.log('Message is from current user, updating without unread badge');
+          // If the message is from the current user, update the conversation without incrementing unread count
+          // Force isFromUser to true to ensure the badge doesn't show
+          data.message.isFromUser = true;
+          updateConversationWithOwnMessage(data.message);
+        }
       }
     };
 
-    // Helper function to update conversations with a new message
+    // Helper function to update conversations with a new message from another user
     const updateConversationWithNewMessage = (message: any) => {
       // Log the message to help with debugging
-      console.log('Updating conversation with message:', message);
+      console.log('Updating conversation with message from another user:', message);
 
       setConversations(prevConversations => {
         // Check if the conversation already exists
@@ -102,7 +123,7 @@ export default function MessagesScreen() {
               content: message.content,
               createdAt: message.createdAt,
               read: false,
-              isFromUser: false // Assume it's from another user if received via WebSocket
+              isFromUser: false // This is a message from another user
             },
             // Only increment by 1, regardless of how many times this is called
             unreadCount: conversation.unreadCount + 1
@@ -127,6 +148,59 @@ export default function MessagesScreen() {
       });
     };
 
+    // Helper function to update conversations with a message from the current user
+    const updateConversationWithOwnMessage = (message: any) => {
+      // Log the message to help with debugging
+      console.log('Updating conversation with own message:', message);
+
+      setConversations(prevConversations => {
+        // Check if the conversation already exists
+        const conversationIndex = prevConversations.findIndex(
+          conv => conv.conversationID === message.conversationID
+        );
+
+        console.log('Found conversation at index:', conversationIndex);
+
+        if (conversationIndex >= 0) {
+          // Create a copy of the conversations array
+          const updatedConversations = [...prevConversations];
+
+          // Get the conversation that needs to be updated
+          const conversation = {...updatedConversations[conversationIndex]};
+
+          // Update the conversation with the new message
+          const updatedConversation = {
+            ...conversation,
+            lastMessage: {
+              content: message.content,
+              createdAt: message.createdAt,
+              read: true, // Mark as read since it's our own message
+              isRead: true, // Also set isRead for compatibility
+              isFromUser: true // This is a message from the current user
+            },
+            // Reset unread count to 0 for own messages
+            // This ensures we never see badges for our own messages
+            unreadCount: 0
+          };
+
+          console.log('Updated conversation with own message:');
+          console.log('- isFromUser:', updatedConversation.lastMessage.isFromUser);
+          console.log('- unreadCount:', updatedConversation.unreadCount);
+
+          // Remove the conversation from its current position
+          updatedConversations.splice(conversationIndex, 1);
+
+          // Add the updated conversation to the beginning of the array
+          updatedConversations.unshift(updatedConversation);
+
+          return updatedConversations;
+        }
+
+        // If the conversation doesn't exist, we might need to fetch it
+        return prevConversations;
+      });
+    };
+
     // Register event handlers
     const unsubscribeMessageNotification = onMessageNotification(handleMessageNotification);
 
@@ -134,7 +208,7 @@ export default function MessagesScreen() {
     return () => {
       unsubscribeMessageNotification();
     };
-  }, [isConnected, onMessageNotification]);
+  }, [isConnected, onMessageNotification, user?.userID]);
 
   if (isLoading) {
     return <LoadingState />;

@@ -186,14 +186,23 @@ export default function MessageThreadScreen() {
   }, [messagesData, conversationID]);
 
   // Appeler markMessagesAsRead lorsque les données sont chargées
+  // mais seulement pour les messages reçus, pas pour les messages envoyés
   useEffect(() => {
-    // Attendre un court instant pour éviter les appels trop fréquents
-    const timer = setTimeout(() => {
-      markMessagesAsRead();
-    }, 500);
+    // Vérifier s'il y a des messages non lus de l'autre utilisateur
+    const hasUnreadMessagesFromOthers = messages.some(msg =>
+      !msg.isRead && msg.senderID !== user?.userID
+    );
 
-    return () => clearTimeout(timer);
-  }, [conversationID, userID, markMessagesAsRead]);
+    // Ne marquer comme lus que s'il y a des messages non lus de l'autre utilisateur
+    if (hasUnreadMessagesFromOthers) {
+      // Attendre un court instant pour éviter les appels trop fréquents
+      const timer = setTimeout(() => {
+        markMessagesAsRead();
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [conversationID, userID, markMessagesAsRead, messages, user?.userID]);
 
 
 
