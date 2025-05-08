@@ -23,8 +23,11 @@ export function useDeleteBlinkMutation(blinkID: string) {
     return useDeleteMutation(`/blinks/${blinkID}`);
 }
 
-export function useBlinksQuery() {
-    return usePaginatedQuery<BlinkType>("blinks", "/blinks");
+export function useBlinksQuery(params?: { userId?: string }) {
+    // Utiliser une clé de cache spécifique si userId est fourni
+    const queryKey = params?.userId ? `blinks-user-${params.userId}` : "blinks";
+    console.log(`Using query key: ${queryKey} with params:`, params);
+    return usePaginatedQuery<BlinkType>(queryKey, "/blinks", params);
 }
 
 export function useSearchBlinksQuery(query: string) {

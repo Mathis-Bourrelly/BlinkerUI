@@ -66,6 +66,8 @@
     "scoreDescriptionLow": "Nouvel utilisateur avec contenu basique",
     "scoreDescriptionMedium": "Utilisateur régulier avec bon contenu",
     "scoreDescriptionHigh": "Utilisateur établi avec contenu de qualité",
-    "scoreInfo": "Votre score détermine la durée de disponibilité de vos messages"
+    "scoreInfo": "Votre score détermine la durée de disponibilité de vos messages",
+    "userBlinks": "Blinks publiés",
+    "noBlinkYet": "Aucun blink publié pour le moment"
   }
 }

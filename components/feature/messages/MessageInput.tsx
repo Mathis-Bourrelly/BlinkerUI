@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { View, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, useWindowDimensions } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
@@ -25,6 +25,19 @@ export function MessageInput({
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { width } = useWindowDimensions();
+  const inputRef = useRef<TextInput>(null);
+
+  // Mettre le focus sur l'input dès que le composant est monté
+  useEffect(() => {
+    // Petit délai pour s'assurer que le composant est bien rendu
+    const timer = setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -46,6 +59,7 @@ export function MessageInput({
       </TouchableOpacity>
 
       <TextInput
+        ref={inputRef}
         style={[messageThreadStyles.input, { color: colors.text, backgroundColor: colors.card }]}
         value={newMessage}
         onChangeText={setNewMessage}

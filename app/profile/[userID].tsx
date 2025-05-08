@@ -10,16 +10,14 @@ import {useUserProfileQuery} from "@/hooks/interfaces/useProfileInterface";
 import {ThemedText} from "@/components/base/ThemedText";
 import {Row} from "@/components/base/Row";
 import TabBar from "@/components/feature/TabBar";
-import {LanguageDropdown} from "@/components/base/LanguageDropdown";
-import {ThemeToggleButton} from "@/components/base/ThemeToggleButton";
 import {ThemedSeparator} from "@/components/base/ThemedSeparator";
 import NavBar from "@/components/feature/NavBar";
 import {InnerContainer} from "@/components/base/InnerContainer";
 import {useUser} from "@/context/UserContext";
 import {Icon} from "@/components/images/Icon";
 import {ScoreDot} from "@/components/feature/ScoreDot";
-import {useFormatUserScore} from "@/utils/scoreUtils";
 import {useFollowMutation, useUnfollowMutation} from "@/hooks/interfaces/useFollowInterface";
+import { UserBlinkList } from "@/components/feature/UserBlinkList";
 
 export default function ProfileScreen() {
     const {colors} = useTheme();
@@ -29,7 +27,6 @@ export default function ProfileScreen() {
     const {width} = useWindowDimensions();
     const isDesktop = width >= 768;
     const {user, clearUser} = useUser();
-    const {formatScore, getScoreDotColor} = useFormatUserScore();
     const queryClient = useQueryClient();
 
     const { userID } = useLocalSearchParams<{ userID: string }>();
@@ -77,16 +74,6 @@ export default function ProfileScreen() {
 
     // Debug log to check profile data
     console.log('Profile data:', data);
-
-
-    const headerContainerStyle = [
-        styles.headerContainer,
-        isDesktop && {
-            marginBottom: 20,
-            width: '100%',
-            alignItems: 'flex-start',
-        },
-    ];
     const avatarStyle = [
         styles.avatar,
         isDesktop && {width: 120, height: 120, borderRadius: 60}
@@ -110,134 +97,148 @@ export default function ProfileScreen() {
                         )}
 
                         {!isLoading && !error && data && (
-                            //@ts-ignore
-                            <View style={headerContainerStyle}>
-                                <Row gap={isDesktop ? 24 : 12}>
-                                    <Image
-                                        source={{uri: data.data.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`}}
-                                        style={avatarStyle}
-                                        onError={(e) => console.log('Error loading profile image:', e.nativeEvent.error)}
-                                    />
-                                    <View style={isDesktop && {paddingHorizontal: 20}}>
-                                        <ThemedText variant="SubTitle">
-                                            {data.data.display_name}
-                                        </ThemedText>
-                                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                            <ThemedText variant="Body" color={colors.textSecondary}>
-                                                @{data.data.username}
+                            <View style={styles.contentContainer}>
+                                {/* En-tête fixe avec un style semi-transparent */}
+                                <View style={[styles.fixedHeader, { backgroundColor: colors.background + '95' }]}>
+                                    <Row gap={isDesktop ? 24 : 12}>
+                                        <Image
+                                            source={{uri: data.data.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`}}
+                                            style={avatarStyle}
+                                            onError={(e) => console.log('Error loading profile image:', e.nativeEvent.error)}
+                                        />
+                                        <View style={[isDesktop && {paddingHorizontal: 20}, styles.userInfoContainer]}>
+                                            <ThemedText variant="SubTitle">
+                                                {data.data.display_name}
                                             </ThemedText>
-                                            <View style={{marginLeft: 6}}>
-                                                <ScoreDot score={data.data.score} showValue={true} size={10} />
+                                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                                <ThemedText variant="Body" color={colors.textSecondary}>
+                                                    @{data.data.username}
+                                                </ThemedText>
+                                                <View style={{marginLeft: 6}}>
+                                                    <ScoreDot score={data.data.score} showValue={true} size={10} />
+                                                </View>
                                             </View>
-                                        </View>
 
-                                        {/* Boutons d'action (seulement si ce n'est pas le profil de l'utilisateur actuel) */}
-                                        {user && user.userID !== userID && (
-                                            <View style={styles.actionButtonsContainer}>
-                                                {/* Bouton Follow/Unfollow */}
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.followButton,
-                                                        {
-                                                            backgroundColor: isFollowingState ? colors.background : colors.accent,
-                                                            borderWidth: isFollowingState ? 1 : 0,
-                                                            borderColor: colors.accent
-                                                        }
-                                                    ]}
-                                                    onPress={handleFollowToggle}
-                                                    disabled={followMutation.isPending || unfollowMutation.isPending}
-                                                >
-                                                    {followMutation.isPending || unfollowMutation.isPending ? (
-                                                        <ActivityIndicator size="small" color={isFollowingState ? colors.accent : colors.textInvert} />
-                                                    ) : (
+                                            {/* Boutons d'action (seulement si ce n'est pas le profil de l'utilisateur actuel) */}
+                                            {user && user.userID !== userID && (
+                                                <View style={styles.actionButtonsContainer}>
+                                                    {/* Bouton Follow/Unfollow */}
+                                                    <TouchableOpacity
+                                                        style={[
+                                                            styles.followButton,
+                                                            {
+                                                                backgroundColor: isFollowingState ? colors.background : colors.accent,
+                                                                borderWidth: isFollowingState ? 1 : 0,
+                                                                borderColor: colors.accent
+                                                            }
+                                                        ]}
+                                                        onPress={handleFollowToggle}
+                                                        disabled={followMutation.isPending || unfollowMutation.isPending}
+                                                    >
+                                                        {followMutation.isPending || unfollowMutation.isPending ? (
+                                                            <ActivityIndicator size="small" color={isFollowingState ? colors.accent : colors.textInvert} />
+                                                        ) : (
+                                                            <ThemedText
+                                                                variant="Body"
+                                                                color={isFollowingState ? colors.accent : colors.textInvert}
+                                                            >
+                                                                {isFollowingState ? t('profile.unfollow') : t('profile.followButton')}
+                                                            </ThemedText>
+                                                        )}
+                                                    </TouchableOpacity>
+
+                                                    {/* Bouton Envoyer un message */}
+                                                    <TouchableOpacity
+                                                        style={[
+                                                            styles.messageButton,
+                                                            {
+                                                                backgroundColor: colors.background,
+                                                                borderWidth: 1,
+                                                                borderColor: colors.accent
+                                                            }
+                                                        ]}
+                                                        onPress={() => router.push(`/messages/${userID}`)}
+                                                    >
                                                         <ThemedText
                                                             variant="Body"
-                                                            color={isFollowingState ? colors.accent : colors.textInvert}
+                                                            color={colors.accent}
                                                         >
-                                                            {isFollowingState ? t('profile.unfollow') : t('profile.followButton')}
+                                                            {t('profile.sendMessage')}
                                                         </ThemedText>
-                                                    )}
+                                                    </TouchableOpacity>
+                                                </View>
+                                            )}
+                                            <Row gap={isDesktop ? 20 : 12} style={styles.statsRow}>
+                                                <TouchableOpacity onPress={() => router.push(`/following/${userID}`)}>
+                                                    <View style={styles.statItem}>
+                                                        <ThemedText variant={"Body"}>
+                                                            {t('profile.follow')}
+                                                        </ThemedText>
+                                                        <ThemedText variant={"SubTitle"}>
+                                                            {data.data.followingCount}
+                                                        </ThemedText>
+                                                    </View>
                                                 </TouchableOpacity>
+                                                <TouchableOpacity onPress={() => router.push(`/followers/${userID}`)}>
+                                                    <View style={styles.statItem}>
+                                                        <ThemedText variant={"Body"}>
+                                                            {t('profile.follower')}
+                                                        </ThemedText>
+                                                        <ThemedText variant={"SubTitle"}>
+                                                            {data.data.followersCount}
+                                                        </ThemedText>
+                                                    </View>
+                                                </TouchableOpacity>
+                                                <View style={styles.statItem}>
+                                                    <ThemedText variant={"Body"}>
+                                                        {t('profile.blink')}
+                                                    </ThemedText>
+                                                    <ThemedText variant={"SubTitle"}>
+                                                        {data.blinksCount}
+                                                    </ThemedText>
+                                                </View>
+                                            </Row>
+                                        </View>
+                                    </Row>
 
-                                                {/* Bouton Envoyer un message */}
-                                                <TouchableOpacity
-                                                    style={[
-                                                        styles.messageButton,
-                                                        {
-                                                            backgroundColor: colors.background,
-                                                            borderWidth: 1,
-                                                            borderColor: colors.accent
-                                                        }
-                                                    ]}
-                                                    onPress={() => router.push(`/messages/${userID}`)}
-                                                >
-                                                    <ThemedText
-                                                        variant="Body"
-                                                        color={colors.accent}
-                                                    >
-                                                        {t('profile.sendMessage')}
-                                                    </ThemedText>
-                                                </TouchableOpacity>
-                                            </View>
-                                        )}
-                                        <Row gap={isDesktop ? 20 : 12}>
-                                            <TouchableOpacity onPress={() => router.push(`/following/${userID}`)}>
-                                                <View style={styles.statItem}>
-                                                    <ThemedText variant={"Body"}>
-                                                        {t('profile.follow')}
-                                                    </ThemedText>
-                                                    <ThemedText variant={"SubTitle"}>
-                                                        {data.data.followingCount}
-                                                    </ThemedText>
-                                                </View>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity onPress={() => router.push(`/followers/${userID}`)}>
-                                                <View style={styles.statItem}>
-                                                    <ThemedText variant={"Body"}>
-                                                        {t('profile.follower')}
-                                                    </ThemedText>
-                                                    <ThemedText variant={"SubTitle"}>
-                                                        {data.data.followersCount}
-                                                    </ThemedText>
-                                                </View>
-                                            </TouchableOpacity>
-                                            <View style={styles.statItem}>
-                                                <ThemedText variant={"Body"}>
-                                                    {t('profile.blink')}
-                                                </ThemedText>
-                                                <ThemedText variant={"SubTitle"}>
-                                                    {data.blinksCount}
-                                                </ThemedText>
-                                            </View>
-                                        </Row>
-                                    </View>
-                                </Row>
-                                {data.data.bio && (
-                                    <View style={styles.infoContainer}>
-                                        <ThemedText variant={"Body"}>
-                                            {data.data.bio}
-                                        </ThemedText>
-                                    </View>
-                                )}
-                                <ThemedSeparator barColor={colors.border}/>
-                                <Row gap={isDesktop ? 24 : 12}>
-                                    {/* Les options de langue et de thème sont maintenant dans le menu d'options de la NavBar */}
-                                    {user && user.userID === userID && (
-                                        <TouchableOpacity
-                                            style={[styles.logoutButton, { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.danger }]}
-                                            onPress={() => {
-                                                clearUser();
-                                                router.push('/login');
-                                            }}
-                                        >
-                                            <Icon name="exit" size={24} color={colors.danger} />
-                                            <ThemedText variant="Body" color={colors.danger}>
-                                                {t('profile.logout')}
+                                    {data.data.bio && (
+                                        <View style={styles.infoContainer}>
+                                            <ThemedText variant={"Body"}>
+                                                {data.data.bio}
                                             </ThemedText>
-                                        </TouchableOpacity>
+                                        </View>
                                     )}
-                                </Row>
 
+                                    {/* Bouton de déconnexion (seulement pour le profil de l'utilisateur actuel) */}
+                                    {user && user.userID === userID && (
+                                        <View style={styles.logoutButtonContainer}>
+                                            <TouchableOpacity
+                                                style={[styles.logoutButton, { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.danger }]}
+                                                onPress={() => {
+                                                    clearUser();
+                                                    router.push('/login');
+                                                }}
+                                            >
+                                                <Icon name="exit" size={24} color={colors.danger} />
+                                                <ThemedText variant="Body" color={colors.danger}>
+                                                    {t('profile.logout')}
+                                                </ThemedText>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
+
+                                    <ThemedSeparator barColor={colors.border} style={styles.separator}/>
+
+                                    {/* Titre de la section des blinks */}
+                                    <ThemedText variant="SubTitle" style={styles.sectionTitle}>
+                                        {t('profile.userBlinks')}
+                                    </ThemedText>
+                                </View>
+
+                                {/* Zone de défilement pour les blinks */}
+                                <View style={styles.scrollableContent}>
+                                    <UserBlinkList userID={userID} />
+                                </View>
                             </View>
                         )}
                         {!isDesktop && (
@@ -247,7 +248,6 @@ export default function ProfileScreen() {
                 </LinearGradient>
             </SafeAreaView>
         </>
-
     );
 }
 const styles = StyleSheet.create({
@@ -260,33 +260,79 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
     },
+    contentContainer: {
+        flex: 1,
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    fixedHeader: {
+        width: '100%',
+        paddingHorizontal: 10,
+        paddingTop: 12,
+        paddingBottom: 10,
+        zIndex: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(128,128,128,0.15)',
+        backgroundColor: 'transparent',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        elevation: 3,
+    },
+    scrollableContent: {
+        flex: 1,
+        width: '100%',
+        paddingTop: 10,
+    },
+    scrollContainer: {
+        flex: 1,
+        width: '100%',
+    },
     headerContainer: {
-        marginTop: 12
+        marginTop: 12,
+        paddingBottom: 80, // Espace supplémentaire en bas pour le défilement
     },
     avatar: {
         width: 80,
         height: 80,
         borderRadius: 40,
     },
+    userInfoContainer: {
+        flex: 1,
+    },
     statItem: {
         alignItems: 'center',
         marginHorizontal: 4,
     },
+    statsRow: {
+        marginTop: 16,
+    },
     infoContainer: {
-        marginVertical: 8,
+        marginVertical: 16,
         alignSelf: "flex-start",
+        paddingHorizontal: 4,
+    },
+    logoutButtonContainer: {
+        marginTop: 16,
+        marginBottom: 16,
     },
     logoutButton: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 10,
-        paddingHorizontal: 12,
+        paddingHorizontal: 16,
         borderRadius: 8,
         gap: 8,
+        alignSelf: 'flex-start',
     },
     actionButtonsContainer: {
         flexDirection: 'row',
-        marginTop: 10,
+        marginTop: 16,
         gap: 10,
     },
     followButton: {
@@ -300,5 +346,15 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         borderRadius: 20,
         alignSelf: 'flex-start',
+    },
+    separator: {
+        marginVertical: 16,
+    },
+    blinksSection: {
+        marginTop: 8,
+        width: '100%',
+    },
+    sectionTitle: {
+        marginBottom: 16,
     },
 });

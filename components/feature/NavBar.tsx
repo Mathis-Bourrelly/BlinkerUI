@@ -80,15 +80,21 @@ export default function NavBar() {
                     </TouchableOpacity>
                     <ThemedVerticalSeparator barColor={colors.border} height={20}/>
 
-                    <TouchableOpacity onPress={() => router.push("/messages")}>
-                    <ThemedText>Messagerie</ThemedText>
-                    </TouchableOpacity>
-                    <ThemedVerticalSeparator barColor={colors.border} height={20} />
+
                     <TouchableOpacity onPress={() => router.push("/search")}>
                     <ThemedText>Rechercher</ThemedText>
                     </TouchableOpacity>
                 </View>
                 <Row gap={12}>
+                    {/* Bouton de messagerie */}
+                    <TouchableOpacity
+                        onPress={() => router.push("/messages")}
+                        style={[styles.optionsButton, { backgroundColor: colors.card }]}
+                    >
+                        <Icon name={"chat"} size={24} color={colors.text} />
+                    </TouchableOpacity>
+
+                    {/* Bouton des paramètres */}
                     <View>
                         <TouchableOpacity
                             ref={buttonRef}
@@ -99,8 +105,8 @@ export default function NavBar() {
                         </TouchableOpacity>
                     </View>
 
+                    {/* Avatar de l'utilisateur */}
                     <TouchableOpacity onPress={() => router.push(`/profile/${user?.userID}`)}>
-                        {/* Use user's avatar URL if available, otherwise use a default avatar */}
                         <Image
                             source={{uri: user?.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png` }}
                             style={[styles.avatar, {borderColor: colors.text}]}

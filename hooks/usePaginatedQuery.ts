@@ -36,10 +36,15 @@ export function usePaginatedQuery<T>(
             url.searchParams.append("page", pageParam.toString());
             url.searchParams.append("limit", "10");
             if (params) {
+                console.log('Query params:', params);
                 Object.entries(params).forEach(([key, value]) => {
-                    if (value) url.searchParams.append(key, value.toString());
+                    if (value) {
+                        url.searchParams.append(key, value.toString());
+                        console.log(`Added param: ${key}=${value}`);
+                    }
                 });
             }
+            console.log('Final URL:', url.toString());
 
             const res = await fetch(url.toString(), {
                 method: "GET",
