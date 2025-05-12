@@ -43,8 +43,10 @@ export function useLikeMutation() {
             return data as InteractionResponse;
         },
         onSuccess: () => {
-            // Invalidate and refetch blinks query to update the UI
+            // Invalidate and refetch all blinks queries to update the UI
             queryClient.invalidateQueries({ queryKey: ['blinks'] });
+            // Invalidate user blinks queries (for profile pages)
+            queryClient.invalidateQueries({ queryKey: ['blinks-byuser'] });
         }
     });
 }
@@ -76,8 +78,10 @@ export function useDislikeMutation() {
             return data as InteractionResponse;
         },
         onSuccess: () => {
-            // Invalidate and refetch blinks query to update the UI
+            // Invalidate and refetch all blinks queries to update the UI
             queryClient.invalidateQueries({ queryKey: ['blinks'] });
+            // Invalidate user blinks queries (for profile pages)
+            queryClient.invalidateQueries({ queryKey: ['blinks-byuser'] });
         }
     });
 }

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View, ScrollView} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {LinearGradient} from "expo-linear-gradient";
 import {useTheme} from '@/context/ThemeContext';
@@ -33,38 +33,40 @@ export default function Index() {
             <Stack.Screen/>
             <SafeAreaView style={styles.container}>
                 <LinearGradient colors={gradientColors} style={styles.background}>
-
-                        <View style={styles.logo_title}>
-                            <ThemedFullLogo/>
-                        </View>
-                        {message && (
-                            <View
-                                style={[styles.messageContainer, {backgroundColor: message.includes('ERROR') ? colors.dangerbg : colors.validebg}]}>
-                                <ThemedText variant={"Body"}>
-                                    {message.replace("ERROR", "")}
-                                </ThemedText>
+                    <ScrollView
+                        contentContainerStyle={styles.scrollContent}
+                        showsVerticalScrollIndicator={true}
+                    >
+                            <View style={styles.logo_title}>
+                                <ThemedFullLogo/>
                             </View>
-                        )}
-                        <GoogleSignInButton/>
-                        <ThemedSeparator text={t('base.or')} maxWidth={300} barColor={colors.border}/>
-
-                            {!isRegister && (
-                                <>
-                                    <LoginForm onMessage={handleMessage}/>
-                                    <ThemedText onPress={() => {
-                                        setIsRegister(true)
-                                    }} variant={"Underline"}>{t('login.noAccount')}</ThemedText>
-                                </>
+                            {message && (
+                                <View
+                                    style={[styles.messageContainer, {backgroundColor: message.includes('ERROR') ? colors.dangerbg : colors.validebg}]}>
+                                    <ThemedText variant={"Body"}>
+                                        {message.replace("ERROR", "")}
+                                    </ThemedText>
+                                </View>
                             )}
-                            {isRegister && (<>
-                                    <RegisterForm onMessage={handleMessage}/>
-                                    <ThemedText onPress={() => {
-                                        setIsRegister(false)
-                                    }} variant={"Underline"}>{t('login.alreadyAccount')}</ThemedText>
-                                </>
-                            )}
+                            <GoogleSignInButton/>
+                            <ThemedSeparator text={t('base.or')} maxWidth={300} barColor={colors.border}/>
 
-
+                                {!isRegister && (
+                                    <>
+                                        <LoginForm onMessage={handleMessage}/>
+                                        <ThemedText onPress={() => {
+                                            setIsRegister(true)
+                                        }} variant={"Underline"}>{t('login.noAccount')}</ThemedText>
+                                    </>
+                                )}
+                                {isRegister && (<>
+                                        <RegisterForm onMessage={handleMessage}/>
+                                        <ThemedText onPress={() => {
+                                            setIsRegister(false)
+                                        }} variant={"Underline"}>{t('login.alreadyAccount')}</ThemedText>
+                                    </>
+                                )}
+                    </ScrollView>
                 </LinearGradient>
             </SafeAreaView>
         </>
@@ -76,14 +78,18 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
     },
-
     background: {
         flex: 1,
-        alignItems: 'center',
         padding: 40,
     },
+    scrollContent: {
+        flexGrow: 1,
+        paddingBottom: 20,
+        alignItems: 'center',
+        minHeight: '100%',
+    },
     formContainer: {
-        maxWidth:280
+        maxWidth: 280
     },
     logo_title: {
         flexDirection: "row",
@@ -100,5 +106,4 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 8,
     },
-
 });

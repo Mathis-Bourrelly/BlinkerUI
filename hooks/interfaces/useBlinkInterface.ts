@@ -30,6 +30,13 @@ export function useBlinksQuery(params?: { userId?: string }) {
     return usePaginatedQuery<BlinkType>(queryKey, "/blinks", params);
 }
 
+export function useUserBlinksQuery(userID: string) {
+    // Utiliser une clé de cache spécifique pour les blinks d'un utilisateur
+    const queryKey = `blinks-byuser-${userID}`;
+    console.log(`Using query key: ${queryKey} for user blinks`);
+    return usePaginatedQuery<BlinkType>(queryKey, `/blinks/byuser/${userID}`);
+}
+
 export function useSearchBlinksQuery(query: string) {
     return usePaginatedQuery<BlinkType>("searchBlinks", `/blinks/search`, { query });
 }

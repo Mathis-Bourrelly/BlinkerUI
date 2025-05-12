@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { ThemedTextInput } from "@/components/base/ThemedTextInput";
+import { UsernameInput } from "@/components/base/UsernameInput";
 import { GradientButton } from "@/components/base/GradientButton";
 import { useRegisterMutation } from "@/hooks/useRegisterMutation";
 import { ThemedText } from "@/components/base/ThemedText";
@@ -113,7 +114,7 @@ export function RegisterForm({ onMessage }: RegisterFormProps) {
     return (
         <View style={RegisterFormStyle.form}>
             <ThemedText variant="Title">{t('login.createAccount')}</ThemedText>
-            <ThemedTextInput
+            <UsernameInput
                 value={username}
                 onChangeText={setUsername}
                 placeholder={t("login.username")}
@@ -137,6 +138,7 @@ export function RegisterForm({ onMessage }: RegisterFormProps) {
                 placeholder={t("login.password")}
                 isPassword={true}
                 errorText={passwordError}
+                showPasswordRules={true}
             />
             <ThemedTextInput
                 value={confirmPassword}

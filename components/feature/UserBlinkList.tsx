@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FlatList, ActivityIndicator, StyleSheet, View, Text } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { BlinkCard } from './BlinkCard';
-import { useBlinksQuery } from '@/hooks/interfaces/useBlinkInterface';
+import { useUserBlinksQuery } from '@/hooks/interfaces/useBlinkInterface';
 import { BlinkType } from '@/types/BlinksType';
 import { ThemedText } from '../base/ThemedText';
 import { useTranslation } from 'react-i18next';
@@ -14,11 +14,9 @@ interface UserBlinkListProps {
 export function UserBlinkList({ userID }: UserBlinkListProps) {
     const { colors } = useTheme();
     const { t } = useTranslation();
-    // Utiliser la route existante avec le paramètre userId
-    // Assurons-nous que le paramètre est correctement nommé (userId avec un 'd' minuscule)
-    console.log(`Fetching blinks for userId: ${userID}`);
-    // Utiliser exactement le même nom de paramètre que dans le backend (userId avec un 'd' minuscule)
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } = useBlinksQuery({ userId: userID });
+    // Utiliser la nouvelle route dédiée pour récupérer les blinks d'un utilisateur
+    console.log(`Fetching blinks for userID: ${userID}`);
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } = useUserBlinksQuery(userID);
 
     const [blinks, setBlinks] = useState<BlinkType[]>([]);
     const flatListRef = useRef<FlatList>(null);

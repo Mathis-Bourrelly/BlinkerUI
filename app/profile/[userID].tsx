@@ -98,8 +98,12 @@ export default function ProfileScreen() {
 
                         {!isLoading && !error && data && (
                             <View style={styles.contentContainer}>
-                                {/* En-tête fixe avec un style semi-transparent */}
-                                <View style={[styles.fixedHeader, { backgroundColor: colors.background + '95' }]}>
+                                {/* En-tête fixe avec un gradient */}
+                                <LinearGradient
+                                    colors={colors.gradient_profile}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 0, y: 1 }}
+                                    style={styles.fixedHeader}>
                                     <Row gap={isDesktop ? 24 : 12}>
                                         <Image
                                             source={{uri: data.data.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png`}}
@@ -233,7 +237,7 @@ export default function ProfileScreen() {
                                     <ThemedText variant="SubTitle" style={styles.sectionTitle}>
                                         {t('profile.userBlinks')}
                                     </ThemedText>
-                                </View>
+                                </LinearGradient>
 
                                 {/* Zone de défilement pour les blinks */}
                                 <View style={styles.scrollableContent}>
@@ -272,17 +276,11 @@ const styles = StyleSheet.create({
         paddingTop: 12,
         paddingBottom: 10,
         zIndex: 10,
+        borderRadius: 10,
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(128,128,128,0.15)',
-        backgroundColor: 'transparent',
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        elevation: 3,
+        boxShadow: "0px 2px 3px rgba(0, 0, 0, 0.1)",
+        elevation: 3, // Pour Android
     },
     scrollableContent: {
         flex: 1,

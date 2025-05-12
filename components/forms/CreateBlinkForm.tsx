@@ -7,6 +7,7 @@ import { ThemedTextInput } from "@/components/base/ThemedTextInput";
 import * as ImagePicker from 'expo-image-picker';
 import { useCreateBlinkMutation } from "@/hooks/interfaces/useBlinkInterface";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 // Définition du type pour un bloc de contenu
 type ContentBlock = {
@@ -25,6 +26,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
     const { colors } = useTheme();
     const queryClient = useQueryClient();
     const createBlinkMutation = useCreateBlinkMutation();
+    const { t } = useTranslation();
 
     const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -35,7 +37,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
         if (status !== 'granted') {
-            alert('Nous avons besoin de votre permission pour accéder à vos photos');
+            alert(t('blink.needPhotoPermission'));
             return;
         }
 
@@ -152,7 +154,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
     // Soumettre le formulaire en créant un objet Blink
     const handleSubmit = async () => {
         if (contentBlocks.length === 0) {
-            alert('Veuillez ajouter au moins un contenu à votre Blink');
+            alert(t('blink.addContent'));
             return;
         }
 
@@ -170,7 +172,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
             });
 
             if (validBlocks.length === 0) {
-                alert('Veuillez ajouter au moins un contenu valide à votre Blink');
+                alert(t('blink.addValidContent'));
                 setIsSubmitting(false);
                 return;
             }
@@ -198,7 +200,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                     console.log(`Utilisation d'un placeholder pour le bloc ${index + 1}: ${content}`);
 
                     // Ajouter un avertissement pour l'utilisateur
-                    alert(`Note: Les ${block.contentType === 'image' ? 'images' : 'vidéos'} ne sont pas prises en charge pour le moment. Une URL de placeholder sera utilisée à la place.`);
+                    alert(t('blink.mediaNotSupported', { mediaType: t(`blink.${block.contentType === 'image' ? 'images' : 'videos'}`) }));
                 }
 
                 return {
@@ -219,6 +221,8 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
 
                         // Invalider les requêtes pour forcer un rafraîchissement des données
                         queryClient.invalidateQueries({ queryKey: ['blinks'] });
+                        // Invalider les requêtes pour les blinks d'utilisateurs
+                        queryClient.invalidateQueries({ queryKey: ['blinks-byuser'] });
 
                         // Appeler le callback onSuccess si fourni
                         if (onSuccess) {
@@ -227,7 +231,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                     },
                     onError: (error) => {
                         console.error("Erreur lors de la création du Blink:", error);
-                        alert(`Erreur lors de la création du Blink: ${error.message}`);
+                        alert(`${t('blink.createError')}: ${error.message}`);
                     },
                     onSettled: () => {
                         setIsSubmitting(false);
@@ -236,7 +240,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
             );
         } catch (error) {
             console.error("Erreur lors de la préparation des données:", error);
-            alert(`Erreur lors de la préparation des données: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+            alert(`${t('blink.dataError')}: ${error instanceof Error ? error.message : t('blink.unknownError')}`);
             setIsSubmitting(false);
         }
     };
@@ -271,7 +275,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
         <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={true}>
             <View style={styles.instructionContainer}>
                 <ThemedText variant="SubTitle" style={styles.instructionText}>
-                    Ajoutez du contenu à votre Blink
+                    {t('blink.addContent')}
                 </ThemedText>
             </View>
 
@@ -281,7 +285,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                     onPress={() => addBlock("text")}
                 >
                     <Icon name={"text"} size={24} color={colors.text} />
-                    <ThemedText style={styles.addButtonText}>Texte</ThemedText>
+                    <ThemedText style={styles.addButtonText}>{t('blink.addText')}</ThemedText>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -289,7 +293,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                     onPress={() => addBlock("image")}
                 >
                     <Icon name={"image"} size={24} color={colors.text} />
-                    <ThemedText style={styles.addButtonText}>Image</ThemedText>
+                    <ThemedText style={styles.addButtonText}>{t('blink.addImage')}</ThemedText>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -297,14 +301,14 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                     onPress={() => addBlock("video")}
                 >
                     <Icon name={"video"} size={24} color={colors.text} />
-                    <ThemedText style={styles.addButtonText}>Vidéo</ThemedText>
+                    <ThemedText style={styles.addButtonText}>{t('blink.addVideo')}</ThemedText>
                 </TouchableOpacity>
             </View>
 
             {contentBlocks.length === 0 ? (
                 <View style={styles.emptyState}>
                     <ThemedText style={styles.emptyStateText}>
-                        Commencez par ajouter du contenu à votre Blink en utilisant les boutons ci-dessus
+                        {t('blink.addContent')}
                     </ThemedText>
                 </View>
             ) : (
@@ -324,8 +328,8 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                                     color={colors.text}
                                 />
                                 <ThemedText style={styles.blockTypeText}>
-                                    {block.contentType === "text" ? "Texte" :
-                                     block.contentType === "image" ? "Image" : "Vidéo"}
+                                    {block.contentType === "text" ? t('blink.addText') :
+                                     block.contentType === "image" ? t('blink.addImage') : t('blink.addVideo')}
                                 </ThemedText>
                             </View>
 
@@ -450,7 +454,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                         <ActivityIndicator color="white" size="small" />
                     ) : (
                         <ThemedText style={styles.submitButtonText}>
-                            Publier
+                            {t('blink.create')}
                         </ThemedText>
                     )}
                 </TouchableOpacity>
@@ -465,11 +469,11 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                 <View style={styles.confirmationOverlay}>
                     <View style={[styles.confirmationContainer, { backgroundColor: colors.background, borderColor: colors.border }]}>
                         <ThemedText variant="SubTitle" style={styles.confirmationTitle}>
-                            Abandonner la création ?
+                            {t('blink.cancel')}?
                         </ThemedText>
 
                         <ThemedText style={styles.confirmationText}>
-                            Êtes-vous sûr de vouloir quitter la création du Blink ? Tous vos changements seront perdus.
+                            {t('blink.confirmCancel')}
                         </ThemedText>
 
                         <View style={styles.confirmationButtons}>
@@ -478,7 +482,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                                 onPress={cancelConfirmation}
                             >
                                 <ThemedText>
-                                    Continuer l'édition
+                                    {t('blink.no')}
                                 </ThemedText>
                             </TouchableOpacity>
 
@@ -487,7 +491,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                                 onPress={confirmCancel}
                             >
                                 <ThemedText style={{ color: 'white' }}>
-                                    Abandonner
+                                    {t('blink.yes')}
                                 </ThemedText>
                             </TouchableOpacity>
                         </View>
