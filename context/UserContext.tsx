@@ -46,6 +46,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                                         userID: storedUserID,
                                         avatar_url: storedAvatarUrl || undefined
                                     });
+                                    // L'utilisateur est connecté, on le laisse sur la page actuelle
                                 } else {
                                     // Token invalide, rediriger vers landing page
                                     clearUser();
