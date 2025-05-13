@@ -47,30 +47,30 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                                         avatar_url: storedAvatarUrl || undefined
                                     });
                                 } else {
-                                    // Token invalide, rediriger vers login
+                                    // Token invalide, rediriger vers landing page
                                     clearUser();
-                                    router.push("/login");
+                                    router.push("/landing");
                                 }
                                 setIsLoading(false);
                             },
                             onError: (error) => {
-                                // En cas d'erreur, rediriger vers login
+                                // En cas d'erreur, rediriger vers landing page
                                 console.error("Token validation error:", error);
                                 clearUser();
-                                router.push("/login");
+                                router.push("/landing");
                                 setIsLoading(false);
                             }
                         }
                     );
                 } else {
-                    // Pas de token ou userID, rediriger vers login
+                    // Pas de token ou userID, rediriger vers landing page
                     setIsLoading(false);
-                    router.push("/login");
+                    router.push("/landing");
                 }
             } catch (error) {
                 console.error("Erreur lors du chargement de l'utilisateur", error);
                 setIsLoading(false);
-                router.push("/login");
+                router.push("/landing");
             }
         };
         loadUser();

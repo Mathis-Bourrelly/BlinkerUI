@@ -4,6 +4,7 @@ import { Fonts } from "@/constants/Fonts";
 
 const styles = StyleSheet.create({
     Display: Fonts.Display,
+    LandingTitle: Fonts.LandingTitle,
     Title: Fonts.Title,
     SubTitle: Fonts.SubTitle,
     Body: Fonts.Body,

@@ -4,10 +4,79 @@
     "or": "または",
     "return": "戻る"
   },
+  "blink": {
+    "addContent": "ブリンクに少なくとも一つのコンテンツを追加してください",
+    "addImage": "画像を追加",
+    "addText": "テキストを追加",
+    "addValidContent": "ブリンクに少なくとも一つの有効なコンテンツを追加してください",
+    "addVideo": "動画を追加",
+    "cancel": "キャンセル",
+    "confirmCancel": "本当にキャンセルしますか？すべての変更が失われます。",
+    "create": "作成",
+    "createError": "ブリンクの作成中にエラーが発生しました",
+    "dataError": "データの準備中にエラーが発生しました",
+    "images": "画像",
+    "mediaNotSupported": "注意: {mediaType}は現在サポートされていません。代わりにプレースホルダーURLが使用されます。",
+    "needPhotoPermission": "写真にアクセスするには権限が必要です",
+    "no": "いいえ",
+    "unknownError": "不明なエラー",
+    "videos": "動画",
+    "yes": "はい"
+  },
   "common": {
     "day": "日",
     "hour": "時間",
     "score": "スコア"
+  },
+  "landing": {
+    "advantages": {
+      "dynamic": {
+        "description": "あなたと共に進化するパーソナライズされた体験",
+        "title": "ダイナミックな体験"
+      },
+      "evolving": {
+        "description": "グループ、新しいフォーマット、近日公開予定の機能",
+        "title": "進化するプラットフォーム"
+      },
+      "quality": {
+        "description": "関連性の高いコンテンツが強調されます",
+        "title": "高品質コンテンツ"
+      },
+      "realtime": {
+        "description": "即時のインタラクションとライブ通知",
+        "title": "流動性とリアルタイム"
+      }
+    },
+    "advantagesTitle": "なぜBlinkerなのか？",
+    "createAccount": "アカウントを作成する",
+    "ctaTitle": "異なるソーシャルネットワークに参加する準備はできていますか？",
+    "discover": "機能を発見する",
+    "features": {
+      "blinks": {
+        "description": "コミュニティによって延長可能な限られた寿命を持つテキスト、画像、動画コンテンツ",
+        "title": "Blinks - 一時的な投稿"
+      },
+      "messaging": {
+        "description": "ユーザースコアに基づく有効期限付きの会話ごとのプライベートメッセージ",
+        "title": "ダイナミックメッセージング"
+      },
+      "profiles": {
+        "description": "ユーザースコア、フォロー、アバター、カスタマイズ可能なバイオ",
+        "title": "リッチプロフィール"
+      },
+      "score": {
+        "description": "Blinksの寿命 = 評判指数、可視性への影響",
+        "title": "コミュニティスコア"
+      }
+    },
+    "featuresTitle": "機能",
+    "heroSubtitle": "Blinkerは量ではなく質を重視します。すべての交流が影響力を持つネットワークを発見してください。",
+    "heroTitle": "大切なことを共有。残りは消えていく。",
+    "learnMore": "詳細を見る",
+    "login": "ログイン",
+    "slogan": "More Like, More Time.",
+    "startNow": "今すぐ始める",
+    "testimonialsTitle": "ユーザーの声"
   },
   "language": "日本語",
   "login": {
@@ -17,6 +86,7 @@
     "continueWithGoogle": "Googleで続ける",
     "createAccount": "アカウントを作成する",
     "displayName": "表示名",
+    "displayNameTooLong": "表示名が長すぎます",
     "email": "メールアドレス",
     "fieldConfirmPasswordRequired": "パスワードの確認が必要です",
     "fieldDisplayNameRequired": "表示名が必要です",
@@ -32,16 +102,15 @@
     "password": "パスワード",
     "passwordForgotten": "パスワードを忘れました",
     "passwordInvalid": "パスワードは少なくとめ12文字、大文字、1つの小文字、1つの数字、1つの特殊文字を含む必要があります",
-    "passwordRules": "パスワードのルール：",
     "passwordRuleLength": "少なくとも12文字",
-    "passwordRuleUppercase": "少なくとも1つの大文字",
     "passwordRuleLowercase": "少なくとも1つの小文字",
     "passwordRuleNumber": "少なくとも1つの数字",
     "passwordRuleSpecial": "少なくとも1つの特殊文字 (@$!%*?&)",
+    "passwordRuleUppercase": "少なくとも1つの大文字",
+    "passwordRules": "パスワードのルール：",
     "passwordsDoNotMatch": "パスワードが一致しません",
     "username": "ユーザー名",
-    "wrongPassword": "パスワードが正しくありません",
-    "displayNameTooLong": "表示名が長すぎます"
+    "wrongPassword": "パスワードが正しくありません"
   },
   "messages": {
     "errorLoading": "メッセージの読み込みエラー",
@@ -62,13 +131,13 @@
   },
   "navigation": {
     "home": "ホーム",
+    "languageLabel": "言語",
     "leaderboard": "リーダーボード",
     "messages": "メッセージ",
     "search": "検索",
     "settings": "設定",
     "theme": "テーマ",
-    "trends": "トレンド",
-    "languageLabel": "言語"
+    "trends": "トレンド"
   },
   "profile": {
     "blink": "ブリンク",
@@ -94,24 +163,5 @@
     "noResults": "結果が見つかりません",
     "placeholder": "名前または@ユーザー名で検索",
     "title": "ユーザー検索"
-  },
-  "blink": {
-    "addContent": "ブリンクに少なくとも一つのコンテンツを追加してください",
-    "addValidContent": "ブリンクに少なくとも一つの有効なコンテンツを追加してください",
-    "createError": "ブリンクの作成中にエラーが発生しました",
-    "dataError": "データの準備中にエラーが発生しました",
-    "mediaNotSupported": "注意: {mediaType}は現在サポートされていません。代わりにプレースホルダーURLが使用されます。",
-    "needPhotoPermission": "写真にアクセスするには権限が必要です",
-    "unknownError": "不明なエラー",
-    "confirmCancel": "本当にキャンセルしますか？すべての変更が失われます。",
-    "yes": "はい",
-    "no": "いいえ",
-    "cancel": "キャンセル",
-    "create": "作成",
-    "addText": "テキストを追加",
-    "addImage": "画像を追加",
-    "addVideo": "動画を追加",
-    "images": "画像",
-    "videos": "動画"
   }
 }

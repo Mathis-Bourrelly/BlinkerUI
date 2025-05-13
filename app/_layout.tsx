@@ -29,6 +29,7 @@ async function loadFonts() {
         'Poppins-Regular': require('@/assets/fonts/Poppins/Poppins-Regular.ttf'),
         'Poppins-SemiBold': require('@/assets/fonts/Poppins/Poppins-SemiBold.ttf'),
         'Poppins-Bold': require('@/assets/fonts/Poppins/Poppins-Bold.ttf'),
+        'Poppins-ExtraBoldItalic': require('@/assets/fonts/Poppins/Poppins-ExtraBoldItalic.ttf'),
     });
 }
 

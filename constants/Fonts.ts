@@ -13,6 +13,11 @@ export const Fonts = {
         fontSize: 32,
         fontWeight: "bold" as const,
     },
+    LandingTitle: {
+        fontFamily : "Poppins-ExtraBoldItalic",
+        fontSize: 96,
+        fontWeight: "bold" as const,
+    },
     Title: {
         fontFamily: "Poppins-Bold",
         fontSize: 24,

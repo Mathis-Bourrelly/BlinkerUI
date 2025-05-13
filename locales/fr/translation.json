@@ -4,10 +4,79 @@
     "or": "ou",
     "return": "retour"
   },
+  "blink": {
+    "addContent": "Ajouter au moins un contenu",
+    "addImage": "Ajouter une image",
+    "addText": "Ajouter du texte",
+    "addValidContent": "Ajouter au moins un contenu valide",
+    "addVideo": "Ajouter une vidéo",
+    "cancel": "Annuler",
+    "confirmCancel": "Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.",
+    "create": "Créer",
+    "createError": "Erreur lors de la création du Blink",
+    "dataError": "Erreur lors de la préparation des données",
+    "images": "images",
+    "mediaNotSupported": "Note: Les {mediaType} ne sont pas prises en charge pour le moment. Une URL de placeholder sera utilisée à la place.",
+    "needPhotoPermission": "Nous avons besoin de votre permission pour accéder à vos photos",
+    "no": "Non",
+    "unknownError": "Erreur inconnue",
+    "videos": "vidéos",
+    "yes": "Oui"
+  },
   "common": {
     "day": "j",
     "hour": "h",
     "score": "Score"
+  },
+  "landing": {
+    "advantages": {
+      "dynamic": {
+        "description": "Une expérience personnalisée qui évolue avec vous",
+        "title": "Expérience dynamique"
+      },
+      "evolving": {
+        "description": "Groupes, nouveaux formats et fonctionnalités à venir",
+        "title": "Évolutivité"
+      },
+      "quality": {
+        "description": "Le contenu pertinent est mis en avant",
+        "title": "Contenu de qualité"
+      },
+      "realtime": {
+        "description": "Interactions instantanées et notifications en direct",
+        "title": "Fluidité et temps réel"
+      }
+    },
+    "advantagesTitle": "Pourquoi Blinker ?",
+    "createAccount": "Créer un compte",
+    "ctaTitle": "Prêt à rejoindre un réseau social différent ?",
+    "discover": "Découvrir les fonctionnalités",
+    "features": {
+      "blinks": {
+        "description": "Contenu texte, image, vidéo avec durée de vie limitée mais prolongeable par la communauté",
+        "title": "Blinks – Publications Éphémères"
+      },
+      "messaging": {
+        "description": "Messages privés par conversation avec expiration selon le score utilisateur",
+        "title": "Messagerie Dynamique"
+      },
+      "profiles": {
+        "description": "Score utilisateur, suivi, avatar et bio personnalisable",
+        "title": "Profils Riches"
+      },
+      "score": {
+        "description": "Durée de vie des blinks = indice de réputation, influence sur la visibilité",
+        "title": "Score Communautaire"
+      }
+    },
+    "featuresTitle": "Fonctionnalités",
+    "heroSubtitle": "Blinker valorise la qualité, pas la quantité. Découvre un réseau où chaque interaction a un impact.",
+    "heroTitle": "Partage ce qui compte. Le reste s'efface.",
+    "learnMore": "En savoir plus",
+    "login": "Se connecter",
+    "slogan": "More Like, More Time.",
+    "startNow": "Commencer maintenant",
+    "testimonialsTitle": "Ce que disent nos utilisateurs"
   },
   "language": "Français",
   "login": {
@@ -17,6 +86,7 @@
     "continueWithGoogle": "Continuer avec Google",
     "createAccount": "Créer un compte",
     "displayName": "Nom d'affichage",
+    "displayNameTooLong": "Le nom d'affichage est trop long",
     "email": "E-mail",
     "fieldConfirmPasswordRequired": "La confirmation du mot de passe est requise",
     "fieldDisplayNameRequired": "Un nom d'affichage est requis",
@@ -32,16 +102,15 @@
     "password": "Mot de passe",
     "passwordForgotten": "Mot de passe oublié",
     "passwordInvalid": "Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial",
-    "passwordRules": "Règles de mot de passe :",
     "passwordRuleLength": "Au moins 12 caractères",
-    "passwordRuleUppercase": "Au moins une lettre majuscule",
     "passwordRuleLowercase": "Au moins une lettre minuscule",
     "passwordRuleNumber": "Au moins un chiffre",
     "passwordRuleSpecial": "Au moins un caractère spécial (@$!%*?&)",
+    "passwordRuleUppercase": "Au moins une lettre majuscule",
+    "passwordRules": "Règles de mot de passe :",
     "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
     "username": "Nom d'utilisateur",
-    "wrongPassword": "Mot de passe incorrect",
-    "displayNameTooLong": "Le nom d'affichage est trop long"
+    "wrongPassword": "Mot de passe incorrect"
   },
   "messages": {
     "errorLoading": "Erreur lors du chargement des messages",
@@ -62,13 +131,13 @@
   },
   "navigation": {
     "home": "Accueil",
+    "languageLabel": "Langue",
     "leaderboard": "Leaderboard",
     "messages": "Message",
     "search": "Rechercher",
     "settings": "Paramètres",
     "theme": "Thème",
-    "trends": "Tendances",
-    "languageLabel": "Langue"
+    "trends": "Tendances"
   },
   "profile": {
     "blink": "blink",
@@ -94,24 +163,5 @@
     "noResults": "Aucun résultat trouvé",
     "placeholder": "Rechercher par nom ou @username",
     "title": "Rechercher des utilisateurs"
-  },
-  "blink": {
-    "addContent": "Ajouter au moins un contenu",
-    "addValidContent": "Ajouter au moins un contenu valide",
-    "createError": "Erreur lors de la création du Blink",
-    "dataError": "Erreur lors de la préparation des données",
-    "mediaNotSupported": "Note: Les {mediaType} ne sont pas prises en charge pour le moment. Une URL de placeholder sera utilisée à la place.",
-    "needPhotoPermission": "Nous avons besoin de votre permission pour accéder à vos photos",
-    "unknownError": "Erreur inconnue",
-    "confirmCancel": "Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.",
-    "yes": "Oui",
-    "no": "Non",
-    "cancel": "Annuler",
-    "create": "Créer",
-    "addText": "Ajouter du texte",
-    "addImage": "Ajouter une image",
-    "addVideo": "Ajouter une vidéo",
-    "images": "images",
-    "videos": "vidéos"
   }
 }

@@ -17,6 +17,6 @@ export const getToken = async () => {
         }
     } catch (e) {
         console.error(e);
-        router.push("/login");
+        router.push("/landing");
     }
 };

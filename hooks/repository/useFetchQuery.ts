@@ -23,7 +23,7 @@ export function useFetchQuery<T = FetchQueryResponse>(path: string, queryKey: an
                 }
             });
             if (res.status === 401 ) {
-                router.push("/login")
+                router.push("/landing")
             }
 
             if (!res.ok) throw new Error("Failed to fetch data");

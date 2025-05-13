@@ -4,10 +4,79 @@
     "or": "or",
     "return": "return"
   },
+  "blink": {
+    "addContent": "Please add at least one content to your Blink",
+    "addImage": "Add image",
+    "addText": "Add text",
+    "addValidContent": "Please add at least one valid content to your Blink",
+    "addVideo": "Add video",
+    "cancel": "Cancel",
+    "confirmCancel": "Are you sure you want to cancel? All changes will be lost.",
+    "create": "Create",
+    "createError": "Error creating Blink",
+    "dataError": "Error preparing data",
+    "images": "images",
+    "mediaNotSupported": "Note: {mediaType} are not supported at the moment. A placeholder URL will be used instead.",
+    "needPhotoPermission": "We need your permission to access your photos",
+    "no": "No",
+    "unknownError": "Unknown error",
+    "videos": "videos",
+    "yes": "Yes"
+  },
   "common": {
     "day": "d",
     "hour": "h",
     "score": "Score"
+  },
+  "landing": {
+    "advantages": {
+      "dynamic": {
+        "description": "A personalized experience that evolves with you",
+        "title": "Dynamic Experience"
+      },
+      "evolving": {
+        "description": "Groups, new formats and features coming soon",
+        "title": "Evolving Platform"
+      },
+      "quality": {
+        "description": "Relevant content is highlighted",
+        "title": "Quality Content"
+      },
+      "realtime": {
+        "description": "Instant interactions and live notifications",
+        "title": "Fluidity and Real-time"
+      }
+    },
+    "advantagesTitle": "Why Blinker?",
+    "createAccount": "Create an account",
+    "ctaTitle": "Ready to join a different social network?",
+    "discover": "Discover features",
+    "features": {
+      "blinks": {
+        "description": "Text, image, video content with limited lifespan that can be extended by the community",
+        "title": "Blinks - Ephemeral Posts"
+      },
+      "messaging": {
+        "description": "Private messages by conversation with expiration based on user score",
+        "title": "Dynamic Messaging"
+      },
+      "profiles": {
+        "description": "User score, following, avatar and customizable bio",
+        "title": "Rich Profiles"
+      },
+      "score": {
+        "description": "Blinks lifespan = reputation index, influence on visibility",
+        "title": "Community Score"
+      }
+    },
+    "featuresTitle": "Features",
+    "heroSubtitle": "Blinker values quality, not quantity. Discover a network where every interaction has an impact.",
+    "heroTitle": "Share what matters. The rest fades away.",
+    "learnMore": "Learn more",
+    "login": "Login",
+    "slogan": "More Like, More Time.",
+    "startNow": "Start now",
+    "testimonialsTitle": "What our users say"
   },
   "language": "English",
   "login": {
@@ -17,6 +86,7 @@
     "continueWithGoogle": "Continue with Google",
     "createAccount": "Create an Account",
     "displayName": "Display name",
+    "displayNameTooLong": "Display name is too long",
     "email": "Email",
     "fieldConfirmPasswordRequired": "Password confirmation is required",
     "fieldDisplayNameRequired": "Display name is required",
@@ -32,16 +102,15 @@
     "password": "Password",
     "passwordForgotten": "Password forgotten",
     "passwordInvalid": "Password must contain at least 12 characters, one uppercase letter, one lowercase letter, one number and one special character",
-    "passwordRules": "Password rules:",
     "passwordRuleLength": "At least 12 characters",
-    "passwordRuleUppercase": "At least one uppercase letter",
     "passwordRuleLowercase": "At least one lowercase letter",
     "passwordRuleNumber": "At least one number",
     "passwordRuleSpecial": "At least one special character (@$!%*?&)",
+    "passwordRuleUppercase": "At least one uppercase letter",
+    "passwordRules": "Password rules:",
     "passwordsDoNotMatch": "Passwords do not match",
     "username": "Username",
-    "wrongPassword": "Incorrect password",
-    "displayNameTooLong": "Display name is too long"
+    "wrongPassword": "Incorrect password"
   },
   "messages": {
     "errorLoading": "Error loading messages",
@@ -62,13 +131,13 @@
   },
   "navigation": {
     "home": "Home",
+    "languageLabel": "Language",
     "leaderboard": "Leaderboard",
     "messages": "Messages",
     "search": "Search",
     "settings": "Settings",
     "theme": "Theme",
-    "trends": "Trends",
-    "languageLabel": "Language"
+    "trends": "Trends"
   },
   "profile": {
     "blink": "blink",
@@ -94,24 +163,5 @@
     "noResults": "No results found",
     "placeholder": "Search by name or @username",
     "title": "Search Users"
-  },
-  "blink": {
-    "addContent": "Please add at least one content to your Blink",
-    "addValidContent": "Please add at least one valid content to your Blink",
-    "createError": "Error creating Blink",
-    "dataError": "Error preparing data",
-    "mediaNotSupported": "Note: {mediaType} are not supported at the moment. A placeholder URL will be used instead.",
-    "needPhotoPermission": "We need your permission to access your photos",
-    "unknownError": "Unknown error",
-    "confirmCancel": "Are you sure you want to cancel? All changes will be lost.",
-    "yes": "Yes",
-    "no": "No",
-    "cancel": "Cancel",
-    "create": "Create",
-    "addText": "Add text",
-    "addImage": "Add image",
-    "addVideo": "Add video",
-    "images": "images",
-    "videos": "videos"
   }
 }

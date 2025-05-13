@@ -105,7 +105,7 @@ function PasswordRules({ password }: { password: string }) {
 
     // Style pour les indicateurs de règles
     const getIndicatorStyle = (isValid: boolean) => ({
-        color: isValid ? colors.valid : colors.danger,
+        color: isValid ? colors.valide : colors.danger,
     });
 
     return (
