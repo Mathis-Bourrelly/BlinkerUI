@@ -6,6 +6,7 @@ import { ThemedText } from "@/components/base/ThemedText";
 import { ScoreDot } from "@/components/feature/ScoreDot";
 import { messageThreadStyles } from "./MessageThreadStyles";
 import { router } from "expo-router";
+import { Icon } from "@/components/images/Icon";
 
 type ContactInfo = {
   display_name: string;
@@ -30,8 +31,22 @@ export function ContactHeader({ contactInfo, userID }: ContactHeaderProps) {
     }
   };
 
+  // Fonction pour retourner à la liste des messages
+  const navigateToMessagesList = () => {
+    router.push('/messages');
+  };
+
   return (
     <View style={[messageThreadStyles.contactHeader, { borderBottomColor: colors.border, backgroundColor: colors.card }]}>
+      {/* Bouton de retour */}
+      <TouchableOpacity
+        onPress={navigateToMessagesList}
+        activeOpacity={0.7}
+        style={messageThreadStyles.backButtonContainer}
+      >
+        <Icon name="left" size={24} color={colors.text} />
+      </TouchableOpacity>
+
       <TouchableOpacity
         onPress={navigateToProfile}
         disabled={!userID || userID === "unknown"}

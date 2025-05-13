@@ -47,6 +47,14 @@ export const messageThreadStyles = StyleSheet.create({
     marginHorizontal: 12,
     marginTop: 8,
   },
+  backButtonContainer: {
+    marginRight: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   contactAvatarContainer: {
     marginRight: 12,
   },
