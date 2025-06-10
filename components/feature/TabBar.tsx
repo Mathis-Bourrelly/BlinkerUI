@@ -4,8 +4,13 @@ import { Icon } from "@/components/images/Icon";
 import {useTheme} from "@/context/ThemeContext";
 import {router, usePathname} from "expo-router";
 import {useUser} from "@/context/UserContext";
+import { LinearGradient } from 'expo-linear-gradient';
 
-export default function TabBar() {
+interface TabBarProps {
+    onCreatePress?: () => void;
+}
+
+export default function TabBar({ onCreatePress }: TabBarProps) {
     const { width } = useWindowDimensions();
     const { colors } = useTheme();
     const { user } = useUser();
@@ -34,6 +39,7 @@ export default function TabBar() {
             <TouchableOpacity
                 onPress={() => handleNavigation("/search", pathname !== "/search")}
                 activeOpacity={pathname === "/search" ? 1 : 0.7}
+                style={styles.tabItem}
             >
                 <Icon name="search" size={32} color={pathname === "/search" ? colors.accent : dynamicColor.color} />
             </TouchableOpacity>
@@ -41,13 +47,31 @@ export default function TabBar() {
             <TouchableOpacity
                 onPress={() => handleNavigation("/", pathname !== "/")}
                 activeOpacity={pathname === "/" ? 1 : 0.7}
+                style={styles.tabItem}
             >
                 <Icon name="home" size={32} color={pathname === "/" ? colors.accent : dynamicColor.color} />
+            </TouchableOpacity>
+
+            {/* Bouton de création intégré */}
+            <TouchableOpacity
+                onPress={onCreatePress}
+                activeOpacity={0.8}
+                style={styles.createButton}
+            >
+                <LinearGradient
+                    colors={colors.accentGradient}
+                    style={styles.createButtonGradient}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                >
+                    <Icon name="plus" size={24} color="#FFFFFF" />
+                </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity
                 onPress={() => handleNavigation("/messages", !pathname.startsWith("/messages"))}
                 activeOpacity={pathname.startsWith("/messages") ? 1 : 0.7}
+                style={styles.tabItem}
             >
                 <Icon name="chat" size={32} color={pathname.startsWith("/messages") ? colors.accent : dynamicColor.color} />
             </TouchableOpacity>
@@ -55,6 +79,7 @@ export default function TabBar() {
             <TouchableOpacity
                 onPress={() => handleNavigation(`/profile/${user?.userID}`, !pathname.startsWith(`/profile/${user?.userID}`))}
                 activeOpacity={pathname.startsWith(`/profile/${user?.userID}`) ? 1 : 0.7}
+                style={styles.tabItem}
             >
                 <Image
                     source={{ uri: user?.avatar_url || `${process.env.EXPO_PUBLIC_API_URL}/uploads/default_user.png` }}
@@ -77,6 +102,28 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderTopWidth: 1,
         zIndex: 2, // S'assurer que la TabBar est au-dessus des autres éléments
+    },
+    tabItem: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    createButton: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    createButtonGradient: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     avatar: {
         width: 32,

@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, useWindowDimensions} from 'react-native';
 import {useTheme} from '@/context/ThemeContext';
 import {Stack} from "expo-router";
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -14,8 +14,12 @@ import CreateBlinkModal from "@/components/feature/CreateBlinkModal";
 
 export default function Index() {
     const {colors} = useTheme();
+    const { width } = useWindowDimensions();
     const gradientColors = colors.gradient;
     const [isModalVisible, setIsModalVisible] = useState(false);
+
+    // Déterminer si on est en format desktop
+    const isDesktop = width > 768;
 
     const handleOpenModal = () => {
         setIsModalVisible(true);
@@ -36,16 +40,19 @@ export default function Index() {
                         {/* Les options de langue et de thème sont maintenant dans le menu d'options de la NavBar */}
                     </InnerContainer>
                 </LinearGradient>
-                <FloatingActionButton
-                    onPress={handleOpenModal}
-                    iconName="plus"
-                    size={60}
-                />
+                {/* FloatingActionButton seulement pour desktop */}
+                {isDesktop && (
+                    <FloatingActionButton
+                        onPress={handleOpenModal}
+                        iconName="plus"
+                        size={60}
+                    />
+                )}
                 <CreateBlinkModal
                     visible={isModalVisible}
                     onClose={handleCloseModal}
                 />
-                <TabBar/>
+                <TabBar onCreatePress={handleOpenModal} />
             </SafeAreaView>
         </>
     );
