@@ -310,10 +310,15 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
                     )}
                 </TouchableOpacity>
 
-                <View style={styles.interactionContent}>
-                    <Icon name={"comments--v1"} size={24} color={colors.text} />
-                    <Text style={[styles.interactionText, { color: colors.text }]}>{blink.commentCount}</Text>
-                </View>
+                <TouchableOpacity
+                    style={styles.interactionButton}
+                    onPress={() => router.push(`/comments/${blink.blinkID}` as any)}
+                >
+                    <View style={styles.interactionContent}>
+                        <Icon name={"comments--v1"} size={24} color={colors.text} />
+                        <Text style={[styles.interactionText, { color: colors.text }]}>{blink.commentCount}</Text>
+                    </View>
+                </TouchableOpacity>
 
                 <View style={styles.interactionContent}>
                     <Icon name={"share"} size={24} color={colors.text} />

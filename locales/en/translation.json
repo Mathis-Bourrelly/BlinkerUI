@@ -23,9 +23,36 @@
     "videos": "videos",
     "yes": "Yes"
   },
+  "comment": {
+    "alreadyCommented": "You have already commented on this blink. Only one comment per user is allowed.",
+    "beFirst": "Be the first to comment!",
+    "createError": "Error creating comment",
+    "deleteError": "Error deleting comment",
+    "deleteMessage": "Are you sure you want to delete this comment?",
+    "deleteTitle": "Delete Comment",
+    "editPlaceholder": "Edit your comment...",
+    "emptyError": "Comment cannot be empty",
+    "invalidBlink": "Invalid blink",
+    "loadError": "Error loading comments",
+    "loading": "Loading comments...",
+    "loadingMore": "Loading more comments...",
+    "noComments": "No comments",
+    "placeholder": "Write your comment...",
+    "title": "Comments",
+    "tooLongError": "Comment is too long (maximum 1000 characters)",
+    "tryAgain": "Please try again",
+    "updateError": "Error updating comment"
+  },
   "common": {
+    "back": "Back",
+    "cancel": "Cancel",
     "day": "d",
+    "delete": "Delete",
+    "error": "Error",
     "hour": "h",
+    "retry": "Retry",
+    "save": "Save",
+    "saving": "Saving...",
     "score": "Score"
   },
   "landing": {
@@ -128,6 +155,15 @@
     "typing": "is typing...",
     "yesterday": "Yesterday",
     "you": "You"
+  },
+  "time": {
+    "daysAgo": "{{count}} day ago",
+    "daysAgo_plural": "{{count}} days ago",
+    "hoursAgo": "{{count}} hour ago",
+    "hoursAgo_plural": "{{count}} hours ago",
+    "minutesAgo": "{{count}} minute ago",
+    "minutesAgo_plural": "{{count}} minutes ago",
+    "now": "now"
   },
   "navigation": {
     "home": "Home",

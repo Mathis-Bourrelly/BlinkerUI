@@ -23,9 +23,36 @@
     "videos": "vidéos",
     "yes": "Oui"
   },
+  "comment": {
+    "alreadyCommented": "Vous avez déjà commenté ce blink. Un seul commentaire par utilisateur est autorisé.",
+    "beFirst": "Soyez le premier à commenter !",
+    "createError": "Erreur lors de la création du commentaire",
+    "deleteError": "Erreur lors de la suppression du commentaire",
+    "deleteMessage": "Êtes-vous sûr de vouloir supprimer ce commentaire ?",
+    "deleteTitle": "Supprimer le commentaire",
+    "editPlaceholder": "Modifier votre commentaire...",
+    "emptyError": "Le commentaire ne peut pas être vide",
+    "invalidBlink": "Blink invalide",
+    "loadError": "Erreur lors du chargement des commentaires",
+    "loading": "Chargement des commentaires...",
+    "loadingMore": "Chargement de plus de commentaires...",
+    "noComments": "Aucun commentaire",
+    "placeholder": "Écrivez votre commentaire...",
+    "title": "Commentaires",
+    "tooLongError": "Le commentaire est trop long (maximum 1000 caractères)",
+    "tryAgain": "Veuillez réessayer",
+    "updateError": "Erreur lors de la modification du commentaire"
+  },
   "common": {
+    "back": "Retour",
+    "cancel": "Annuler",
     "day": "j",
+    "delete": "Supprimer",
+    "error": "Erreur",
     "hour": "h",
+    "retry": "Réessayer",
+    "save": "Sauvegarder",
+    "saving": "Sauvegarde...",
     "score": "Score"
   },
   "landing": {
@@ -128,6 +155,15 @@
     "typing": "est en train d'écrire...",
     "yesterday": "Hier",
     "you": "Vous"
+  },
+  "time": {
+    "daysAgo": "il y a {{count}} jour",
+    "daysAgo_plural": "il y a {{count}} jours",
+    "hoursAgo": "il y a {{count}} heure",
+    "hoursAgo_plural": "il y a {{count}} heures",
+    "minutesAgo": "il y a {{count}} minute",
+    "minutesAgo_plural": "il y a {{count}} minutes",
+    "now": "maintenant"
   },
   "navigation": {
     "home": "Accueil",

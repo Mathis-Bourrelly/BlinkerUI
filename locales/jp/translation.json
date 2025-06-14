@@ -23,9 +23,35 @@
     "videos": "動画",
     "yes": "はい"
   },
+  "comment": {
+    "beFirst": "最初にコメントしてください！",
+    "createError": "コメント作成エラー",
+    "deleteError": "コメント削除エラー",
+    "deleteMessage": "このコメントを削除してもよろしいですか？",
+    "deleteTitle": "コメントを削除",
+    "editPlaceholder": "コメントを編集...",
+    "emptyError": "コメントは空にできません",
+    "invalidBlink": "無効なブリンク",
+    "loadError": "コメント読み込みエラー",
+    "loading": "コメントを読み込み中...",
+    "loadingMore": "さらにコメントを読み込み中...",
+    "noComments": "コメントなし",
+    "placeholder": "コメントを書く...",
+    "title": "コメント",
+    "tooLongError": "コメントが長すぎます（最大1000文字）",
+    "tryAgain": "もう一度お試しください",
+    "updateError": "コメント更新エラー"
+  },
   "common": {
+    "back": "戻る",
+    "cancel": "キャンセル",
     "day": "日",
+    "delete": "削除",
+    "error": "エラー",
     "hour": "時間",
+    "retry": "再試行",
+    "save": "保存",
+    "saving": "保存中...",
     "score": "スコア"
   },
   "landing": {
@@ -128,6 +154,15 @@
     "typing": "入力中...",
     "yesterday": "昨日",
     "you": "あなた"
+  },
+  "time": {
+    "daysAgo": "{{count}}日前",
+    "daysAgo_plural": "{{count}}日前",
+    "hoursAgo": "{{count}}時間前",
+    "hoursAgo_plural": "{{count}}時間前",
+    "minutesAgo": "{{count}}分前",
+    "minutesAgo_plural": "{{count}}分前",
+    "now": "今"
   },
   "navigation": {
     "home": "ホーム",
