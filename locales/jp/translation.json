@@ -19,6 +19,9 @@
     "mediaNotSupported": "注意: {mediaType}は現在サポートされていません。代わりにプレースホルダーURLが使用されます。",
     "needPhotoPermission": "写真にアクセスするには権限が必要です",
     "no": "いいえ",
+    "optional": "オプション",
+    "tags": "タグ",
+    "tagsPlaceholder": "タグを追加...",
     "unknownError": "不明なエラー",
     "videos": "動画",
     "yes": "はい"
@@ -198,5 +201,35 @@
     "noResults": "結果が見つかりません",
     "placeholder": "名前または@ユーザー名で検索",
     "title": "ユーザー検索"
+  },
+  "tags": {
+    "alreadyExists": "このタグは既に存在します",
+    "maxReached": "最大{maxTags}個のタグが許可されています",
+    "placeholder": "タグを追加...",
+    "validationError": "タグ検証エラー"
+  },
+  "trends": {
+    "title": "トレンド",
+    "popularTags": "人気のタグ",
+    "trendingTags": "トレンドタグ",
+    "descriptions": {
+      "popular": "選択された期間で最も使用されたタグ",
+      "trending": "最近の使用量が最も成長しているタグ"
+    },
+    "timeFilters": {
+      "24h": "24時間",
+      "7d": "7日間",
+      "30d": "30日間",
+      "all": "全期間"
+    },
+    "stats": {
+      "usageCount": "{{count}}回使用",
+      "usageCount_plural": "{{count}}回使用",
+      "recentUsage": "{{count}}回最近",
+      "recentUsage_plural": "{{count}}回最近",
+      "viewBlinks": "ブリンクを見る"
+    },
+    "noData": "データがありません",
+    "error": "トレンドの読み込みエラー"
   }
 }

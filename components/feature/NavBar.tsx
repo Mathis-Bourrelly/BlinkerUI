@@ -83,7 +83,7 @@ export default function NavBar() {
                         <ThemedText>{t('navigation.home')}</ThemedText>
                     </TouchableOpacity>
                     <ThemedVerticalSeparator barColor={colors.border} height={20}/>
-                    <TouchableOpacity onPress={() => router.push("/")}>
+                    <TouchableOpacity onPress={() => router.push("/trends")}>
                         <ThemedText>{t('navigation.trends')}</ThemedText>
                     </TouchableOpacity>
                     <ThemedVerticalSeparator barColor={colors.border} height={20}/>

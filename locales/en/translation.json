@@ -19,6 +19,9 @@
     "mediaNotSupported": "Note: {mediaType} are not supported at the moment. A placeholder URL will be used instead.",
     "needPhotoPermission": "We need your permission to access your photos",
     "no": "No",
+    "optional": "optional",
+    "tags": "Tags",
+    "tagsPlaceholder": "Add tags...",
     "unknownError": "Unknown error",
     "videos": "videos",
     "yes": "Yes"
@@ -199,5 +202,35 @@
     "noResults": "No results found",
     "placeholder": "Search by name or @username",
     "title": "Search Users"
+  },
+  "tags": {
+    "alreadyExists": "This tag already exists",
+    "maxReached": "Maximum {maxTags} tags allowed",
+    "placeholder": "Add a tag...",
+    "validationError": "Tag validation error"
+  },
+  "trends": {
+    "title": "Trends",
+    "popularTags": "Popular Tags",
+    "trendingTags": "Trending Tags",
+    "descriptions": {
+      "popular": "Most used tags for the selected time period",
+      "trending": "Tags with the highest recent usage growth"
+    },
+    "timeFilters": {
+      "24h": "24 hours",
+      "7d": "7 days",
+      "30d": "30 days",
+      "all": "All time"
+    },
+    "stats": {
+      "usageCount": "{{count}} use",
+      "usageCount_plural": "{{count}} uses",
+      "recentUsage": "{{count}} recent",
+      "recentUsage_plural": "{{count}} recent",
+      "viewBlinks": "View blinks"
+    },
+    "noData": "No data available",
+    "error": "Error loading trends"
   }
 }

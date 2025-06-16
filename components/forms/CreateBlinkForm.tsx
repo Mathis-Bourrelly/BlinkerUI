@@ -4,6 +4,7 @@ import { ThemedText } from "../base/ThemedText";
 import { Icon } from "@/components/images/Icon";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemedTextInput } from "@/components/base/ThemedTextInput";
+import { TagInput } from "@/components/feature/TagInput";
 import * as ImagePicker from 'expo-image-picker';
 import { useCreateBlinkMutation } from "@/hooks/interfaces/useBlinkInterface";
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,6 +30,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
     const { t } = useTranslation();
 
     const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([]);
+    const [tags, setTags] = useState<string[]>([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -214,7 +216,7 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
 
             // Envoyer les données au backend
             createBlinkMutation.mutate(
-                { body: { contents: processedBlocks } },
+                { body: { contents: processedBlocks, tags: tags.length > 0 ? tags : undefined } },
                 {
                     onSuccess: (data) => {
                         console.log("Blink créé avec succès:", data);
@@ -277,6 +279,19 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                 <ThemedText variant="SubTitle" style={styles.instructionText}>
                     {t('blink.addContent')}
                 </ThemedText>
+            </View>
+
+            {/* Section Tags */}
+            <View style={styles.tagsSection}>
+                <ThemedText variant="Body" style={styles.sectionTitle}>
+                    {t('blink.tags', 'Tags')} ({t('blink.optional', 'optionnel')})
+                </ThemedText>
+                <TagInput
+                    tags={tags}
+                    onTagsChange={setTags}
+                    placeholder={t('blink.tagsPlaceholder', 'Ajouter des tags...')}
+                    maxTags={3}
+                />
             </View>
 
             <View style={styles.buttonContainer}>
@@ -701,6 +716,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginVertical: 8,
+    },
+    tagsSection: {
+        marginBottom: 24,
+    },
+    sectionTitle: {
+        marginBottom: 8,
+        fontWeight: '600',
     },
 });
 

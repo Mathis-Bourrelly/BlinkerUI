@@ -9,6 +9,7 @@ export type BlinkType = {
     createdAt: string;
     updatedAt: string;
     contents: { contentID: string; contentType: string; content: string; position: number }[];
+    tags?: { tagID: string; name: string }[]; // Tags associés au blink (max 3)
     profile: {
         display_name: string;
         username: string;

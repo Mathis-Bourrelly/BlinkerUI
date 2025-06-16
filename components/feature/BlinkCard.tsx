@@ -7,6 +7,7 @@ import { ThemedSeparator } from "@/components/base/ThemedSeparator";
 import VideoPlayer from "@/components/base/VideoPlayer";
 import { LinearGradient } from "expo-linear-gradient";
 import { ThemedText } from "@/components/base/ThemedText";
+import { TagChip } from "@/components/feature/TagChip";
 import { router } from "expo-router";
 import { useLikeMutation, useDislikeMutation } from "@/hooks/interfaces/useInteractionInterface";
 import { useRemainingTimeQuery } from "@/hooks/interfaces/useBlinkInterface";
@@ -225,31 +226,53 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
     return (
         <View style={[styles.blinkContainer, { backgroundColor: colors.card }]}>
             {/* En-tête */}
-            <View style={styles.header}>
-                <TouchableOpacity
-                    onPress={() => router.push(`/profile/${blink.userID}`)}
-                    activeOpacity={0.7}
-                    style={{ flexDirection: "row", alignItems: "center" }}
-                >
-                    <Image source={{ uri: blink.profile.avatar_url }} style={styles.avatar} />
-                    <View>
-                        <Text style={[styles.username, { color: colors.text }]}>{blink.profile.display_name}</Text>
-                        <Text style={[styles.handle, { color: colors.textSecondary }]}>@{blink.profile.username}</Text>
+            <View style={styles.headerContainer}>
+                <View style={styles.header}>
+                    <TouchableOpacity
+                        onPress={() => router.push(`/profile/${blink.userID}`)}
+                        activeOpacity={0.7}
+                        style={{ flexDirection: "row", alignItems: "center", flex: 1 }}
+                    >
+                        <Image source={{ uri: blink.profile.avatar_url }} style={styles.avatar} />
+                        <View style={{ flex: 1 }}>
+                            <Text style={[styles.username, { color: colors.text }]}>{blink.profile.display_name}</Text>
+                            <Text style={[styles.handle, { color: colors.textSecondary }]}>@{blink.profile.username}</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <LinearGradient
+                        colors={isCritical ? colors.dangerGradient : colors.accentGradient}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 0, y: 1 }}
+                        style={[styles.timeContainer, { borderColor: isCritical ? colors.dangerTimer : colors.accent, borderWidth: 2 }]}
+                    >
+                        <ThemedText variant={"Body"}>
+                            {days > 0 ? `${days} jour${days > 1 ? "s" : ""}`
+                                : hours > 0 || mins > 0 ? `${hours}h ${mins}m`
+                                    : `${secs}s`}
+                        </ThemedText>
+                    </LinearGradient>
+                </View>
+
+                {/* Tags - maintenant en dessous */}
+                {blink.tags && blink.tags.length > 0 && (
+                    <View style={styles.tagsContainer}>
+                        {blink.tags.map((tag, index) => (
+                            <TagChip
+                                key={tag.tagID || index}
+                                tag={tag}
+                                variant="clickable"
+                                size="small"
+                                onPress={() => {
+                                    router.push(`/tag/${encodeURIComponent(tag.name)}`);
+                                }}
+                            />
+                        ))}
                     </View>
-                </TouchableOpacity>
-                <LinearGradient
-                    colors={isCritical ? colors.dangerGradient : colors.accentGradient}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    style={[styles.timeContainer, { borderColor: isCritical ? colors.dangerTimer : colors.accent, borderWidth: 2 }]}
-                >
-                    <ThemedText variant={"Body"}>
-                        {days > 0 ? `${days} jour${days > 1 ? "s" : ""}`
-                            : hours > 0 || mins > 0 ? `${hours}h ${mins}m`
-                                : `${secs}s`}
-                    </ThemedText>
-                </LinearGradient>
+                )}
             </View>
+
+
+
             <ThemedSeparator barColor={colors.border} />
 
             {/* Contenu du Blink */}
@@ -335,10 +358,14 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 10,
     },
+    headerContainer: {
+        marginBottom: 12,
+    },
     header: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 5,
+        justifyContent: "space-between",
+        marginBottom: 8,
     },
     avatar: {
         width: 40,
@@ -397,5 +424,12 @@ const styles = StyleSheet.create({
     interactionText: {
         marginLeft: 5,
         fontSize: 14,
+    },
+    tagsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: 4,
+        marginBottom: 8,
+        paddingLeft: 50, // Aligné avec le texte (avatar 40px + margin 10px)
     },
 });

@@ -19,6 +19,9 @@
     "mediaNotSupported": "Note: Les {mediaType} ne sont pas prises en charge pour le moment. Une URL de placeholder sera utilisée à la place.",
     "needPhotoPermission": "Nous avons besoin de votre permission pour accéder à vos photos",
     "no": "Non",
+    "optional": "optionnel",
+    "tags": "Tags",
+    "tagsPlaceholder": "Ajouter des tags...",
     "unknownError": "Erreur inconnue",
     "videos": "vidéos",
     "yes": "Oui"
@@ -199,5 +202,35 @@
     "noResults": "Aucun résultat trouvé",
     "placeholder": "Rechercher par nom ou @username",
     "title": "Rechercher des utilisateurs"
+  },
+  "tags": {
+    "alreadyExists": "Ce tag existe déjà",
+    "maxReached": "Maximum {maxTags} tags autorisés",
+    "placeholder": "Ajouter un tag...",
+    "validationError": "Erreur de validation des tags"
+  },
+  "trends": {
+    "title": "Tendances",
+    "popularTags": "Tags populaires",
+    "trendingTags": "Tags tendances",
+    "descriptions": {
+      "popular": "Tags les plus utilisés selon la période sélectionnée",
+      "trending": "Tags avec la plus forte croissance d'utilisation récente"
+    },
+    "timeFilters": {
+      "24h": "24 heures",
+      "7d": "7 jours",
+      "30d": "30 jours",
+      "all": "Tout le temps"
+    },
+    "stats": {
+      "usageCount": "{{count}} utilisation",
+      "usageCount_plural": "{{count}} utilisations",
+      "recentUsage": "{{count}} récente",
+      "recentUsage_plural": "{{count}} récentes",
+      "viewBlinks": "Voir les blinks"
+    },
+    "noData": "Aucune donnée disponible",
+    "error": "Erreur lors du chargement des tendances"
   }
 }
