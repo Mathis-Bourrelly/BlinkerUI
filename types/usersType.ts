@@ -3,7 +3,7 @@ export interface UserType {
     name: string;
     password: string;
     email: string;
-    role: "user" | "admin"; // Ajout d'un type spécifique pour les rôles
+    role: "user" | "moderator" | "admin"; // Ajout du rôle modérateur
     isVerified: boolean;
 }
 

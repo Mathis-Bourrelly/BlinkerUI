@@ -11,9 +11,12 @@ import { TagChip } from "@/components/feature/TagChip";
 import { router } from "expo-router";
 import { useLikeMutation, useDislikeMutation } from "@/hooks/interfaces/useInteractionInterface";
 import { useRemainingTimeQuery } from "@/hooks/interfaces/useBlinkInterface";
+import { ReportBlinkModal } from "@/components/feature/ReportBlinkModal";
+import { useUser } from "@/context/UserContext";
 
 export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (blinkID: string) => void }) {
     const { colors } = useTheme();
+    const { user } = useUser();
     const likeMutation = useLikeMutation();
     const dislikeMutation = useDislikeMutation();
     // États locaux pour mettre à jour l'UI immédiatement sans attendre la réponse du serveur
@@ -23,6 +26,7 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
     const [isDisliking, setIsDisliking] = useState(false);
     const [hasLiked, setHasLiked] = useState(blink.isLiked || false); // L'utilisateur a-t-il liké ce post
     const [hasDisliked, setHasDisliked] = useState(blink.isDisliked || false); // L'utilisateur a-t-il disliké ce post
+    const [showReportModal, setShowReportModal] = useState(false);
     // Mettre à jour les états locaux quand les props changent
     useEffect(() => {
         setLocalLikeCount(blink.likeCount);
@@ -239,18 +243,31 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
                             <Text style={[styles.handle, { color: colors.textSecondary }]}>@{blink.profile.username}</Text>
                         </View>
                     </TouchableOpacity>
-                    <LinearGradient
-                        colors={isCritical ? colors.dangerGradient : colors.accentGradient}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 0, y: 1 }}
-                        style={[styles.timeContainer, { borderColor: isCritical ? colors.dangerTimer : colors.accent, borderWidth: 2 }]}
-                    >
-                        <ThemedText variant={"Body"}>
-                            {days > 0 ? `${days} jour${days > 1 ? "s" : ""}`
-                                : hours > 0 || mins > 0 ? `${hours}h ${mins}m`
-                                    : `${secs}s`}
-                        </ThemedText>
-                    </LinearGradient>
+                    <View style={styles.headerActions}>
+                        {/* Bouton de report - seulement si ce n'est pas le blink de l'utilisateur actuel */}
+                        {user?.userID !== blink.userID && (
+                            <TouchableOpacity
+                                onPress={() => setShowReportModal(true)}
+                                style={styles.reportButton}
+                                activeOpacity={0.7}
+                            >
+                                <Icon name="flag" size={20} color={colors.textSecondary.replace('#', '')} />
+                            </TouchableOpacity>
+                        )}
+
+                        <LinearGradient
+                            colors={isCritical ? colors.dangerGradient : colors.accentGradient}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 0, y: 1 }}
+                            style={[styles.timeContainer, { borderColor: isCritical ? colors.dangerTimer : colors.accent, borderWidth: 2 }]}
+                        >
+                            <ThemedText variant={"Body"}>
+                                {days > 0 ? `${days} jour${days > 1 ? "s" : ""}`
+                                    : hours > 0 || mins > 0 ? `${hours}h ${mins}m`
+                                        : `${secs}s`}
+                            </ThemedText>
+                        </LinearGradient>
+                    </View>
                 </View>
 
                 {/* Tags - maintenant en dessous */}
@@ -348,6 +365,13 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
                     <Text style={[styles.interactionText, { color: colors.text }]}>{blink.shareCount}</Text>
                 </View>
             </View>
+
+            {/* Modal de report */}
+            <ReportBlinkModal
+                visible={showReportModal}
+                onClose={() => setShowReportModal(false)}
+                blinkID={blink.blinkID}
+            />
         </View>
     );
 }
@@ -384,10 +408,18 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
     },
+    headerActions: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+    },
+    reportButton: {
+        padding: 4,
+        borderRadius: 4,
+    },
     timeContainer: {
         paddingHorizontal: 4,
         paddingVertical: 2,
-        marginLeft: "auto",
         borderRadius: 20,
         borderWidth: 2,
     },

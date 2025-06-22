@@ -14,12 +14,14 @@ import {ThemeToggleIcon} from "@/components/base/ThemeToggleIcon";
 import {LanguageIcon} from "@/components/base/LanguageIcon";
 import {useTranslation} from "react-i18next";
 import {CountryFlag} from "@/components/images/CountryFlag";
+import {useCanModerate} from "@/hooks/useUserRole";
 
 export default function NavBar() {
     const {width} = useWindowDimensions();
     const {colors, toggleTheme} = useTheme();
     const {i18n, t} = useTranslation();
     const { user } = useUser();
+    const { canModerate } = useCanModerate();
     const [showOptions, setShowOptions] = useState(false);
     const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
 
@@ -96,6 +98,16 @@ export default function NavBar() {
                     <TouchableOpacity onPress={() => router.push("/search")}>
                     <ThemedText>{t('navigation.search')}</ThemedText>
                     </TouchableOpacity>
+
+                    {/* Lien vers l'administration pour les modérateurs */}
+                    {canModerate && (
+                        <>
+                            <ThemedVerticalSeparator barColor={colors.border} height={20}/>
+                            <TouchableOpacity onPress={() => router.push("/admin/reports")}>
+                                <ThemedText style={{ color: colors.accent }}>{t('admin.reports')}</ThemedText>
+                            </TouchableOpacity>
+                        </>
+                    )}
                 </View>
                 <Row gap={12}>
                     {/* Bouton de messagerie */}

@@ -53,10 +53,12 @@
     "delete": "Supprimer",
     "error": "Erreur",
     "hour": "h",
+    "loading": "Chargement...",
     "retry": "Réessayer",
     "save": "Sauvegarder",
     "saving": "Sauvegarde...",
-    "score": "Score"
+    "score": "Score",
+    "unknownError": "Erreur inconnue"
   },
   "landing": {
     "advantages": {
@@ -232,5 +234,62 @@
     },
     "noData": "Aucune donnée disponible",
     "error": "Erreur lors du chargement des tendances"
+  },
+  "reports": {
+    "reportBlink": "Signaler ce blink",
+    "selectReason": "Sélectionnez une raison",
+    "additionalInfo": "Informations supplémentaires (optionnel)",
+    "descriptionPlaceholder": "Décrivez le problème...",
+    "submit": "Signaler",
+    "success": "Succès",
+    "submitted": "Votre signalement a été envoyé",
+    "error": "Erreur",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Harcèlement",
+      "hate_speech": "Discours de haine",
+      "violence": "Violence",
+      "nudity": "Nudité",
+      "copyright": "Violation de droits d'auteur",
+      "misinformation": "Désinformation",
+      "other": "Autre"
+    },
+    "status": {
+      "pending": "En attente",
+      "reviewed": "Examiné",
+      "resolved": "Résolu",
+      "dismissed": "Rejeté"
+    },
+    "actions": {
+      "resolve": "Résoudre",
+      "dismiss": "Rejeter",
+      "deleteBlink": "Supprimer le blink"
+    },
+    "reportedBy": "Signalé par",
+    "reviewedBy": "Examiné par",
+    "filters": {
+      "title": "Filtres",
+      "status": "Statut",
+      "reason": "Raison",
+      "allStatuses": "Tous les statuts",
+      "allReasons": "Toutes les raisons",
+      "reset": "Réinitialiser"
+    },
+    "stats": {
+      "title": "Statistiques",
+      "total": "Total",
+      "pending": "En attente",
+      "resolved": "Résolus",
+      "dismissed": "Rejetés",
+      "topReasons": "Principales raisons"
+    }
+  },
+  "admin": {
+    "reports": "Signalements",
+    "reportsManagement": "Gestion des signalements",
+    "accessDenied": "Accès refusé - Droits de modération requis",
+    "noReports": "Aucun signalement",
+    "confirmDelete": "Confirmer la suppression",
+    "confirmDeleteMessage": "Êtes-vous sûr de vouloir supprimer ce blink ? Cette action est irréversible."
   }
 }
