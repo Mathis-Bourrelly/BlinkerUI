@@ -6,25 +6,56 @@ import { ThemedText } from '@/components/base/ThemedText';
 import { ThemedButton } from '@/components/base/ThemedButton';
 import { Icon } from '@/components/images/Icon';
 import { ReportType, ReportStatus } from '@/types/ReportsType';
-import { formatDistanceToNow } from 'date-fns';
-import { fr, enUS, ja } from 'date-fns/locale';
 
 interface ReportCardProps {
   report: ReportType;
   onAction: (action: 'resolve' | 'dismiss' | 'delete') => void;
 }
 
+// Fonction pour formater la date de manière relative
+const formatTimeAgo = (dateString: string, language: string = 'en'): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (diffInSeconds < 60) {
+    return language === 'fr' ? 'à l\'instant' : 'just now';
+  }
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    if (language === 'fr') {
+      return `il y a ${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''}`;
+    }
+    return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+  }
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    if (language === 'fr') {
+      return `il y a ${diffInHours} heure${diffInHours > 1 ? 's' : ''}`;
+    }
+    return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+  }
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 30) {
+    if (language === 'fr') {
+      return `il y a ${diffInDays} jour${diffInDays > 1 ? 's' : ''}`;
+    }
+    return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+  }
+
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (language === 'fr') {
+    return `il y a ${diffInMonths} mois`;
+  }
+  return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
+};
+
 export function ReportCard({ report, onAction }: ReportCardProps) {
   const { colors } = useTheme();
   const { t, i18n } = useTranslation();
-
-  const getLocale = () => {
-    switch (i18n.language) {
-      case 'fr': return fr;
-      case 'ja': return ja;
-      default: return enUS;
-    }
-  };
 
   const getStatusColor = (status: ReportStatus) => {
     switch (status) {
@@ -55,10 +86,7 @@ export function ReportCard({ report, onAction }: ReportCardProps) {
             </ThemedText>
           </View>
           <ThemedText variant="Caption" style={{ color: colors.textSecondary }}>
-            {formatDistanceToNow(new Date(report.createdAt), { 
-              addSuffix: true, 
-              locale: getLocale() 
-            })}
+            {formatTimeAgo(report.createdAt, i18n.language)}
           </ThemedText>
         </View>
       </View>
@@ -160,10 +188,7 @@ export function ReportCard({ report, onAction }: ReportCardProps) {
       {report.reviewedAt && report.reviewer && (
         <View style={styles.reviewInfo}>
           <ThemedText variant="Caption" style={{ color: colors.textSecondary }}>
-            {t('reports.reviewedBy')} {report.reviewer.display_name} • {formatDistanceToNow(new Date(report.reviewedAt), { 
-              addSuffix: true, 
-              locale: getLocale() 
-            })}
+            {t('reports.reviewedBy')} {report.reviewer.display_name} • {formatTimeAgo(report.reviewedAt, i18n.language)}
           </ThemedText>
         </View>
       )}
