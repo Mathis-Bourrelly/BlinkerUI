@@ -8,6 +8,7 @@ import { ThemedTextInput } from '@/components/base/ThemedTextInput';
 import { ThemedButton } from '@/components/base/ThemedButton';
 import { ReportReason } from '@/types/ReportsType';
 import { useCreateReportMutation } from '@/hooks/interfaces/useReportInterface';
+import { useUser } from '@/context/UserContext';
 
 interface ReportBlinkModalProps {
   visible: boolean;
@@ -18,22 +19,28 @@ interface ReportBlinkModalProps {
 export function ReportBlinkModal({ visible, onClose, blinkID }: ReportBlinkModalProps) {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const { user } = useUser();
   const [selectedReason, setSelectedReason] = useState<ReportReason | null>(null);
   const [description, setDescription] = useState('');
   const createReportMutation = useCreateReportMutation();
 
+  // Debug log pour voir les raisons disponibles
+  console.log('🔍 Available reasons:', Object.values(ReportReason));
+
   const reportReasons = [
+    { key: ReportReason.INAPPROPRIATE, label: t('reports.reasons.inappropriate') },
     { key: ReportReason.SPAM, label: t('reports.reasons.spam') },
     { key: ReportReason.HARASSMENT, label: t('reports.reasons.harassment') },
-    { key: ReportReason.HATE_SPEECH, label: t('reports.reasons.hate_speech') },
     { key: ReportReason.VIOLENCE, label: t('reports.reasons.violence') },
-    { key: ReportReason.NUDITY, label: t('reports.reasons.nudity') },
-    { key: ReportReason.COPYRIGHT, label: t('reports.reasons.copyright') },
-    { key: ReportReason.MISINFORMATION, label: t('reports.reasons.misinformation') },
     { key: ReportReason.OTHER, label: t('reports.reasons.other') },
   ];
 
   const handleSubmit = () => {
+    if (!user) {
+      Alert.alert(t('reports.error'), 'Vous devez être connecté pour signaler un blink');
+      return;
+    }
+
     if (!selectedReason) {
       Alert.alert(t('reports.error'), t('reports.selectReason'));
       return;
@@ -85,19 +92,22 @@ export function ReportBlinkModal({ visible, onClose, blinkID }: ReportBlinkModal
               {t('reports.selectReason')}
             </ThemedText>
             
-            {reportReasons.map((reason) => (
+            {reportReasons.map((reason, index) => (
               <TouchableOpacity
-                key={reason.key}
+                key={`${reason.key}-${index}`}
                 style={[
                   styles.reasonOption,
-                  { 
+                  {
                     backgroundColor: selectedReason === reason.key ? colors.accent : colors.background,
-                    borderColor: colors.border 
+                    borderColor: colors.border
                   }
                 ]}
-                onPress={() => setSelectedReason(reason.key)}
+                onPress={() => {
+                  console.log('🔍 Reason selected:', reason.key);
+                  setSelectedReason(reason.key);
+                }}
               >
-                <ThemedText 
+                <ThemedText
                   style={[
                     styles.reasonText,
                     { color: selectedReason === reason.key ? colors.background : colors.text }

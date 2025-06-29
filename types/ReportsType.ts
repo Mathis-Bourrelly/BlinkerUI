@@ -41,21 +41,18 @@ export interface ReportType {
 }
 
 export enum ReportReason {
+  INAPPROPRIATE = 'inappropriate',
   SPAM = 'spam',
   HARASSMENT = 'harassment',
-  HATE_SPEECH = 'hate_speech',
   VIOLENCE = 'violence',
-  NUDITY = 'nudity',
-  COPYRIGHT = 'copyright',
-  MISINFORMATION = 'misinformation',
   OTHER = 'other'
 }
 
 export enum ReportStatus {
   PENDING = 'pending',
   REVIEWED = 'reviewed',
-  RESOLVED = 'resolved',
-  DISMISSED = 'dismissed'
+  REJECTED = 'rejected',
+  ACTION_TAKEN = 'action_taken'
 }
 
 export interface CreateReportRequest {

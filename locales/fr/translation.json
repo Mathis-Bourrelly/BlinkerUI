@@ -58,6 +58,7 @@
     "save": "Sauvegarder",
     "saving": "Sauvegarde...",
     "score": "Score",
+    "success": "Succès",
     "unknownError": "Erreur inconnue"
   },
   "landing": {
@@ -245,24 +246,21 @@
     "submitted": "Votre signalement a été envoyé",
     "error": "Erreur",
     "reasons": {
+      "inappropriate": "Contenu inapproprié",
       "spam": "Spam",
       "harassment": "Harcèlement",
-      "hate_speech": "Discours de haine",
       "violence": "Violence",
-      "nudity": "Nudité",
-      "copyright": "Violation de droits d'auteur",
-      "misinformation": "Désinformation",
       "other": "Autre"
     },
     "status": {
       "pending": "En attente",
       "reviewed": "Examiné",
-      "resolved": "Résolu",
-      "dismissed": "Rejeté"
+      "rejected": "Rejeté",
+      "action_taken": "Action prise"
     },
     "actions": {
-      "resolve": "Résoudre",
-      "dismiss": "Rejeter",
+      "review": "Examiner",
+      "reject": "Rejeter",
       "deleteBlink": "Supprimer le blink"
     },
     "reportedBy": "Signalé par",
@@ -288,6 +286,7 @@
     "reports": "Signalements",
     "reportsManagement": "Gestion des signalements",
     "accessDenied": "Accès refusé - Droits de modération requis",
+    "redirecting": "Redirection vers l'accueil...",
     "noReports": "Aucun signalement",
     "confirmDelete": "Confirmer la suppression",
     "confirmDeleteMessage": "Êtes-vous sûr de vouloir supprimer ce blink ? Cette action est irréversible."

@@ -164,14 +164,14 @@ export function ReportCard({ report, onAction }: ReportCardProps) {
       {report.status === ReportStatus.PENDING && (
         <View style={styles.actions}>
           <ThemedButton
-            title={t('reports.actions.dismiss')}
-            onPress={() => onAction('dismiss')}
+            title={t('reports.actions.reject')}
+            onPress={() => onAction('reject')}
             variant="secondary"
             style={styles.actionButton}
           />
           <ThemedButton
-            title={t('reports.actions.resolve')}
-            onPress={() => onAction('resolve')}
+            title={t('reports.actions.review')}
+            onPress={() => onAction('review')}
             variant="primary"
             style={styles.actionButton}
           />

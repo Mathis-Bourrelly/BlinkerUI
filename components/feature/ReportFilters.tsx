@@ -20,19 +20,17 @@ export function ReportFilters({ filters, onFiltersChange }: ReportFiltersProps) 
   const statusOptions = [
     { value: undefined, label: t('reports.filters.allStatuses') },
     { value: ReportStatus.PENDING, label: t('reports.status.pending') },
-    { value: ReportStatus.RESOLVED, label: t('reports.status.resolved') },
-    { value: ReportStatus.DISMISSED, label: t('reports.status.dismissed') },
+    { value: ReportStatus.REVIEWED, label: t('reports.status.reviewed') },
+    { value: ReportStatus.REJECTED, label: t('reports.status.rejected') },
+    { value: ReportStatus.ACTION_TAKEN, label: t('reports.status.action_taken') },
   ];
 
   const reasonOptions = [
     { value: undefined, label: t('reports.filters.allReasons') },
+    { value: ReportReason.INAPPROPRIATE, label: t('reports.reasons.inappropriate') },
     { value: ReportReason.SPAM, label: t('reports.reasons.spam') },
     { value: ReportReason.HARASSMENT, label: t('reports.reasons.harassment') },
-    { value: ReportReason.HATE_SPEECH, label: t('reports.reasons.hate_speech') },
     { value: ReportReason.VIOLENCE, label: t('reports.reasons.violence') },
-    { value: ReportReason.NUDITY, label: t('reports.reasons.nudity') },
-    { value: ReportReason.COPYRIGHT, label: t('reports.reasons.copyright') },
-    { value: ReportReason.MISINFORMATION, label: t('reports.reasons.misinformation') },
     { value: ReportReason.OTHER, label: t('reports.reasons.other') },
   ];
 

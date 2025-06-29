@@ -16,8 +16,29 @@ import {
 // Hook pour créer un report (utilisateurs)
 export function useCreateReportMutation() {
   const queryClient = useQueryClient();
-  
-  return usePostMutation<CreateReportRequest>("/reports", {
+
+  return useMutation({
+    mutationFn: async (reportData: CreateReportRequest) => {
+      const token = await import("@/hooks/useSetToken").then(m => m.getToken());
+      console.log('🔑 Token récupéré:', token ? 'Présent' : 'Absent');
+      console.log('📤 Envoi du report:', reportData);
+
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/reports`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reportData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create report');
+      }
+
+      return response.json();
+    },
     onSuccess: () => {
       // Invalider les requêtes liées aux reports pour les admins
       queryClient.invalidateQueries({ queryKey: ["reports"] });
@@ -30,21 +51,39 @@ export function useCreateReportMutation() {
 export function useReportsQuery(filters?: {
   status?: ReportStatus;
   reason?: string;
-  reporterID?: string;
+  minReports?: number;
 }) {
-  return usePaginatedQuery<ReportType>("reports", "/admin/reports", filters);
+  return usePaginatedQuery<ReportType>("reports", "/reports", filters);
 }
 
 // Hook pour récupérer un report spécifique (admin seulement)
 export function useReportQuery(reportID: string) {
-  return useFetchQuery<{ data: ReportType }>(`/admin/reports/${reportID}`, ["report", reportID]);
+  return useFetchQuery<{ data: ReportType }>(`/reports/${reportID}`, ["report", reportID]);
 }
 
 // Hook pour mettre à jour le statut d'un report (admin seulement)
 export function useUpdateReportMutation(reportID: string) {
   const queryClient = useQueryClient();
-  
-  return usePutMutation<UpdateReportRequest>(`/admin/reports/${reportID}`, {
+
+  return useMutation({
+    mutationFn: async (updateData: { status: ReportStatus }) => {
+      const token = await import("@/hooks/useSetToken").then(m => m.getToken());
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/reports/${reportID}/status`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update report');
+      }
+
+      return response.json();
+    },
     onSuccess: () => {
       // Invalider les requêtes liées aux reports
       queryClient.invalidateQueries({ queryKey: ["reports"] });
@@ -56,17 +95,17 @@ export function useUpdateReportMutation(reportID: string) {
 
 // Hook pour récupérer les statistiques des reports (admin seulement)
 export function useReportStatsQuery() {
-  return useFetchQuery<ReportStatsResponse>("/admin/reports/stats", ["reportStats"]);
+  return useFetchQuery<ReportStatsResponse>("/reports/counts", ["reportStats"]);
 }
 
 // Hook pour supprimer un blink signalé (admin seulement)
 export function useDeleteReportedBlinkMutation() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ blinkID, reportID }: { blinkID: string; reportID: string }) => {
+    mutationFn: async ({ blinkID }: { blinkID: string }) => {
       const token = await import("@/hooks/useSetToken").then(m => m.getToken());
-      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/admin/reports/${reportID}/delete-blink`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/reports/blink/${blinkID}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

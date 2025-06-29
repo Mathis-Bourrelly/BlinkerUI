@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useFetchQuery } from '@/hooks/repository/useFetchQuery';
 import { useUser } from '@/context/UserContext';
+import { getToken } from '@/hooks/useSetToken';
 
 export interface UserRoleData {
   userID: string;
@@ -13,32 +14,50 @@ export function useUserRole() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isModerator, setIsModerator] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Récupérer les informations de rôle de l'utilisateur
-  const { data: roleData, isLoading: roleLoading, error } = useFetchQuery<{ data: UserRoleData }>(
-    `/users/${user?.userID}/role`,
-    ["userRole", user?.userID || ""],
-    {
-      enabled: !!user?.userID,
-    }
-  );
+  const [userRole, setUserRole] = useState<'user' | 'moderator' | 'admin'>('user');
 
   useEffect(() => {
-    if (!roleLoading) {
-      setIsLoading(false);
-      const role = roleData?.data?.role;
+    if (user?.userID) {
+      // TEMPORAIRE : Rôles en dur pour tester
+      // TODO: Remplacer par un vrai appel API quand le back-end sera prêt
+      const testRoles: Record<string, 'user' | 'moderator' | 'admin'> = {
+        // Ajoutez ici vos userIDs de test
+        'admin-test-id': 'admin',
+        'moderator-test-id': 'moderator',
+        // TEMPORAIRE: Ajoutez votre userID ici pour tester (regardez la console)
+        'bb29baec-bbfe-4c65-a930-82e8696a7ed1': 'admin', // Votre userID avec droits admin
+      };
+
+      // TEMPORAIRE: Pour tester, on peut forcer admin si c'est votre userID
+      // Remplacez 'VOTRE-USER-ID' par votre vrai userID depuis la console
+      const isTestUser = user.userID === 'VOTRE-USER-ID-ICI';
+      console.log('🔍 Is test user?', { userID: user.userID, isTestUser });
+
+      const role = testRoles[user.userID] || (isTestUser ? 'admin' : 'user'); // Par défaut user (sécurisé)
+
+      setUserRole(role);
       setIsAdmin(role === 'admin');
-      setIsModerator(role === 'moderator' || role === 'admin'); // Admin a aussi les droits de modérateur
+      setIsModerator(role === 'moderator' || role === 'admin');
+      setIsLoading(false);
+
+      console.log('🔑 User Role Debug:', {
+        userID: user.userID,
+        role: role,
+        isAdmin: role === 'admin',
+        isModerator: role === 'moderator' || role === 'admin'
+      });
+    } else {
+      setIsLoading(false);
     }
-  }, [roleData, roleLoading]);
+  }, [user?.userID]);
 
   return {
     isAdmin,
     isModerator,
     isLoading,
-    role: roleData?.data?.role || 'user',
-    permissions: roleData?.data?.permissions || [],
-    error
+    role: userRole,
+    permissions: isAdmin ? ['moderate', 'admin'] : isModerator ? ['moderate'] : [],
+    error: null
   };
 }
 

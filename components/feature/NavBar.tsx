@@ -25,6 +25,13 @@ export default function NavBar() {
     const [showOptions, setShowOptions] = useState(false);
     const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
 
+    // Debug logs
+    console.log('🔍 NavBar Debug:', {
+        user: user?.userID,
+        canModerate,
+        hasUser: !!user
+    });
+
     // Suppression du log de débogage qui cause des rendus excessifs
 
     const optionsRef = useRef<any>(null);
@@ -104,7 +111,9 @@ export default function NavBar() {
                         <>
                             <ThemedVerticalSeparator barColor={colors.border} height={20}/>
                             <TouchableOpacity onPress={() => router.push("/admin/reports")}>
-                                <ThemedText style={{ color: colors.accent }}>{t('admin.reports')}</ThemedText>
+                                <ThemedText style={{ color: colors.accent }}>
+                                    {t('admin.reports')}
+                                </ThemedText>
                             </TouchableOpacity>
                         </>
                     )}
