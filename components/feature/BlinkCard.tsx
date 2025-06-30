@@ -251,7 +251,7 @@ export function BlinkCard({ blink, onExpire }: { blink: BlinkType, onExpire: (bl
                                 style={styles.reportButton}
                                 activeOpacity={0.7}
                             >
-                                <Icon name="flag" size={20} color={colors.textSecondary.replace('#', '')} />
+                                <Icon name="flag" size={20} color={colors.text} />
                             </TouchableOpacity>
                         )}
 
