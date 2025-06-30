@@ -6,7 +6,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { ThemedTextInput } from "@/components/base/ThemedTextInput";
 import { TagInput } from "@/components/feature/TagInput";
 import * as ImagePicker from 'expo-image-picker';
-import { useCreateBlinkMutation } from "@/hooks/interfaces/useBlinkInterface";
+import { useCreateBlinkMutation, useImageUploadMutation } from "@/hooks/interfaces/useBlinkInterface";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -27,12 +27,14 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
     const { colors } = useTheme();
     const queryClient = useQueryClient();
     const createBlinkMutation = useCreateBlinkMutation();
+    const imageUploadMutation = useImageUploadMutation();
     const { t } = useTranslation();
 
     const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([]);
     const [tags, setTags] = useState<string[]>([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState<string>('');
 
     // Fonction pour sélectionner une image depuis la galerie
     const pickImage = async (contentID: string) => {
@@ -180,37 +182,48 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
             }
 
             // Préparer les blocs de contenu pour l'API
-            const processedBlocks = validBlocks.map((block, index) => {
+            const processedBlocks = [];
+
+            for (let index = 0; index < validBlocks.length; index++) {
+                const block = validBlocks[index];
                 let content = block.content;
                 console.log(`Traitement du bloc ${index + 1}/${validBlocks.length} (${block.contentType})`);
 
                 // Pour les blocs de texte, utiliser le contenu tel quel
                 if (block.contentType === 'text') {
-                    // Rien à faire, le contenu est déjà du texte
+                    content = block.content;
                 }
-                // Pour les images et vidéos, utiliser une URL externe
-                else if ((block.contentType === 'image' || block.contentType === 'video') && block.file) {
-                    // Comme nous ne pouvons pas télécharger les fichiers pour le moment,
-                    // nous utilisons une URL externe pour les tests
-                    if (block.contentType === 'image') {
-                        // Utiliser une URL d'image de placeholder
-                        content = 'https://via.placeholder.com/800x600?text=Image';
-                    } else {
-                        // Utiliser une URL de vidéo de placeholder
-                        content = 'https://example.com/video.mp4';
+                // Pour les images, uploader d'abord l'image
+                else if (block.contentType === 'image' && block.file) {
+                    try {
+                        setUploadProgress(`Upload de l'image ${index + 1}/${validBlocks.length}...`);
+                        console.log(`Upload de l'image pour le bloc ${index + 1}`);
+                        const uploadResult = await imageUploadMutation.mutateAsync(block.file);
+                        content = uploadResult.url;
+                        console.log(`Image uploadée avec succès: ${content}`);
+                        setUploadProgress('');
+                    } catch (uploadError) {
+                        console.error(`Erreur lors de l'upload de l'image du bloc ${index + 1}:`, uploadError);
+                        setUploadProgress('');
+                        alert(`${t('blink.imageUploadError', { defaultValue: 'Erreur lors de l\'upload de l\'image' })}: ${uploadError instanceof Error ? uploadError.message : t('blink.unknownError')}`);
+                        setIsSubmitting(false);
+                        return;
                     }
-                    console.log(`Utilisation d'un placeholder pour le bloc ${index + 1}: ${content}`);
-
-                    // Ajouter un avertissement pour l'utilisateur
-                    alert(t('blink.mediaNotSupported', { mediaType: t(`blink.${block.contentType === 'image' ? 'images' : 'videos'}`) }));
+                }
+                // Pour les vidéos, utiliser une URL de placeholder pour le moment
+                else if (block.contentType === 'video' && block.file) {
+                    // TODO: Implémenter l'upload de vidéos
+                    content = 'https://example.com/video.mp4';
+                    console.log(`Utilisation d'un placeholder pour la vidéo du bloc ${index + 1}: ${content}`);
+                    alert(t('blink.videoNotSupported', { defaultValue: 'L\'upload de vidéos n\'est pas encore supporté' }));
                 }
 
-                return {
+                processedBlocks.push({
                     contentType: block.contentType,
                     content: content,
                     position: index + 1,
-                };
-            });
+                });
+            }
 
             console.log('Tous les blocs ont été traités, envoi au backend');
 
@@ -466,7 +479,14 @@ const CreateBlinkForm: React.FC<CreateBlinkFormProps> = ({ onSuccess }) => {
                     disabled={contentBlocks.length === 0 || isSubmitting}
                 >
                     {isSubmitting ? (
-                        <ActivityIndicator color="white" size="small" />
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <ActivityIndicator color="white" size="small" />
+                            {uploadProgress && (
+                                <ThemedText style={[styles.submitButtonText, { marginLeft: 8, fontSize: 14 }]}>
+                                    {uploadProgress}
+                                </ThemedText>
+                            )}
+                        </View>
                     ) : (
                         <ThemedText style={styles.submitButtonText}>
                             {t('blink.create')}

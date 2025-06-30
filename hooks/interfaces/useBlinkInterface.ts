@@ -4,8 +4,9 @@ import { usePutMutation } from "@/hooks/repository/usePutMutation";
 import { useDeleteMutation } from "@/hooks/repository/useDeleteMutation";
 import { usePaginatedQuery } from "@/hooks/usePaginatedQuery";
 import { BlinkType } from "@/types/BlinksType";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { getToken } from "@/hooks/useSetToken";
+import { uploadImage } from "@/api/blinks";
 
 export function useBlinkInterface(blinkID: string, queryKeys: string[] = []) {
     return useFetchQuery<{ data: BlinkType }>(`/blinks/${blinkID}`, ["blink", blinkID, ...queryKeys]);
@@ -13,6 +14,12 @@ export function useBlinkInterface(blinkID: string, queryKeys: string[] = []) {
 
 export function useCreateBlinkMutation() {
     return usePostMutation(`/blinks`);
+}
+
+export function useImageUploadMutation() {
+    return useMutation({
+        mutationFn: uploadImage,
+    });
 }
 
 export function useUpdateBlinkMutation(blinkID: string) {
