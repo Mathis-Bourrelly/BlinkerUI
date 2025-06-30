@@ -24,9 +24,6 @@ export function ReportBlinkModal({ visible, onClose, blinkID }: ReportBlinkModal
   const [description, setDescription] = useState('');
   const createReportMutation = useCreateReportMutation();
 
-  // Debug log pour voir les raisons disponibles
-  console.log('🔍 Available reasons:', Object.values(ReportReason));
-
   const reportReasons = [
     { key: ReportReason.INAPPROPRIATE, label: t('reports.reasons.inappropriate') },
     { key: ReportReason.SPAM, label: t('reports.reasons.spam') },
