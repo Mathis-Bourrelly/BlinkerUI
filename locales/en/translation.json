@@ -1,0 +1,236 @@
+{
+  "base": {
+    "error": "Error",
+    "or": "or",
+    "return": "return"
+  },
+  "blink": {
+    "addContent": "Please add at least one content to your Blink",
+    "addImage": "Add image",
+    "addText": "Add text",
+    "addValidContent": "Please add at least one valid content to your Blink",
+    "addVideo": "Add video",
+    "cancel": "Cancel",
+    "confirmCancel": "Are you sure you want to cancel? All changes will be lost.",
+    "create": "Create",
+    "createError": "Error creating Blink",
+    "dataError": "Error preparing data",
+    "images": "images",
+    "mediaNotSupported": "Note: {mediaType} are not supported at the moment. A placeholder URL will be used instead.",
+    "needPhotoPermission": "We need your permission to access your photos",
+    "no": "No",
+    "optional": "optional",
+    "tags": "Tags",
+    "tagsPlaceholder": "Add tags...",
+    "unknownError": "Unknown error",
+    "videos": "videos",
+    "yes": "Yes"
+  },
+  "comment": {
+    "alreadyCommented": "You have already commented on this blink. Only one comment per user is allowed.",
+    "beFirst": "Be the first to comment!",
+    "createError": "Error creating comment",
+    "deleteError": "Error deleting comment",
+    "deleteMessage": "Are you sure you want to delete this comment?",
+    "deleteTitle": "Delete Comment",
+    "editPlaceholder": "Edit your comment...",
+    "emptyError": "Comment cannot be empty",
+    "invalidBlink": "Invalid blink",
+    "loadError": "Error loading comments",
+    "loading": "Loading comments...",
+    "loadingMore": "Loading more comments...",
+    "noComments": "No comments",
+    "placeholder": "Write your comment...",
+    "title": "Comments",
+    "tooLongError": "Comment is too long (maximum 1000 characters)",
+    "tryAgain": "Please try again",
+    "updateError": "Error updating comment"
+  },
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "day": "d",
+    "delete": "Delete",
+    "error": "Error",
+    "hour": "h",
+    "retry": "Retry",
+    "save": "Save",
+    "saving": "Saving...",
+    "score": "Score"
+  },
+  "landing": {
+    "advantages": {
+      "dynamic": {
+        "description": "A personalized experience that evolves with you",
+        "title": "Dynamic Experience"
+      },
+      "evolving": {
+        "description": "Groups, new formats and features coming soon",
+        "title": "Evolving Platform"
+      },
+      "quality": {
+        "description": "Relevant content is highlighted",
+        "title": "Quality Content"
+      },
+      "realtime": {
+        "description": "Instant interactions and live notifications",
+        "title": "Fluidity and Real-time"
+      }
+    },
+    "advantagesTitle": "Why Blinker?",
+    "createAccount": "Create an account",
+    "ctaTitle": "Ready to join a different social network?",
+    "discover": "Discover features",
+    "features": {
+      "blinks": {
+        "description": "Text, image, video content with limited lifespan that can be extended by the community",
+        "title": "Blinks - Ephemeral Posts"
+      },
+      "messaging": {
+        "description": "Private messages by conversation with expiration based on user score",
+        "title": "Dynamic Messaging"
+      },
+      "profiles": {
+        "description": "User score, following, avatar and customizable bio",
+        "title": "Rich Profiles"
+      },
+      "score": {
+        "description": "Blinks lifespan = reputation index, influence on visibility",
+        "title": "Community Score"
+      }
+    },
+    "featuresTitle": "Features",
+    "heroSubtitle": "Blinker values quality, not quantity. Discover a network where every interaction has an impact.",
+    "heroTitle": "Share what matters. The rest fades away.",
+    "learnMore": "Learn more",
+    "login": "Login",
+    "slogan": "More Like, More Time.",
+    "startNow": "Start now",
+    "testimonialsTitle": "What our users say"
+  },
+  "language": "English",
+  "login": {
+    "alreadyAccount": "I have an account",
+    "confirmPassword": "Confirm password",
+    "continue": "Continue",
+    "continueWithGoogle": "Continue with Google",
+    "createAccount": "Create an Account",
+    "displayName": "Display name",
+    "displayNameTooLong": "Display name is too long",
+    "email": "Email",
+    "fieldConfirmPasswordRequired": "Password confirmation is required",
+    "fieldDisplayNameRequired": "Display name is required",
+    "fieldEmailRequired": "Email is required",
+    "fieldPasswordRequired": "Password is required",
+    "fieldUsernameRequired": "Username is required",
+    "forgotPassword": "Password forgotten ?",
+    "invalidEmail": "Email is invalid",
+    "invalidUsername": "Username is invalid",
+    "login": "Login",
+    "name": "Name",
+    "noAccount": "I have no account",
+    "password": "Password",
+    "passwordForgotten": "Password forgotten",
+    "passwordInvalid": "Password must contain at least 12 characters, one uppercase letter, one lowercase letter, one number and one special character",
+    "passwordRuleLength": "At least 12 characters",
+    "passwordRuleLowercase": "At least one lowercase letter",
+    "passwordRuleNumber": "At least one number",
+    "passwordRuleSpecial": "At least one special character (@$!%*?&)",
+    "passwordRuleUppercase": "At least one uppercase letter",
+    "passwordRules": "Password rules:",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "username": "Username",
+    "wrongPassword": "Incorrect password"
+  },
+  "messages": {
+    "errorLoading": "Error loading messages",
+    "expired": "Expired",
+    "expiresIn": "Expires in",
+    "lastSeen": "Last seen",
+    "noMessages": "No messages",
+    "offline": "Offline",
+    "online": "Online",
+    "placeholder": "Write a message...",
+    "send": "Send",
+    "startConversation": "Start a conversation",
+    "title": "Messages",
+    "today": "Today",
+    "typing": "is typing...",
+    "yesterday": "Yesterday",
+    "you": "You"
+  },
+  "time": {
+    "daysAgo": "{{count}} day ago",
+    "daysAgo_plural": "{{count}} days ago",
+    "hoursAgo": "{{count}} hour ago",
+    "hoursAgo_plural": "{{count}} hours ago",
+    "minutesAgo": "{{count}} minute ago",
+    "minutesAgo_plural": "{{count}} minutes ago",
+    "now": "now"
+  },
+  "navigation": {
+    "home": "Home",
+    "languageLabel": "Language",
+    "leaderboard": "Leaderboard",
+    "messages": "Messages",
+    "search": "Search",
+    "settings": "Settings",
+    "theme": "Theme",
+    "trends": "Trends"
+  },
+  "profile": {
+    "blink": "blink",
+    "errorLoadingProfile": "Error loading profile",
+    "follow": "follow",
+    "followButton": "Follow",
+    "follower": "follower",
+    "following": "Following",
+    "logout": "Logout",
+    "noBlinkYet": "No blinks published yet",
+    "score": "User Score",
+    "scoreDescriptionHigh": "Established user with quality content",
+    "scoreDescriptionLow": "New user with basic content",
+    "scoreDescriptionMedium": "Regular user with good content",
+    "scoreInfo": "Your score determines how long your messages remain available",
+    "sendMessage": "Send Message",
+    "unfollow": "Unfollow",
+    "userBlinks": "Published Blinks"
+  },
+  "search": {
+    "enterQuery": "Enter a search term",
+    "error": "An error occurred",
+    "noResults": "No results found",
+    "placeholder": "Search by name or @username",
+    "title": "Search Users"
+  },
+  "tags": {
+    "alreadyExists": "This tag already exists",
+    "maxReached": "Maximum {maxTags} tags allowed",
+    "placeholder": "Add a tag...",
+    "validationError": "Tag validation error"
+  },
+  "trends": {
+    "title": "Trends",
+    "popularTags": "Popular Tags",
+    "trendingTags": "Trending Tags",
+    "descriptions": {
+      "popular": "Most used tags for the selected time period",
+      "trending": "Tags with the highest recent usage growth"
+    },
+    "timeFilters": {
+      "24h": "24 hours",
+      "7d": "7 days",
+      "30d": "30 days",
+      "all": "All time"
+    },
+    "stats": {
+      "usageCount": "{{count}} use",
+      "usageCount_plural": "{{count}} uses",
+      "recentUsage": "{{count}} recent",
+      "recentUsage_plural": "{{count}} recent",
+      "viewBlinks": "View blinks"
+    },
+    "noData": "No data available",
+    "error": "Error loading trends"
+  }
+}

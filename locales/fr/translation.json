@@ -1,0 +1,294 @@
+{
+  "base": {
+    "error": "Erreur",
+    "or": "ou",
+    "return": "retour"
+  },
+  "blink": {
+    "addContent": "Ajouter au moins un contenu",
+    "addImage": "Ajouter une image",
+    "addText": "Ajouter du texte",
+    "addValidContent": "Ajouter au moins un contenu valide",
+    "addVideo": "Ajouter une vidéo",
+    "cancel": "Annuler",
+    "confirmCancel": "Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.",
+    "create": "Créer",
+    "createError": "Erreur lors de la création du Blink",
+    "dataError": "Erreur lors de la préparation des données",
+    "images": "images",
+    "mediaNotSupported": "Note: Les {mediaType} ne sont pas prises en charge pour le moment. Une URL de placeholder sera utilisée à la place.",
+    "needPhotoPermission": "Nous avons besoin de votre permission pour accéder à vos photos",
+    "no": "Non",
+    "optional": "optionnel",
+    "tags": "Tags",
+    "tagsPlaceholder": "Ajouter des tags...",
+    "unknownError": "Erreur inconnue",
+    "videos": "vidéos",
+    "yes": "Oui"
+  },
+  "comment": {
+    "alreadyCommented": "Vous avez déjà commenté ce blink. Un seul commentaire par utilisateur est autorisé.",
+    "beFirst": "Soyez le premier à commenter !",
+    "createError": "Erreur lors de la création du commentaire",
+    "deleteError": "Erreur lors de la suppression du commentaire",
+    "deleteMessage": "Êtes-vous sûr de vouloir supprimer ce commentaire ?",
+    "deleteTitle": "Supprimer le commentaire",
+    "editPlaceholder": "Modifier votre commentaire...",
+    "emptyError": "Le commentaire ne peut pas être vide",
+    "invalidBlink": "Blink invalide",
+    "loadError": "Erreur lors du chargement des commentaires",
+    "loading": "Chargement des commentaires...",
+    "loadingMore": "Chargement de plus de commentaires...",
+    "noComments": "Aucun commentaire",
+    "placeholder": "Écrivez votre commentaire...",
+    "title": "Commentaires",
+    "tooLongError": "Le commentaire est trop long (maximum 1000 caractères)",
+    "tryAgain": "Veuillez réessayer",
+    "updateError": "Erreur lors de la modification du commentaire"
+  },
+  "common": {
+    "back": "Retour",
+    "cancel": "Annuler",
+    "day": "j",
+    "delete": "Supprimer",
+    "error": "Erreur",
+    "hour": "h",
+    "loading": "Chargement...",
+    "retry": "Réessayer",
+    "save": "Sauvegarder",
+    "saving": "Sauvegarde...",
+    "score": "Score",
+    "success": "Succès",
+    "unknownError": "Erreur inconnue"
+  },
+  "landing": {
+    "advantages": {
+      "dynamic": {
+        "description": "Une expérience personnalisée qui évolue avec vous",
+        "title": "Expérience dynamique"
+      },
+      "evolving": {
+        "description": "Groupes, nouveaux formats et fonctionnalités à venir",
+        "title": "Évolutivité"
+      },
+      "quality": {
+        "description": "Le contenu pertinent est mis en avant",
+        "title": "Contenu de qualité"
+      },
+      "realtime": {
+        "description": "Interactions instantanées et notifications en direct",
+        "title": "Fluidité et temps réel"
+      }
+    },
+    "advantagesTitle": "Pourquoi Blinker ?",
+    "createAccount": "Créer un compte",
+    "ctaTitle": "Prêt à rejoindre un réseau social différent ?",
+    "discover": "Découvrir les fonctionnalités",
+    "features": {
+      "blinks": {
+        "description": "Contenu texte, image, vidéo avec durée de vie limitée mais prolongeable par la communauté",
+        "title": "Blinks – Publications Éphémères"
+      },
+      "messaging": {
+        "description": "Messages privés par conversation avec expiration selon le score utilisateur",
+        "title": "Messagerie Dynamique"
+      },
+      "profiles": {
+        "description": "Score utilisateur, suivi, avatar et bio personnalisable",
+        "title": "Profils Riches"
+      },
+      "score": {
+        "description": "Durée de vie des blinks = indice de réputation, influence sur la visibilité",
+        "title": "Score Communautaire"
+      }
+    },
+    "featuresTitle": "Fonctionnalités",
+    "heroSubtitle": "Blinker valorise la qualité, pas la quantité. Découvre un réseau où chaque interaction a un impact.",
+    "heroTitle": "Partage ce qui compte. Le reste s'efface.",
+    "learnMore": "En savoir plus",
+    "login": "Se connecter",
+    "slogan": "More Like, More Time.",
+    "startNow": "Commencer maintenant",
+    "testimonialsTitle": "Ce que disent nos utilisateurs"
+  },
+  "language": "Français",
+  "login": {
+    "alreadyAccount": "J'ai déja un compte",
+    "confirmPassword": "Confirmer mot de passe",
+    "continue": "Continuer",
+    "continueWithGoogle": "Continuer avec Google",
+    "createAccount": "Créer un compte",
+    "displayName": "Nom d'affichage",
+    "displayNameTooLong": "Le nom d'affichage est trop long",
+    "email": "E-mail",
+    "fieldConfirmPasswordRequired": "La confirmation du mot de passe est requise",
+    "fieldDisplayNameRequired": "Un nom d'affichage est requis",
+    "fieldEmailRequired": "un E-mail est requis",
+    "fieldPasswordRequired": "un mot de passe est requis",
+    "fieldUsernameRequired": "Un nom d'utilisateur est requis",
+    "forgotPassword": "Mot de passe oublié ?",
+    "invalidEmail": "l'E-mail n'est pas valide",
+    "invalidUsername": "Le nom d'utilisateur n'est pas valide",
+    "login": "Se connecter",
+    "name": "Nom",
+    "noAccount": "Je n'ai pas de compte",
+    "password": "Mot de passe",
+    "passwordForgotten": "Mot de passe oublié",
+    "passwordInvalid": "Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial",
+    "passwordRuleLength": "Au moins 12 caractères",
+    "passwordRuleLowercase": "Au moins une lettre minuscule",
+    "passwordRuleNumber": "Au moins un chiffre",
+    "passwordRuleSpecial": "Au moins un caractère spécial (@$!%*?&)",
+    "passwordRuleUppercase": "Au moins une lettre majuscule",
+    "passwordRules": "Règles de mot de passe :",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "username": "Nom d'utilisateur",
+    "wrongPassword": "Mot de passe incorrect"
+  },
+  "messages": {
+    "errorLoading": "Erreur lors du chargement des messages",
+    "expired": "Expiré",
+    "expiresIn": "Expire dans",
+    "lastSeen": "Vu dernièrement",
+    "noMessages": "Pas de messages",
+    "offline": "Hors ligne",
+    "online": "En ligne",
+    "placeholder": "Écris un message...",
+    "send": "Envoyer",
+    "startConversation": "Commencez une conversation",
+    "title": "Messagerie",
+    "today": "Aujourd'hui",
+    "typing": "est en train d'écrire...",
+    "yesterday": "Hier",
+    "you": "Vous"
+  },
+  "time": {
+    "daysAgo": "il y a {{count}} jour",
+    "daysAgo_plural": "il y a {{count}} jours",
+    "hoursAgo": "il y a {{count}} heure",
+    "hoursAgo_plural": "il y a {{count}} heures",
+    "minutesAgo": "il y a {{count}} minute",
+    "minutesAgo_plural": "il y a {{count}} minutes",
+    "now": "maintenant"
+  },
+  "navigation": {
+    "home": "Accueil",
+    "languageLabel": "Langue",
+    "leaderboard": "Leaderboard",
+    "messages": "Message",
+    "search": "Rechercher",
+    "settings": "Paramètres",
+    "theme": "Thème",
+    "trends": "Tendances"
+  },
+  "profile": {
+    "blink": "blink",
+    "errorLoadingProfile": "Erreur lors du chargement du profil",
+    "follow": "surveillé",
+    "followButton": "Suivre",
+    "follower": "surveillant",
+    "following": "Abonné",
+    "logout": "Se déconnecter",
+    "noBlinkYet": "Aucun blink publié pour le moment",
+    "score": "Score utilisateur",
+    "scoreDescriptionHigh": "Utilisateur établi avec contenu de qualité",
+    "scoreDescriptionLow": "Nouvel utilisateur avec contenu basique",
+    "scoreDescriptionMedium": "Utilisateur régulier avec bon contenu",
+    "scoreInfo": "Votre score détermine la durée de disponibilité de vos messages",
+    "sendMessage": "Envoyer un message",
+    "unfollow": "Ne plus suivre",
+    "userBlinks": "Blinks publiés"
+  },
+  "search": {
+    "enterQuery": "Entrez un terme de recherche",
+    "error": "Une erreur est survenue",
+    "noResults": "Aucun résultat trouvé",
+    "placeholder": "Rechercher par nom ou @username",
+    "title": "Rechercher des utilisateurs"
+  },
+  "tags": {
+    "alreadyExists": "Ce tag existe déjà",
+    "maxReached": "Maximum {maxTags} tags autorisés",
+    "placeholder": "Ajouter un tag...",
+    "validationError": "Erreur de validation des tags"
+  },
+  "trends": {
+    "title": "Tendances",
+    "popularTags": "Tags populaires",
+    "trendingTags": "Tags tendances",
+    "descriptions": {
+      "popular": "Tags les plus utilisés selon la période sélectionnée",
+      "trending": "Tags avec la plus forte croissance d'utilisation récente"
+    },
+    "timeFilters": {
+      "24h": "24 heures",
+      "7d": "7 jours",
+      "30d": "30 jours",
+      "all": "Tout le temps"
+    },
+    "stats": {
+      "usageCount": "{{count}} utilisation",
+      "usageCount_plural": "{{count}} utilisations",
+      "recentUsage": "{{count}} récente",
+      "recentUsage_plural": "{{count}} récentes",
+      "viewBlinks": "Voir les blinks"
+    },
+    "noData": "Aucune donnée disponible",
+    "error": "Erreur lors du chargement des tendances"
+  },
+  "reports": {
+    "reportBlink": "Signaler ce blink",
+    "selectReason": "Sélectionnez une raison",
+    "additionalInfo": "Informations supplémentaires (optionnel)",
+    "descriptionPlaceholder": "Décrivez le problème...",
+    "submit": "Signaler",
+    "success": "Succès",
+    "submitted": "Votre signalement a été envoyé",
+    "error": "Erreur",
+    "reasons": {
+      "inappropriate": "Contenu inapproprié",
+      "spam": "Spam",
+      "harassment": "Harcèlement",
+      "violence": "Violence",
+      "other": "Autre"
+    },
+    "status": {
+      "pending": "En attente",
+      "reviewed": "Examiné",
+      "rejected": "Rejeté",
+      "action_taken": "Action prise"
+    },
+    "actions": {
+      "review": "Examiner",
+      "reject": "Rejeter",
+      "deleteBlink": "Supprimer le blink"
+    },
+    "reportedBy": "Signalé par",
+    "reviewedBy": "Examiné par",
+    "filters": {
+      "title": "Filtres",
+      "status": "Statut",
+      "reason": "Raison",
+      "allStatuses": "Tous les statuts",
+      "allReasons": "Toutes les raisons",
+      "reset": "Réinitialiser"
+    },
+    "stats": {
+      "title": "Statistiques",
+      "total": "Total",
+      "pending": "En attente",
+      "resolved": "Résolus",
+      "dismissed": "Rejetés",
+      "topReasons": "Principales raisons"
+    }
+  },
+  "admin": {
+    "reports": "Signalements",
+    "reportsManagement": "Gestion des signalements",
+    "accessDenied": "Accès refusé - Droits de modération requis",
+    "redirecting": "Redirection vers l'accueil...",
+    "noReports": "Aucun signalement",
+    "confirmDelete": "Confirmer la suppression",
+    "confirmDeleteMessage": "Êtes-vous sûr de vouloir supprimer ce blink ? Cette action est irréversible."
+  }
+}

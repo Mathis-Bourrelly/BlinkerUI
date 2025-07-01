@@ -1,0 +1,235 @@
+{
+  "base": {
+    "error": "エラー",
+    "or": "または",
+    "return": "戻る"
+  },
+  "blink": {
+    "addContent": "ブリンクに少なくとも一つのコンテンツを追加してください",
+    "addImage": "画像を追加",
+    "addText": "テキストを追加",
+    "addValidContent": "ブリンクに少なくとも一つの有効なコンテンツを追加してください",
+    "addVideo": "動画を追加",
+    "cancel": "キャンセル",
+    "confirmCancel": "本当にキャンセルしますか？すべての変更が失われます。",
+    "create": "作成",
+    "createError": "ブリンクの作成中にエラーが発生しました",
+    "dataError": "データの準備中にエラーが発生しました",
+    "images": "画像",
+    "mediaNotSupported": "注意: {mediaType}は現在サポートされていません。代わりにプレースホルダーURLが使用されます。",
+    "needPhotoPermission": "写真にアクセスするには権限が必要です",
+    "no": "いいえ",
+    "optional": "オプション",
+    "tags": "タグ",
+    "tagsPlaceholder": "タグを追加...",
+    "unknownError": "不明なエラー",
+    "videos": "動画",
+    "yes": "はい"
+  },
+  "comment": {
+    "beFirst": "最初にコメントしてください！",
+    "createError": "コメント作成エラー",
+    "deleteError": "コメント削除エラー",
+    "deleteMessage": "このコメントを削除してもよろしいですか？",
+    "deleteTitle": "コメントを削除",
+    "editPlaceholder": "コメントを編集...",
+    "emptyError": "コメントは空にできません",
+    "invalidBlink": "無効なブリンク",
+    "loadError": "コメント読み込みエラー",
+    "loading": "コメントを読み込み中...",
+    "loadingMore": "さらにコメントを読み込み中...",
+    "noComments": "コメントなし",
+    "placeholder": "コメントを書く...",
+    "title": "コメント",
+    "tooLongError": "コメントが長すぎます（最大1000文字）",
+    "tryAgain": "もう一度お試しください",
+    "updateError": "コメント更新エラー"
+  },
+  "common": {
+    "back": "戻る",
+    "cancel": "キャンセル",
+    "day": "日",
+    "delete": "削除",
+    "error": "エラー",
+    "hour": "時間",
+    "retry": "再試行",
+    "save": "保存",
+    "saving": "保存中...",
+    "score": "スコア"
+  },
+  "landing": {
+    "advantages": {
+      "dynamic": {
+        "description": "あなたと共に進化するパーソナライズされた体験",
+        "title": "ダイナミックな体験"
+      },
+      "evolving": {
+        "description": "グループ、新しいフォーマット、近日公開予定の機能",
+        "title": "進化するプラットフォーム"
+      },
+      "quality": {
+        "description": "関連性の高いコンテンツが強調されます",
+        "title": "高品質コンテンツ"
+      },
+      "realtime": {
+        "description": "即時のインタラクションとライブ通知",
+        "title": "流動性とリアルタイム"
+      }
+    },
+    "advantagesTitle": "なぜBlinkerなのか？",
+    "createAccount": "アカウントを作成する",
+    "ctaTitle": "異なるソーシャルネットワークに参加する準備はできていますか？",
+    "discover": "機能を発見する",
+    "features": {
+      "blinks": {
+        "description": "コミュニティによって延長可能な限られた寿命を持つテキスト、画像、動画コンテンツ",
+        "title": "Blinks - 一時的な投稿"
+      },
+      "messaging": {
+        "description": "ユーザースコアに基づく有効期限付きの会話ごとのプライベートメッセージ",
+        "title": "ダイナミックメッセージング"
+      },
+      "profiles": {
+        "description": "ユーザースコア、フォロー、アバター、カスタマイズ可能なバイオ",
+        "title": "リッチプロフィール"
+      },
+      "score": {
+        "description": "Blinksの寿命 = 評判指数、可視性への影響",
+        "title": "コミュニティスコア"
+      }
+    },
+    "featuresTitle": "機能",
+    "heroSubtitle": "Blinkerは量ではなく質を重視します。すべての交流が影響力を持つネットワークを発見してください。",
+    "heroTitle": "大切なことを共有。残りは消えていく。",
+    "learnMore": "詳細を見る",
+    "login": "ログイン",
+    "slogan": "More Like, More Time.",
+    "startNow": "今すぐ始める",
+    "testimonialsTitle": "ユーザーの声"
+  },
+  "language": "日本語",
+  "login": {
+    "alreadyAccount": "アカウントを持っています",
+    "confirmPassword": "パスワードを確認",
+    "continue": "続ける",
+    "continueWithGoogle": "Googleで続ける",
+    "createAccount": "アカウントを作成する",
+    "displayName": "表示名",
+    "displayNameTooLong": "表示名が長すぎます",
+    "email": "メールアドレス",
+    "fieldConfirmPasswordRequired": "パスワードの確認が必要です",
+    "fieldDisplayNameRequired": "表示名が必要です",
+    "fieldEmailRequired": "メールアドレスが必要です",
+    "fieldPasswordRequired": "パスワードが必要です",
+    "fieldUsernameRequired": "ユーザー名が必要です",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "invalidEmail": "メールアドレスが無効です",
+    "invalidUsername": "ユーザー名が無効です",
+    "login": "ログイン",
+    "name": "名前",
+    "noAccount": "アカウントを持っていません",
+    "password": "パスワード",
+    "passwordForgotten": "パスワードを忘れました",
+    "passwordInvalid": "パスワードは少なくとめ12文字、大文字、1つの小文字、1つの数字、1つの特殊文字を含む必要があります",
+    "passwordRuleLength": "少なくとも12文字",
+    "passwordRuleLowercase": "少なくとも1つの小文字",
+    "passwordRuleNumber": "少なくとも1つの数字",
+    "passwordRuleSpecial": "少なくとも1つの特殊文字 (@$!%*?&)",
+    "passwordRuleUppercase": "少なくとも1つの大文字",
+    "passwordRules": "パスワードのルール：",
+    "passwordsDoNotMatch": "パスワードが一致しません",
+    "username": "ユーザー名",
+    "wrongPassword": "パスワードが正しくありません"
+  },
+  "messages": {
+    "errorLoading": "メッセージの読み込みエラー",
+    "expired": "期限切れ",
+    "expiresIn": "有効期限",
+    "lastSeen": "最後に見た",
+    "noMessages": "メッセージなし",
+    "offline": "オフライン",
+    "online": "オンライン",
+    "placeholder": "メッセージを書く...",
+    "send": "送信",
+    "startConversation": "会話を始める",
+    "title": "メッセージ",
+    "today": "今日",
+    "typing": "入力中...",
+    "yesterday": "昨日",
+    "you": "あなた"
+  },
+  "time": {
+    "daysAgo": "{{count}}日前",
+    "daysAgo_plural": "{{count}}日前",
+    "hoursAgo": "{{count}}時間前",
+    "hoursAgo_plural": "{{count}}時間前",
+    "minutesAgo": "{{count}}分前",
+    "minutesAgo_plural": "{{count}}分前",
+    "now": "今"
+  },
+  "navigation": {
+    "home": "ホーム",
+    "languageLabel": "言語",
+    "leaderboard": "リーダーボード",
+    "messages": "メッセージ",
+    "search": "検索",
+    "settings": "設定",
+    "theme": "テーマ",
+    "trends": "トレンド"
+  },
+  "profile": {
+    "blink": "ブリンク",
+    "errorLoadingProfile": "プロフィールの読み込みエラー",
+    "follow": "フォロー",
+    "followButton": "フォローする",
+    "follower": "フォロワー",
+    "following": "フォロー中",
+    "logout": "ログアウト",
+    "noBlinkYet": "まだブリンクが公開されていません",
+    "score": "ユーザースコア",
+    "scoreDescriptionHigh": "質の高いコンテンツの確立されたユーザー",
+    "scoreDescriptionLow": "基本的なコンテンツの新しいユーザー",
+    "scoreDescriptionMedium": "良いコンテンツの定期的なユーザー",
+    "scoreInfo": "あなたのスコアはメッセージの利用可能期間を決定します",
+    "sendMessage": "メッセージを送る",
+    "unfollow": "フォロー解除",
+    "userBlinks": "公開されたブリンク"
+  },
+  "search": {
+    "enterQuery": "検索語を入力してください",
+    "error": "エラーが発生しました",
+    "noResults": "結果が見つかりません",
+    "placeholder": "名前または@ユーザー名で検索",
+    "title": "ユーザー検索"
+  },
+  "tags": {
+    "alreadyExists": "このタグは既に存在します",
+    "maxReached": "最大{maxTags}個のタグが許可されています",
+    "placeholder": "タグを追加...",
+    "validationError": "タグ検証エラー"
+  },
+  "trends": {
+    "title": "トレンド",
+    "popularTags": "人気のタグ",
+    "trendingTags": "トレンドタグ",
+    "descriptions": {
+      "popular": "選択された期間で最も使用されたタグ",
+      "trending": "最近の使用量が最も成長しているタグ"
+    },
+    "timeFilters": {
+      "24h": "24時間",
+      "7d": "7日間",
+      "30d": "30日間",
+      "all": "全期間"
+    },
+    "stats": {
+      "usageCount": "{{count}}回使用",
+      "usageCount_plural": "{{count}}回使用",
+      "recentUsage": "{{count}}回最近",
+      "recentUsage_plural": "{{count}}回最近",
+      "viewBlinks": "ブリンクを見る"
+    },
+    "noData": "データがありません",
+    "error": "トレンドの読み込みエラー"
+  }
+}

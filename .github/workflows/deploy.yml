@@ -1,0 +1,38 @@
+name: Deploy Expo Web App
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      # Vérifier le code depuis le repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Installer Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 # Ajuste selon ta version
+
+      # Installer Expo CLI
+      - name: Install Expo CLI
+        run: npm install -g expo-cli
+
+      # Installer les dépendances du projet
+      - name: Install dependencies
+        run: npm install
+
+      # Déployer le build dans le dossier  cible sur le serveur Windows
+      - name: Deploy to target folder
+        run: |
+          $targetFolder = "D:\blinkerUI"
+          if (-not (Test-Path $targetFolder)) {
+            New-Item -ItemType Directory -Path $targetFolder
+          }
+          Copy-Item -Path * -Destination $targetFolder -Recurse -Force
+        shell: powershell

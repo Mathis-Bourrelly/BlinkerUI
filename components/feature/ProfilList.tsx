@@ -1,0 +1,56 @@
+import React from 'react';
+import { FlatList, ActivityIndicator, StyleSheet, Text } from 'react-native';
+import { useTheme } from '@/context/ThemeContext';
+import { ProfilCard } from './ProfilCard';
+import { UseInfiniteQueryResult } from '@tanstack/react-query';
+import { ProfilesType } from '@/types/ProfilesType'
+
+type UserListProps = {
+    fetchProfiles: () => UseInfiniteQueryResult<{ data: ProfilesType[] }, Error>; // Fonction pour récupérer les profils
+};
+
+export function ProfilList({ fetchProfiles }: UserListProps) {
+    const { colors } = useTheme();
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isLoading,
+        error,
+    } = fetchProfiles();
+    // Extraire les profils des données paginées avec la nouvelle structure de réponse
+    const profiles = data ? data.pages.flatMap(page => page.data.data) : [];
+
+    if (isLoading) {
+        return <ActivityIndicator size="large" color={colors.accent} />;
+    }
+
+    if (error) {
+        return <Text style={{ color: colors.danger }}>Error: {error.message}</Text>;
+    }
+    return (
+        <FlatList
+            data={profiles}
+            keyExtractor={(item) => item.userID}
+            renderItem={({ item }) => <ProfilCard profil={item} />}
+            onEndReached={() => {
+                if (hasNextPage) {
+                    fetchNextPage();
+                }
+            }}
+            onEndReachedThreshold={0.5}
+            showsVerticalScrollIndicator={true}
+            ListFooterComponent={
+                isFetchingNextPage ? <ActivityIndicator size="small" color={colors.accent} /> : null
+            }
+            contentContainerStyle={styles.listContainer}
+        />
+    );
+}
+
+const styles = StyleSheet.create({
+    listContainer: {
+        padding: 10,
+    },
+});

@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "blinker-ui",
-    "slug": "blinker-ui",
+    "name": "Blinker",
+    "slug": "blinker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "blinkerui",
+    "scheme": "blinker",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -14,24 +14,36 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#03050c"
       },
       "package": "com.mathis13.blinkerui"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "Blinker"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#ffffff",
+          "image": "./assets/images/splash-icon-dark.png",
+          "dark": {
+            "image": "./assets/images/splash-icon.png",
+            "backgroundColor": "#03050C"
+          },
+          "imageWidth": 200
+        }
+      ],
+      "expo-localization",
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
         }
       ]
     ],
@@ -42,8 +54,11 @@
       "router": {
         "origin": false
       },
+      "cli": {
+        "appVersionSource": "0.2"
+      },
       "eas": {
-        "projectId": "bb16c418-11c4-4e19-8a50-dd0949895191"
+        "projectId": "37830f43-41c7-47ed-a264-dab7dd0aac65"
       }
     }
   }
